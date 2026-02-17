@@ -1,8 +1,11 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
+#include "status.h"
 #include <QWidget>
 #include <QGridLayout>
+#include <QFileDialog>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWidget; }
@@ -18,6 +21,11 @@ class MainWidget : public QWidget
 
     private:
         Ui::MainWidget *ui; 
-}
+
+    private slots:
+        // обработка нажатий на кнопки
+        status_t ButtonLoadFile_clicked();
+        status_t ButtonOpenDescrioption_clicked();
+};
 
 #endif

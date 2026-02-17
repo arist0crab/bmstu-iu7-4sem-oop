@@ -113,3 +113,91 @@ MOC_DIR = build/moc
 > ```
 
 После чего можно уже вызывать ```Makefile```, который и создаст бинарный файл, при запуске которого появится приложение.
+
+## Основы создания приложений: нажатие на кнопку
+
+Сейчас ```mainwidget.cpp``` выглядит так:
+
+```cpp
+#include "mainwidget.h"      // подключение заголовочных файлов
+#include "ui_mainwidget.h"   // подключение заголовочных файлов
+
+/* инструкции для компилятора, что именно надо сделать при создании
+объекта класса MainWidget*/
+MainWidget::MainWidget(QWidget *parent) : QWidget(parent), ui(new Ui::MainWidget)
+{
+   ui->setupUi(this);  // построение интерфейса
+}
+
+MainWidget::~MainWidget()  // описание деструктора
+{
+   delete ui;
+}
+```
+
+Здесь указаны основные моменты, которыми будут общими в принципе для всех случаев создания приложения. Если синтаксис самого языка не совсем понятен, то рекоментуется начать с чтения [руководства](https://learn.microsoft.com/ru-ru/cpp/cpp/classes-and-structs-cpp?view=msvc-170) по классам. Теперь необходимо создать метод класса, который будет отвечать за выбор и загрузку файлов. Для этого в свою очерень нужно конкретезировать, какие именно файлы мы хотим использовать в проекте, а мы хотим использовать файлы ```.txt``` для упрощения процесса.
+
+Пример ```.txt``` файла, который будет корректно обрабатываться нашей программой:
+
+```
+4
+0 0 100
+100 -100 0
+100 100 0
+-100 100 0
+6
+0 1
+0 2
+0 3 
+1 2
+2 3
+3 1
+```
+
+В первой строке указывается количество точек фигуры. На каждой следующей строке указываются координаты (x, y, z) каждой из точек. Затем указано количество ребер фигуры, а за ней на каждой строке отдельно указываются "связи ребер" (нумерация начинается с 0). Таким образом ребро 0 связано с ребром 1, с ребром 2, с ребром 3 и т.д. Не трудно догадаться, что данная фигура - куб.
+
+
+Создадим метод класса, который будет предлагать пользователю диалоговое окно, выбор ```.txt``` файла в нем, а затем будет выводить имя полученного файла в консоль.
+
+```cpp
+
+status_t MainWidget::ButtonLoadFile_clicked()
+{
+   QString path = QFileDialog::getOpenFileName(this, "Выбор файла", "", "Text files (*.txt)");
+   cout << path.toUtf8().data() << endl;
+
+   return SUCCESS;
+}
+```
+
+Обновим класс MainWidget, добавив в ```private slots```  ButtonLoadFile_clicked():
+
+```cpp
+class MainWidget : public QWidget
+{
+    Q_OBJECT
+
+    public:
+        explicit MainWidget(QWidget *parent = nullptr);
+        ~MainWidget();
+
+    private:
+        Ui::MainWidget *ui; 
+
+    private slots:
+        status_t ButtonLoadFile_clicked();
+};
+```
+
+Последний этап: привяжем кнопку ```ButtonLoadFile``` из нашего ui к методу данного класса:
+
+```cpp
+MainWidget::MainWidget(QWidget *parent) : QWidget(parent), ui(new Ui::MainWidget)
+{
+   ui->setupUi(this);
+
+   connect(ui->ButtonLoadFile, &QPushButton::clicked, this, &MainWidget::ButtonLoadFile_clicked);
+}
+```
+
+Теперь при нажатии ```ButtonLoadFile``` в консоль будет выводиться имя файла, который мы выбрали.
