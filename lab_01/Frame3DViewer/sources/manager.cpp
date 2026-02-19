@@ -1,6 +1,4 @@
 #include "manager.h"
-#include <iostream>  // TODO
-using namespace std;  // TODO
 
 
 status_t manage_request(request_t &request, figure_t &figure)
@@ -25,7 +23,7 @@ status_t manage_request(request_t &request, figure_t &figure)
             break;
 
         case ROTATE_FIGURE:
-            // TODO
+            sc = rotate_figure(figure, request.rotate_data);
             break;
 
         default:

@@ -147,7 +147,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+           <widget class="QDoubleSpinBox" name="EnterRotateX">
             <property name="minimum">
              <double>-100.000000000000000</double>
             </property>
@@ -171,7 +171,7 @@
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+           <widget class="QDoubleSpinBox" name="EnterRotateZ">
             <property name="minimum">
              <double>-100.000000000000000</double>
             </property>
@@ -181,7 +181,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+           <widget class="QDoubleSpinBox" name="EnterRotateY">
             <property name="minimum">
              <double>-100.000000000000000</double>
             </property>

@@ -1,10 +1,18 @@
 #include "figure.h"
 
+
 status_t draw_lines(const points_t &points, const edges_t &edges, draw_scene_t &scene);
 status_t scene_reset(draw_scene_t &scene);
 
 status_t move_point(point_t &point, const move_data_t &move_data);
 status_t move_points(points_t &points, const move_data_t move_data);
+
+status_t rotate_points(points_t &points, const point_t &rotation_center, const rotate_data_t &rotate_data);
+status_t rotate_point(point_t &point, const point_t &rotation_center, const rotate_data_t &rotate_data);
+status_t rotate_x_coordinate(point_t &point, const point_t &rotation_center, const double angle);
+status_t rotate_y_coordinate(point_t &point, const point_t &rotation_center, const double angle);
+status_t rotate_z_coordinate(point_t &point, const point_t &rotation_center, const double angle);
+status_t to_radians(const double degrees, double &radians);
 
 status_t figure_ensure_valid(figure_t &figure);
 
@@ -16,7 +24,84 @@ status_t free_figure(figure_t &figure);
 // Поворот фигуры
 // ===================================
 
-// TODO
+status_t rotate_figure(figure_t &figure, const rotate_data_t &rotate_data)
+{
+    status_t sc = figure_ensure_valid(figure);
+
+    if (sc == SUCCESS)
+        rotate_points(figure.points, figure.center, rotate_data);
+
+    return sc;
+}
+
+status_t rotate_points(points_t &points, const point_t &rotation_center, const rotate_data_t &rotate_data)
+{
+    for (size_t i = 0; i < points.size; i++)
+        rotate_point(points.array[i], rotation_center, rotate_data);
+
+    return SUCCESS;
+}
+
+status_t rotate_point(point_t &point, const point_t &rotation_center, const rotate_data_t &rotate_data)
+{
+    rotate_x_coordinate(point, rotation_center, rotate_data.ax);
+    rotate_y_coordinate(point, rotation_center, rotate_data.ay);
+    rotate_z_coordinate(point, rotation_center, rotate_data.az);
+
+    return SUCCESS;
+}
+
+status_t rotate_x_coordinate(point_t &point, const point_t &rotation_center, const double angle)
+{
+    double r_cos, r_sin, radians;
+    double y = point.y;
+
+    to_radians(angle, radians);
+    r_cos = cos(radians);
+    r_sin = sin(radians);
+
+    point.y = (point.y - rotation_center.y) * r_cos + (point.z - rotation_center.z) * r_sin + rotation_center.y;
+    point.z = -(y - rotation_center.y) * r_sin + (point.z - rotation_center.z) * r_cos + rotation_center.z;
+
+    return SUCCESS;
+}
+
+status_t rotate_y_coordinate(point_t &point, const point_t &rotation_center, const double angle)
+{
+    double r_cos, r_sin, radians;
+    double x = point.x;
+
+    to_radians(angle, radians);
+    r_cos = cos(radians);
+    r_sin = sin(radians);
+
+    point.x = (point.x - rotation_center.x) * r_cos + (point.z - rotation_center.z) * r_sin + rotation_center.x;
+    point.z = -(x - rotation_center.y) * r_sin + (point.z - rotation_center.z) * r_cos + rotation_center.z;
+
+    return SUCCESS;
+}
+
+status_t rotate_z_coordinate(point_t &point, const point_t &rotation_center, const double angle)
+{
+    double r_cos, r_sin, radians;
+    double x = point.x;
+
+    to_radians(angle, radians);
+    r_cos = cos(radians);
+    r_sin = sin(radians);
+
+    point.x = (point.x - rotation_center.x) * r_cos + (point.y - rotation_center.y) * r_sin + rotation_center.x;
+    point.y = -(x - rotation_center.y) * r_sin + (point.y - rotation_center.y) * r_cos + rotation_center.y;
+
+    return SUCCESS;
+}
+
+status_t to_radians(const double degrees, double &radians)
+{
+    radians = degrees * M_PI / 180.0;
+
+    return SUCCESS;
+}
 
 // ===================================
 // Сдвиг фигуры
@@ -58,9 +143,7 @@ status_t move_point(point_t &point, const move_data_t &move_data)
 
 status_t draw_figure(figure_t &figure, draw_scene_t &scene)
 {
-    status_t sc;
-
-    sc = figure_ensure_valid(figure);
+    status_t sc = figure_ensure_valid(figure);
 
     if (sc == SUCCESS)
     {

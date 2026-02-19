@@ -24,7 +24,7 @@ typedef struct
         const char *filename;
         move_data_t move_data;
         scale_data_t scale_data;
-        rotate_data_t rotate_date;
+        rotate_data_t rotate_data;
     };
 } request_t;
 
