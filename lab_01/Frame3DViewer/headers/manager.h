@@ -22,12 +22,12 @@ typedef struct
     union
     {
         const char *filename;
-        struct { double dx, dy, dz; } move_data;
-        struct { double kx, ky, kz; } scale_data;
-        struct { double ax, ay, az; } rotate_data;
+        move_data_t move_data;
+        scale_data_t scale_data;
+        rotate_data_t rotate_date;
     };
 } request_t;
 
-status_t manage_request(request_t request, figure_t &figure);
+status_t manage_request(request_t &request, figure_t &figure);
 
 #endif

@@ -3,6 +3,8 @@
 #include <iostream>
 using namespace std;
 
+status_t move_point(point_t &point, const move_data_t &move_data);
+
 status_t check_figure_valid(const vector<point_t> &points, const vector<edge_t> &edges);
 status_t check_index_valid(const int array_size, const int index);
 
@@ -10,6 +12,70 @@ status_t read_points_from_file(figure_t &figure, ifstream &filestream);
 status_t read_edges_from_file(figure_t &figure, ifstream &filestream);
 status_t figure_reset(figure_t &figure);
 
+// ===================================
+// Поворот фигуры
+// ===================================
+
+// TODO
+
+// ===================================
+// Сдвиг фигуры
+// ===================================
+
+status_t move_figure(figure_t &figure, const move_data_t &move_data)
+{
+    status_t sc = check_figure_valid(figure.points, figure.edges);
+
+    if (sc == SUCCESS)
+    {
+        move_point(figure.center, move_data);
+        for (auto &point : figure.points)
+            move_point(point, move_data);
+    }
+
+    return sc;
+}
+
+status_t move_point(point_t &point, const move_data_t &move_data)
+{
+    point.x += move_data.dx;
+    point.y += move_data.dy;
+    point.z += move_data.dz;
+
+    return SUCCESS;
+}
+
+// ===================================
+// Отрисовка фигуры
+// ===================================
+
+status_t draw_figure(figure_t &figure, draw_scene_t &scene)
+{
+    status_t sc;
+    point_t p1, p2;
+    double x1, y1, x2, y2; 
+
+    sc = check_figure_valid(figure.points, figure.edges);
+    if (sc == ERR_FIGURE_DATA) 
+        figure_reset(figure);
+
+    if (sc == SUCCESS)
+    {
+        scene.scene->clear();
+        for (const auto &edge : figure.edges)
+        {        
+            p1 = figure.points[edge.point_1];
+            p2 = figure.points[edge.point_2];
+            x1 = p1.x + scene.width / 2;
+            y1 = p1.y + scene.height / 2;
+            x2 = p2.x + scene.width / 2;
+            y2 = p2.y + scene.height / 2;
+            scene.scene->addLine(x1, y1, x2, y2);
+        }
+    }
+    
+    return SUCCESS;
+}
 
 // ===================================
 // Чтение фигуры из файла
@@ -66,38 +132,6 @@ status_t read_edges_from_file(figure_t &figure, ifstream &filestream)
         figure.edges.push_back(edge);
     }
 
-    return SUCCESS;
-}
-
-// ===================================
-// Отрисовка фигуры
-// ===================================
-
-status_t draw_figure(figure_t &figure, draw_scene_t &scene)
-{
-    status_t sc;
-    point_t p1, p2;
-    double x1, y1, x2, y2; 
-
-    sc = check_figure_valid(figure.points, figure.edges);
-    if (sc == ERR_FIGURE_DATA) 
-        figure_reset(figure);
-
-    if (sc == SUCCESS)
-    {
-        scene.scene->clear();
-        for (const auto &edge : figure.edges)
-        {        
-            p1 = figure.points[edge.point_1];
-            p2 = figure.points[edge.point_2];
-            x1 = p1.x + scene.width / 2;
-            y1 = p1.y + scene.height / 2;
-            x2 = p2.x + scene.width / 2;
-            y2 = p2.y + scene.height / 2;
-            scene.scene->addLine(x1, y1, x2, y2);
-        }
-    }
-    
     return SUCCESS;
 }
 

@@ -29,6 +29,7 @@ class MainWidget : public QWidget
 
     private slots:
         // обработка нажатий на кнопки
+        status_t ButtonMoveFigure_clicked();
         status_t ButtonLoadFile_clicked();
         status_t ButtonOpenDescrioption_clicked();
 };

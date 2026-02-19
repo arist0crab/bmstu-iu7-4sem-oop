@@ -40,7 +40,17 @@
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout">
           <item row="1" column="0">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+           <widget class="QDoubleSpinBox" name="EnterMoveX">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>5.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="2">
            <widget class="QLabel" name="label_3">
@@ -57,7 +67,7 @@
            </widget>
           </item>
           <item row="2" column="0" colspan="3">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="ButtonMoveFigure">
             <property name="text">
              <string>Перенести</string>
             </property>
@@ -71,10 +81,24 @@
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+           <widget class="QDoubleSpinBox" name="EnterMoveZ">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+           <widget class="QDoubleSpinBox" name="EnterMoveY">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -109,14 +133,11 @@
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="2" column="0" colspan="3">
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="ButtonRotateFigure">
             <property name="text">
              <string>Повернуть</string>
             </property>
            </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_5"/>
           </item>
           <item row="0" column="1">
            <widget class="QLabel" name="label_5">
@@ -126,10 +147,14 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_6">
@@ -142,6 +167,26 @@
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>angle z</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -164,27 +209,17 @@
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_9">
+          <item row="2" column="0" colspan="3">
+           <widget class="QPushButton" name="ButtonScaleFigure">
             <property name="text">
-             <string>kx</string>
+             <string>Масштабировать</string>
             </property>
            </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
           </item>
           <item row="0" column="1">
            <widget class="QLabel" name="label_8">
             <property name="text">
              <string>ky</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="3">
-           <widget class="QPushButton" name="pushButton_3">
-            <property name="text">
-             <string>Масштабировать</string>
             </property>
            </widget>
           </item>
@@ -195,11 +230,42 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>kx</string>
+            </property>
+           </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

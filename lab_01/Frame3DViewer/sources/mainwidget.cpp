@@ -16,6 +16,7 @@ MainWidget::MainWidget(figure_t &figure, QWidget *parent) : QWidget(parent), ui(
 
    connect(ui->ButtonLoadFile, &QPushButton::clicked, this, &MainWidget::ButtonLoadFile_clicked);
    connect(ui->ButtonOpenDescrioption, &QPushButton::clicked, this, &MainWidget::ButtonOpenDescrioption_clicked);
+   connect(ui->ButtonMoveFigure, &QPushButton::clicked, this, &MainWidget::ButtonMoveFigure_clicked);
 
    figure_reset(this->figure);
 }
@@ -48,6 +49,27 @@ status_t MainWidget::draw()
 }
 
 // обработка нажатий на кнопки
+
+status_t MainWidget::ButtonMoveFigure_clicked()
+{
+   status_t sc;
+   request_t request;
+   double dx, dy, dz;
+
+   dx = ui->EnterMoveX->value();
+   dy = ui->EnterMoveY->value();
+   dz = ui->EnterMoveZ->value();
+
+   request.type = MOVE_FIGURE;
+   request.move_data = { dx, dy, dz };
+
+   sc = manage_request(request, this->figure);
+   if (sc == SUCCESS) sc = draw();
+
+   // TODO add error manager
+
+   return sc;
+}
 
 status_t MainWidget::ButtonLoadFile_clicked()
 {

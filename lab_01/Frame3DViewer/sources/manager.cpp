@@ -1,7 +1,7 @@
 #include "manager.h"
 
 
-status_t manage_request(request_t request, figure_t &figure)
+status_t manage_request(request_t &request, figure_t &figure)
 {
     status_t sc = SUCCESS;
     switch (request.type)
@@ -16,7 +16,7 @@ status_t manage_request(request_t request, figure_t &figure)
             break;
             
         case MOVE_FIGURE:
-            // TODO
+            sc = move_figure(figure, request.move_data);
             break;
 
         case SCALE_FIGURE:
