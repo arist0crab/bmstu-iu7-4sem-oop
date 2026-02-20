@@ -29,12 +29,19 @@ typedef struct { double dx, dy, dz; } move_data_t;
 typedef struct { double kx, ky, kz; } scale_data_t;
 typedef struct { double ax, ay, az; } rotate_data_t;
 
-status_t init_figure(figure_t &figure);
-status_t free_figure(figure_t &figure);
-status_t draw_figure(figure_t &figure, draw_scene_t &scene);
+// действия над фигурой
 status_t move_figure(figure_t &figure, const move_data_t &move_data);
 status_t rotate_figure(figure_t &figure, const rotate_data_t &rotate_data);
 status_t scale_figure(figure_t &figure, const scale_data_t &scale_data);
+
+// отрисовка фигуры
+status_t draw_figure(figure_t &figure, draw_scene_t &scene);
+
+// чтение фигуры из файла
 status_t read_figure_from_file(figure_t &figure, const string filename);
+
+// инициализация и освобождение фигуры
+status_t init_figure(figure_t &figure);
+status_t free_figure(figure_t &figure);
 
 #endif

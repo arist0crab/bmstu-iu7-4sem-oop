@@ -118,8 +118,8 @@ status_t MainWidget::ButtonLoadFile_clicked()
    
    QString path = QFileDialog::getOpenFileName(this, "Выбор файла", "", "Text files (*.txt)");
 
-   request.filename = path.toUtf8().data();
    request.type = LOAD_FIGURE;
+   request.filename = path.toUtf8().data();
 
    sc = manage_request(request, this->figure);
    if (sc == SUCCESS) sc = draw();

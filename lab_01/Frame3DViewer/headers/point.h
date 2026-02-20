@@ -20,10 +20,10 @@ typedef struct
 } points_t;
 
 
-status_t init_points(points_t &points);
-status_t init_point(point_t &point);
+status_t allocate_points_array(points_t &points, size_t array_capacity);
 status_t push_back_point(points_t &points, const point_t &point);
 status_t free_points(points_t &points);
-status_t allocate_points_array(points_t &points, size_t array_capacity);
+status_t init_points(points_t &points);
+status_t init_point(point_t &point);
 
 #endif

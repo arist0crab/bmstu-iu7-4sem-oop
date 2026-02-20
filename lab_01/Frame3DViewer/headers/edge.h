@@ -18,8 +18,8 @@ typedef struct
     size_t size;
 } edges_t;
 
-status_t push_back_edge(edges_t &edges, const edge_t &edge);
 status_t allocate_edges_array(edges_t &edges, const size_t array_capacity);
+status_t push_back_edge(edges_t &edges, const edge_t &edge);
 status_t free_edges(edges_t &edges);
 status_t init_edges(edges_t &edges);
 

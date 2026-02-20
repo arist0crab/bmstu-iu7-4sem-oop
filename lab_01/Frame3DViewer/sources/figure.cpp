@@ -1,12 +1,11 @@
 #include "figure.h"
 
 
-status_t draw_lines(const points_t &points, const edges_t &edges, draw_scene_t &scene);
-status_t scene_reset(draw_scene_t &scene);
-
+// сдвиг фигуры
 status_t move_point(point_t &point, const move_data_t &move_data);
 status_t move_points(points_t &points, const move_data_t move_data);
 
+// вращение фигуры
 status_t rotate_points(points_t &points, const point_t &rotation_center, const rotate_data_t &rotate_data);
 status_t rotate_point(point_t &point, const point_t &rotation_center, const rotate_data_t &rotate_data);
 status_t rotate_x_coordinate(point_t &point, const point_t &rotation_center, const double angle);
@@ -14,15 +13,21 @@ status_t rotate_y_coordinate(point_t &point, const point_t &rotation_center, con
 status_t rotate_z_coordinate(point_t &point, const point_t &rotation_center, const double angle);
 status_t to_radians(const double degrees, double &radians);
 
+// масштабирование фигуры
 status_t scale_points(points_t &points, const point_t &scale_center, const scale_data_t &scale_data);
 status_t scale_point(point_t &point, const point_t &scale_center, const scale_data_t &scale_data);
 
+// отрисовка фигуры
+status_t draw_lines(const points_t &points, const edges_t &edges, draw_scene_t &scene);
+status_t scene_reset(draw_scene_t &scene);
+
+// проверка валидности фигуры
 status_t figure_ensure_valid(const figure_t &figure);
 status_t check_edges_indexes(const points_t &points, const edges_t &edges);
 status_t check_edge_indexes(const int &points_size, const edge_t &edge);
 status_t check_figure_empty(const points_t &points, const edges_t &edges_t);
 
-
+// чтение фигуры из файла
 status_t read_points_from_file(figure_t &figure, ifstream &filestream);
 status_t read_edges_from_file(figure_t &figure, ifstream &filestream);
 status_t free_figure(figure_t &figure);
@@ -335,13 +340,8 @@ status_t check_figure_empty(const points_t &points, const edges_t &edges)
     return (points.size == 0 || edges.size == 0) ? ERR_EMPTY : SUCCESS;    
 }
 
-// status_t check_index_valid(const int array_size, const int index)
-// {
-//     return (index < 0 || index >= array_size) ? ERR_OUT_OF_RANGE : SUCCESS;;
-// }
-
 // ===================================
-// Освобождение фигуры
+// Освобождение и инициализация фигуры
 // ===================================
 
 status_t free_figure(figure_t &figure)
