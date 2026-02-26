@@ -239,21 +239,28 @@ status_t draw_lines(const points_t &points, const edges_t &edges, draw_scene_t &
 // Чтение фигуры из файла
 // ===================================
 
-status_t read_figure_from_file(figure_t &figure, const string filename)
+// переписать чтение из файла под си
+
+status_t read_figure_from_file(figure_t &figure, const char *filename)
 {
     status_t sc = SUCCESS;
 
+    // TODO правило для var параметров
     free_figure(figure);
 
+    // TODO вынести
     ifstream filestream(filename);
 
     if (filestream.is_open())
     {
+        // TODO статус
+        // TODO в точках читаются
         read_points_from_file(figure, filestream);
         read_edges_from_file(figure, filestream);
     }
     else sc = ERR_FILE;
 
+    // TODO проверить открыт ли файл
     filestream.close();
 
     if (sc == SUCCESS)
@@ -358,6 +365,19 @@ status_t init_figure(figure_t &figure)
     init_point(figure.center);
     init_points(figure.points);
     init_edges(figure.edges);
+
+    return SUCCESS;
+}
+
+status_t move_figure(figure_t &dest, figure_t &src)
+{
+    free_figure(dest);
+
+    dest.center = src.center;
+    dest.points = src.points;
+    dest.edges = src.edges;
+
+    init_figure(src);
 
     return SUCCESS;
 }

@@ -3,6 +3,7 @@
 
 #include "status.h"
 #include "figure.h"
+#include "read_from_file.h"
 #include <iostream>
 using namespace std;
 

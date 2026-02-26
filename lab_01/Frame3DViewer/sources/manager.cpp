@@ -3,6 +3,7 @@
 
 status_t manage_request(request_t &request, figure_t &figure)
 {
+    // TODO static figure
     status_t sc = SUCCESS;
     switch (request.type)
     {

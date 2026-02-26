@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/lab_01/Frame3DViewer/headers/*",
+                "${workspaceFolder}/lab_01/Frame3DViewer/headers/*.h",
+                "${workspaceFolder}/lab_01/Frame3DViewer/sources/*.cpp",
                 "/usr/include/qt6/QtWidgets"
             ],
             "defines": [],

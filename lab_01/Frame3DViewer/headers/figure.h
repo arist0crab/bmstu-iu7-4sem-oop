@@ -37,8 +37,8 @@ status_t scale_figure(figure_t &figure, const scale_data_t &scale_data);
 // отрисовка фигуры
 status_t draw_figure(figure_t &figure, draw_scene_t &scene);
 
-// чтение фигуры из файла
-status_t read_figure_from_file(figure_t &figure, const string filename);
+// "копирование" фигуры
+status_t move_figure(figure_t &dest, figure_t &src);
 
 // инициализация и освобождение фигуры
 status_t init_figure(figure_t &figure);
