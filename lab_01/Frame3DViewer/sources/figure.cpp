@@ -237,8 +237,10 @@ status_t draw_lines(const points_t &points, const edges_t &edges, draw_scene_t &
 status_t figure_ensure_valid(const figure_t &figure)
 {
     status_t sc = check_figure_empty(figure.points, figure.edges);
+
     if (sc == SUCCESS)
         sc = check_edges_indexes(figure.points, figure.edges);
+        
     return sc;    
 }
 
