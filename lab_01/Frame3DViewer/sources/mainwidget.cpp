@@ -1,7 +1,7 @@
 #include "mainwidget.h"
 #include "ui_mainwidget.h"
 
-MainWidget::MainWidget(figure_t &figure, QWidget *parent) : QWidget(parent), ui(new Ui::MainWidget), figure(figure)
+MainWidget::MainWidget(QWidget *parent) : QWidget(parent), ui(new Ui::MainWidget)
 {
    ui->setupUi(this);
 
@@ -20,7 +20,6 @@ MainWidget::MainWidget(figure_t &figure, QWidget *parent) : QWidget(parent), ui(
 
 MainWidget::~MainWidget()
 {
-   free_figure(this->figure);
    delete ui;
 }
 
@@ -41,7 +40,7 @@ status_t MainWidget::draw()
    request.type = DRAW_FIGURE;
    request.scene = { scene, scene_width, scene_height };
 
-   sc = manage_request(request, this->figure);
+   sc = manage_request(request);
 
    return sc;
 }
@@ -61,7 +60,7 @@ status_t MainWidget::ButtonScaleFigure_clicked()
    request.type = SCALE_FIGURE;
    request.scale_data = { kx, ky, kz };
 
-   sc = manage_request(request, this->figure);
+   sc = manage_request(request);
    if (sc == SUCCESS) sc = draw();
 
    show_error_message(sc, this);
@@ -82,7 +81,7 @@ status_t MainWidget::ButtonMoveFigure_clicked()
    request.type = MOVE_FIGURE;
    request.move_data = { dx, dy, dz };
 
-   sc = manage_request(request, this->figure);
+   sc = manage_request(request);
    if (sc == SUCCESS) sc = draw();
 
    show_error_message(sc, this);
@@ -103,7 +102,7 @@ status_t MainWidget::ButtonRotateFigure_clicked()
    request.type = ROTATE_FIGURE;
    request.rotate_data = { ax, ay, az };
 
-   sc = manage_request(request, this->figure);
+   sc = manage_request(request);
    if (sc == SUCCESS) sc = draw();
 
    show_error_message(sc, this);
@@ -121,7 +120,7 @@ status_t MainWidget::ButtonLoadFile_clicked()
    request.type = LOAD_FIGURE;
    request.filename = path.toUtf8().data();
 
-   sc = manage_request(request, this->figure);
+   sc = manage_request(request);
    if (sc == SUCCESS) sc = draw();
 
    show_error_message(sc, this);

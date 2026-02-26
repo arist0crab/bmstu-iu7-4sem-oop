@@ -7,8 +7,8 @@
 
 typedef struct
 {
-    int point_1;
-    int point_2;
+    size_t point_1;
+    size_t point_2;
 } edge_t;
 
 typedef struct

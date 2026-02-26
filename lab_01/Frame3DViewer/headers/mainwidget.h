@@ -19,14 +19,13 @@ class MainWidget : public QWidget
     Q_OBJECT
 
     public:
-        explicit MainWidget(figure_t &figure, QWidget *parent = nullptr);
+        explicit MainWidget(QWidget *parent = nullptr);
         ~MainWidget();
 
         status_t draw();
 
     private:
         Ui::MainWidget *ui; 
-        figure_t figure;
 
     private slots:
         status_t ButtonLoadFile_clicked();

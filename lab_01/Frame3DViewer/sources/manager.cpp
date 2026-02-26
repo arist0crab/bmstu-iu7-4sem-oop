@@ -1,10 +1,11 @@
 #include "manager.h"
 
 
-status_t manage_request(request_t &request, figure_t &figure)
+status_t manage_request(request_t &request)
 {
-    // TODO static figure
     status_t sc = SUCCESS;
+    static figure_t figure;
+
     switch (request.type)
     {
         case LOAD_FIGURE:

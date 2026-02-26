@@ -29,6 +29,6 @@ typedef struct
     };
 } request_t;
 
-status_t manage_request(request_t &request, figure_t &figure);
+status_t manage_request(request_t &request);
 
 #endif

@@ -18,9 +18,15 @@ status_t allocate_points_array(points_t &points, const size_t array_capacity)
 {
     status_t sc = SUCCESS;
 
-    points.array = (point_t *)calloc(array_capacity, sizeof(point_t));
-    if (points.array == NULL)
-        sc = ERR_MEM;
+    if (array_capacity == 0)
+        sc = ERR_EMPTY;
+
+    if (sc == SUCCESS)
+    {
+        points.array = (point_t *)calloc(array_capacity, sizeof(point_t));
+        if (points.array == NULL)
+            sc = ERR_MEM;
+    }
 
     if (sc == SUCCESS)
     {

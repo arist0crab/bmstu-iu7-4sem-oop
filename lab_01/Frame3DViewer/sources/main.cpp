@@ -8,11 +8,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
-    figure_t figure;
-    init_figure(figure);
-    
-    MainWidget w(figure);
+    MainWidget w;
 
     w.show();
 
