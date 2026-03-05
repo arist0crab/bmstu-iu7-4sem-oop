@@ -20,6 +20,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent), ui(new Ui::MainWidget
 
 MainWidget::~MainWidget()
 {
+   request_t request;
+
+   request.type = QUIT;
+
+   manage_request(request);
+
    delete ui;
 }
 

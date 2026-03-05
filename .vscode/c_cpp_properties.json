@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/lab_01/Frame3DViewer/headers/*.h",
                 "${workspaceFolder}/lab_01/Frame3DViewer/sources/*.cpp",
-                "/usr/include/qt6/QtWidgets"
+                "/usr/include/qt6/QtWidgets",
+                "/usr/include/qt6"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

@@ -9,6 +9,7 @@ using namespace std;
 
 typedef enum
 {
+    QUIT,
     LOAD_FIGURE,
     DRAW_FIGURE,
     MOVE_FIGURE,

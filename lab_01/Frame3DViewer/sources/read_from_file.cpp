@@ -8,7 +8,6 @@ static status_t read_figure_from_file(FILE *filestream, figure_t &figure);
 static status_t read_points_from_file(FILE *filestream, points_t &points);
 static status_t read_points_to_array(FILE *filestream, points_t &points, const size_t points_quantity);
 static status_t read_point_to_array(FILE *filestream, points_t &points);
-static status_t read_points_from_file(FILE *filestream, points_t &points);
 static status_t read_point_from_file(FILE *filestream, point_t &point);
 
 /* чтение сторон из файла */
