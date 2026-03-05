@@ -7,6 +7,6 @@
 #include <stdio.h>
 
 // чтение фигуры из файла
-status_t read_figure_from_file(figure_t &figure, const char *filename);
+status_t load_figure_from_file(figure_t &figure, const char *filename);
 
 #endif

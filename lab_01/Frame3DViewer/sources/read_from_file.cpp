@@ -1,104 +1,154 @@
 #include "read_from_file.h"
 
 
-/* функции чтения данных из файла */
+/* чтение фигуры */
+static status_t read_figure_from_file(FILE *filestream, figure_t &figure);
+
+/* чтение точек из файла */
+static status_t read_points_from_file(FILE *filestream, points_t &points);
+static status_t read_points_to_array(FILE *filestream, points_t &points, const size_t points_quantity);
+static status_t read_point_to_array(FILE *filestream, points_t &points);
 static status_t read_points_from_file(FILE *filestream, points_t &points);
 static status_t read_point_from_file(FILE *filestream, point_t &point);
+
+/* чтение сторон из файла */
 static status_t read_edges_from_file(FILE *filestream, edges_t &edges);
+static status_t read_edges_to_array(FILE *filestream, edges_t &edges, const size_t edges_quantity);
+static status_t read_edge_to_array(FILE *filestream, edges_t &edges);
 static status_t read_edge_from_file(FILE *filestream, edge_t &edge);
+
 static status_t read_size_from_file(FILE *filestream, size_t &number);
 
 /* безопасное открытие и закрытие файла */
-static status_t safe_file_open(const char *filename, FILE **filestream);
+static status_t safe_file_open(FILE **filestream, const char *filename);
 static status_t safe_file_close(FILE *filestream);
 
 
-status_t read_figure_from_file(figure_t &figure, const char *filename)
+status_t load_figure_from_file(figure_t &figure, const char *filename)
 {
-    status_t sc = SUCCESS;
     figure_t local_figure;
+    init_figure(local_figure);
+
     FILE *filestream = NULL;
-
-    sc = safe_file_open(filename, &filestream);
-
-    if (sc == SUCCESS)
-        init_figure(local_figure);
+    status_t sc = safe_file_open(&filestream, filename);
 
     if (sc == SUCCESS)
     {
-        sc = read_points_from_file(filestream, local_figure.points);
+        sc = read_figure_from_file(filestream, local_figure);
+        safe_file_close(filestream);
+
         if (sc == SUCCESS)
-            sc = read_edges_from_file(filestream, local_figure.edges);
+            sc = move_figure(figure, local_figure);
     }
 
-    safe_file_close(filestream);
+    if (sc != SUCCESS) 
+        free_figure(local_figure);
 
-    if (sc == SUCCESS) sc = move_figure(figure, local_figure);
-    else free_figure(local_figure);
+    return sc;
+}
+
+static status_t read_figure_from_file(FILE *filestream, figure_t &figure)
+{
+    if (filestream == NULL)
+        return ERR_FILE;
+
+    status_t sc = read_points_from_file(filestream, figure.points);
+    if (sc == SUCCESS)
+        sc = read_edges_from_file(filestream, figure.edges);
 
     return sc;
 }
 
 static status_t read_points_from_file(FILE *filestream, points_t &points)
 {
-    status_t sc = SUCCESS;
-    size_t points_quantity = 0;
-    point_t local_point = { 0, 0, 0 };
-    points_t local_points =  { NULL, 0, 0 };
-
     if (filestream == NULL)
-        sc = ERR_FILE;
+        return ERR_FILE;
+
+    size_t points_quantity = 0;
+    status_t sc = read_size_from_file(filestream, points_quantity);
 
     if (sc == SUCCESS)
-        sc = read_size_from_file(filestream, points_quantity);
-
-    if (sc == SUCCESS)
+    {
+        points_t local_points =  { NULL, 0, 0 };
         sc = allocate_points_array(local_points, points_quantity);
+        if (sc == SUCCESS)
+        {
+            sc = read_points_to_array(filestream, local_points, points_quantity);
+            if (sc == SUCCESS)
+                points = local_points;
+        }
+
+        if (sc != SUCCESS)
+            free_points(local_points);
+    }
+
+    return sc;
+}
+
+static status_t read_points_to_array(FILE *filestream, points_t &points, const size_t points_quantity)
+{
+    status_t sc = SUCCESS;
 
     for (size_t i = 0; sc == SUCCESS && i < points_quantity; i++)
-    {
-        sc = read_point_from_file(filestream, local_point);
-        if (sc == SUCCESS)
-            sc = push_back_point(local_points, local_point);
-    }
-         
-    if (sc == SUCCESS)
-        points = local_points;
+        sc = read_point_to_array(filestream, points);
 
-    if (sc != SUCCESS)
-        free_points(local_points);
+    return sc;
+}
+
+static status_t read_point_to_array(FILE *filestream, points_t &points)
+{
+    point_t local_point = { 0, 0, 0 };
+
+    status_t sc = read_point_from_file(filestream, local_point);
+    if (sc == SUCCESS)
+        sc = push_back_point(points, local_point);
 
     return sc;
 }
 
 static status_t read_edges_from_file(FILE *filestream, edges_t &edges)
 {
-    status_t sc = SUCCESS;
-    size_t edges_quantity = 0;
-    edge_t local_edge = { 0, 0 };
-    edges_t local_edges = { NULL, 0, 0 };
-
     if (filestream == NULL)
-        sc = ERR_FILE;
+        return ERR_FILE;
+
+    size_t edges_quantity = 0;
+    status_t sc = read_size_from_file(filestream, edges_quantity);
 
     if (sc == SUCCESS)
-        sc = read_size_from_file(filestream, edges_quantity);
-
-    if (sc == SUCCESS)
-        sc = allocate_edges_array(local_edges, edges_quantity);
-
-    for (size_t i = 0; sc == SUCCESS && i < edges_quantity; i++)
     {
-        sc = read_edge_from_file(filestream, local_edge);
+        edges_t local_edges = { NULL, 0, 0 };
+        sc = allocate_edges_array(local_edges, edges_quantity);
         if (sc == SUCCESS)
-            sc = push_back_edge(local_edges, local_edge);
+        {
+            sc = read_edges_to_array(filestream, local_edges, edges_quantity);
+            if (sc == SUCCESS)
+                edges = local_edges;
+        }
+
+        if (sc != SUCCESS)
+            free_edges(local_edges);
     }
 
-    if (sc != SUCCESS)
-        free_edges(local_edges);
+    return sc;
+}
 
+static status_t read_edges_to_array(FILE *filestream, edges_t &edges, const size_t edges_quantity)
+{
+    status_t sc = SUCCESS;
+
+    for (size_t i = 0; sc == SUCCESS && i < edges_quantity; i++)
+        sc = read_edge_to_array(filestream, edges);
+
+    return sc;
+}
+
+static status_t read_edge_to_array(FILE *filestream, edges_t &edges)
+{
+    edge_t local_edge = { 0, 0 };
+
+    status_t sc = read_edge_from_file(filestream, local_edge);
     if (sc == SUCCESS)
-        edges = local_edges;
+        sc = push_back_edge(edges, local_edge);
 
     return sc;
 }
@@ -161,7 +211,7 @@ static status_t read_size_from_file(FILE *filestream, size_t &number)
 }
 
 
-static status_t safe_file_open(const char *filename, FILE **filestream)
+static status_t safe_file_open(FILE **filestream, const char *filename)
 {
     status_t sc = SUCCESS;
 

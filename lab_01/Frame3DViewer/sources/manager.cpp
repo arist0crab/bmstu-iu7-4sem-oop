@@ -9,7 +9,7 @@ status_t manage_request(request_t &request)
     switch (request.type)
     {
         case LOAD_FIGURE:
-            sc = read_figure_from_file(figure, request.filename);
+            sc = load_figure_from_file(figure, request.filename);
             break;
 
         case DRAW_FIGURE:
