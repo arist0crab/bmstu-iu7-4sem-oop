@@ -1,8 +1,13 @@
+#ifndef __MATRIX_HPP__
+#define __MATRIX_HPP__
+
 #include <iostream>
 #include <concepts>
 #include <memory>
+#include <type_traits>
 
 #define MATRIX_ELEMENT_TYPE_ERROR "Matrix element type must be copyable and destructible"
+#define MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR "Inconsistent row lengths in initializer_list"
 
 // элементы матрицы - арифметические типы
 template <typename T>
@@ -29,17 +34,17 @@ class Matrix
         //          Конструкторы
         // ===============================
 
-        Matrix() : m_rows(0), m_cols(0), m_data(nullptr);
-        Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), m_data(std::make_unique<T[]>(rows * cols)); 
-        Matrix(size_type rows, size_type cols, const T& value) : m_rows(rows), m_cols(cols), m_data(std::make_unique<T[]>(rows * cols));
-        Matrix(std::initializer_list<std::initializer_list<T>> init_list) : m_rows(init.size()), m_cols(0), m_data(nullptr);  // TODO
-        // TODO template<typename OtherContainer>  
-        // TODO explicit Matrix(const OtherContainer& container)
-        Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows), m_cols(other_matrix.m_cols), m_data(std::move(other_matrix.m_data));  // TODO
+        Matrix();
+        Matrix(size_type rows, size_type cols); 
+        Matrix(size_type rows, size_type cols, const_reference value);
+        Matrix(std::initializer_list<std::initializer_list<value_type>> init_list);
+        
+        Matrix(Matrix &&other_matrix) noexcept;
+        Matrix(const Matrix &other_matrix);
         ~Matrix() = default;
 
         // TODO оператор присваивания
-        Matrix &operator=(Matrix other) noexcept;
+        // Matrix &operator=(Matrix other) noexcept;
 
         // ===============================
         //          Итераторы
@@ -80,9 +85,13 @@ class Matrix
     private:
         size_type m_rows = 0;
         size_type m_cols = 0;
-        std::unique_ptr<T[]> m_data = nullptr;
+        std::unique_ptr<value_type[]> m_data = nullptr;
 
         // TODO возможно придется переименовать метод или дописать какие-то спецификаторы
         void reset_matrix();
 
 };
+
+#include "matrix.cpp"
+
+#endif 
