@@ -8,6 +8,7 @@
 
 #define MATRIX_ELEMENT_TYPE_ERROR "Matrix element type must be copyable and destructible"
 #define MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR "Inconsistent row lengths in initializer_list"
+#define MATRIX_UNARY_ADD_SUB_ERR "Matrix dimensions must match for addition"
 
 // элементы матрицы - арифметические типы
 template <typename T>
@@ -71,10 +72,26 @@ class Matrix
         // TODO
 
         // ===============================
-        //          Операторы
+        //       Операторы доступа
         // ===============================
 
         // TODO 
+
+        // ===============================
+        //    Математические операторы
+        // ===============================
+
+        Matrix &operator -= (const Matrix &other_matrix);
+        Matrix &operator += (const Matrix &other_matrix);
+        Matrix &operator *= (const Matrix &other_matrix);
+        Matrix &operator *= (const_reference number); 
+        // TODO 
+
+        // ===============================
+        //    Математические операторы
+        // ===============================
+
+        // TODO
 
         // ===============================
         //      Математические методы
@@ -91,6 +108,23 @@ class Matrix
         void reset_matrix();
 
 };
+
+
+template <typename T>
+Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs);
+
+template <typename T>
+Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs);
+
+template <typename T>
+Matrix<T> operator * (Matrix<T> lhs, const T& number);
+
+template <typename T>
+Matrix<T> operator * (const T& number, Matrix<T> rhs);
+
+template <typename T>
+Matrix<T> operator*(Matrix<T> lhs, const Matrix<T>& rhs);
+
 
 #include "matrix.cpp"
 

@@ -84,3 +84,100 @@ void Matrix<T>::reset_matrix()
     m_cols = 0;
     m_data.reset();
 }
+
+
+// ===============================
+//    Математические операторы
+// ===============================
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator += (const Matrix& other_matrix)
+{
+    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+        throw std::invalid_argument(MATRIX_UNARY_ADD_SUB_ERR);
+
+    for (size_type i = 0; i < m_rows * m_cols; i++)
+        m_data[i] += other_matrix.m_data[i];
+
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator -= (const Matrix &other_matrix)
+{
+    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+        throw std::invalid_argument(MATRIX_UNARY_ADD_SUB_ERR);
+
+    for (size_type i = 0; i < m_rows * m_cols; i++)
+        m_data[i] -= other_matrix.m_data[i];
+
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator *= (const Matrix &other_matrix)
+{
+    Matrix<T> result_matrix(m_rows, other_matrix.m_cols, 0);
+
+    for (size_type i = 0; i < m_rows; i++)
+        for (size_type j = 0; j < other_matrix.m_cols; j++)
+            for (size_type k = 0; k < m_cols; k++)
+                // TODO доделать операторы доступа
+
+    *this = std::move(result_matrix);
+    
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator *= (const_reference number)
+{
+    for (size_type i = 0; i < m_rows * m_cols; i++)
+        m_data[i] *= number;
+
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs)
+{
+    lhs += rhs;
+    return lhs;
+}
+
+
+template <typename T>
+Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs)
+{
+    lhs -= rhs;
+    return rhs;
+}
+
+
+template <typename T>
+Matrix<T> operator * (Matrix<T> lhs, const T& number)
+{
+    lhs *= number;
+    return lhs;
+}
+
+
+template <typename T>
+Matrix<T> operator * (const T& number, Matrix<T> rhs)
+{
+    rhs *= number;
+    return rhs;
+}
+
+
+template <typename T>
+Matrix<T> operator * (Matrix<T> lhs, const Matrix<T>& rhs)
+{
+    lhs *= rhs;
+    return lhs;
+}
