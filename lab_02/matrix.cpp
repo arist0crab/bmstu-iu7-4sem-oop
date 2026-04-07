@@ -119,7 +119,7 @@ void Matrix<T>::reset_matrix()
 
 
 // ===============================
-//       Доступ к элементам
+//       Операторы доступа
 // ===============================
 
 
@@ -160,6 +160,39 @@ Matrix<T>::const_reference Matrix<T>::operator()(size_type row, size_type col) c
         throw std::out_of_range(MATRIX_INDEX_OUT_OF_RANGE_ERROR);
 
     return m_data[row * m_cols + col];
+}
+
+
+// ===============================
+//           Вместимость
+// ===============================
+
+
+template <typename T>
+Matrix<T>::size_type Matrix<T>::rows() const noexcept
+{
+    return m_rows;
+}
+
+
+template <typename T>
+Matrix<T>::size_type Matrix<T>::cols() const noexcept
+{
+    return m_cols;
+}
+
+
+template <typename T>
+Matrix<T>::size_type Matrix<T>::size() const noexcept
+{
+    return m_rows * m_cols;
+}
+
+
+template <typename T>
+bool Matrix<T>::empty() const noexcept
+{
+    return m_rows == 0 || m_cols == 0;
 }
 
 

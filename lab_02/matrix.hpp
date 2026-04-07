@@ -82,7 +82,7 @@ class Matrix
         // TODO
 
         // ===============================
-        //       Доступ к элементам
+        //       Операторы доступа
         // ===============================
 
         MatrixRow operator [](size_type row);
@@ -91,22 +91,19 @@ class Matrix
         const_reference operator()(size_type row, size_type col) const;
 
         // ===============================
-        //          Вместимость
+        //           Вместимость
         // ===============================
 
-        // TODO
+        size_type rows() const noexcept;
+        size_type cols() const noexcept;
+        size_type size() const noexcept;
+        bool empty() const noexcept;
 
         // ===============================
         //          Модификаторы
         // ===============================
 
         // TODO
-
-        // ===============================
-        //       Операторы доступа
-        // ===============================
-
-        // TODO 
 
         // ===============================
         //    Математические операторы
@@ -116,12 +113,6 @@ class Matrix
         Matrix &operator += (const Matrix &other_matrix);
         Matrix &operator *= (const Matrix &other_matrix);
         Matrix &operator *= (const_reference number); 
-
-        // ===============================
-        //    Математические операторы
-        // ===============================
-
-        // TODO
 
         // ===============================
         //      Математические методы
