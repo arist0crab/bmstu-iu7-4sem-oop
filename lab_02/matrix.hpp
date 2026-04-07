@@ -103,7 +103,9 @@ class Matrix
         //          Модификаторы
         // ===============================
 
-        // TODO
+        void clear() noexcept;
+        void swap(Matrix &other_matrix);
+        void resize(size_type new_rows, size_type new_cols);
 
         // ===============================
         //    Математические операторы
@@ -124,10 +126,6 @@ class Matrix
         size_type m_rows = 0;
         size_type m_cols = 0;
         std::unique_ptr<value_type[]> m_data = nullptr;
-
-        // TODO возможно придется переименовать метод или дописать какие-то спецификаторы
-        void reset_matrix();
-
 };
 
 

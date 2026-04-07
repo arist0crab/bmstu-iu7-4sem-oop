@@ -51,7 +51,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), 
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
 
     if (m_rows == 0 || m_cols == 0)
-        reset_matrix();
+        clear();
 }
 
 
@@ -61,7 +61,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols, const_reference value) : m_row
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
 
     if (m_rows == 0 || m_cols == 0)
-        reset_matrix();
+        clear();
     else 
         std::fill(m_data.get(), m_data.get() + rows * cols, value);
 }
@@ -79,7 +79,7 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_
     {
         if (row.size() != m_cols) 
         {
-            reset_matrix();
+            clear();
             throw std::invalid_argument(MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR);
         }
     }
@@ -106,15 +106,6 @@ Matrix<T>::Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows),
 {
     other_matrix.m_rows = 0;
     other_matrix.m_cols = 0;
-}
-
-
-template <typename T>
-void Matrix<T>::reset_matrix()
-{
-    m_rows = 0;
-    m_cols = 0;
-    m_data.reset();
 }
 
 
@@ -193,6 +184,52 @@ template <typename T>
 bool Matrix<T>::empty() const noexcept
 {
     return m_rows == 0 || m_cols == 0;
+}
+
+
+// ===============================
+//          Модификаторы
+// ===============================
+
+
+template <typename T>
+void Matrix<T>::clear() noexcept
+{
+    m_rows = 0;
+    m_cols = 0;
+    m_data.reset();
+}
+
+
+template <typename T>
+void Matrix<T>::swap(Matrix &other_matrix)
+{
+    std::swap(m_rows, other.m_rows);
+    std::swap(m_cols, other.m_cols);
+    std::swap(m_data, other.m_data);
+}
+
+
+template <typename T>
+void Matrix<T>::resize(size_type new_rows, size_type new_cols)
+{
+    if (new_rows == m_rows || new_cols == m_cols)
+        return;
+
+    auto new_data = std::make_unique<T[]>(new_rows * new_cols);
+
+    size_type min_rows = std::min(m_rows, new_rows);
+    size_type min_cols = std::min(m_cols, new_cols);
+
+    for (size_type i = 0; i < min_rows; i++)
+        std::copy(m_data.get() + i * m_cols, m_data.get() + i * m_cols + min_cols, new_data.get() + i * new_cols);
+
+    if (new_rows * new_cols > min_rows * min_cols)
+        std::fill(new_data.get() + min_rows * new_cols, new_data.get() + new_rows * new_cols, T{});
+
+    m_data = std::move(new_data);
+    m_rows = new_cols;
+    m_cols = new_cols;
 }
 
 
