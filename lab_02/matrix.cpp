@@ -328,3 +328,98 @@ Matrix<T> operator * (Matrix<T> lhs, const Matrix<T>& rhs)
     lhs *= rhs;
     return lhs;
 }
+
+
+// ===============================
+//       Операторы сравнения
+// ===============================
+
+
+template <typename T>
+bool Matrix<T>::operator == (const Matrix &other_matrix) const
+{
+    return equal(other_matrix);
+}
+
+
+template <typename T>
+bool Matrix<T>::operator != (const Matrix &other_matrix) const
+{
+    return not_equal(other_matrix);
+}
+
+
+template <typename T>
+bool Matrix<T>::operator < (const Matrix &other_matrix) const
+{
+    return less(other_matrix);
+}
+
+
+template <typename T>
+bool Matrix<T>::operator <= (const Matrix &other_matrix) const
+{
+    return less_equal(other_matrix);
+}
+
+
+template <typename T>
+bool Matrix<T>::operator > (const Matrix &other_matrix) const
+{
+    return greater(other_matrix);
+}
+
+
+template <typename T>
+bool Matrix<T>::operator >= (const Matrix &other_matrix) const
+{
+    return greater_equal(other_matrix);
+}
+
+
+template <typename T>
+bool Matrix<T>::equal(const Matrix &other_matrix) const
+{
+    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+        return false;
+
+    return std::equal(begin(), end(), other_matrix.begin());
+}
+
+
+template <typename T>
+bool Matrix<T>::not_equal(const Matrix& other_matrix) const
+{
+    return !equal(other_matrix);
+}
+
+
+template <typename T>
+bool Matrix<T>::less(const Matrix& other_matrix) const
+{
+    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+        return size() < other_matrix.size();
+
+    return std::lexicographical_compare(begin(), end(), other_matrix.begin(), other_matrix.end());
+}
+
+
+template <typename T>
+bool Matrix<T>::less_equal(const Matrix& other_matrix) const
+{
+    return less(other_matrix) || equal(other_matrix);
+}
+
+
+template <typename T>
+bool Matrix<T>::greater(const Matrix& other_matrix) const
+{
+    return other_matrix.less(*this);
+}
+
+
+template <typename T>
+bool Matrix<T>::greater_equal(const Matrix& other_matrix) const
+{
+    return !less(other_matrix);
+}

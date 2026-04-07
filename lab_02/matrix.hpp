@@ -117,6 +117,23 @@ class Matrix
         Matrix &operator *= (const_reference number); 
 
         // ===============================
+        //       Операторы сравнения
+        // ===============================
+
+        bool operator == (const Matrix &other_matrix) const;
+        bool operator != (const Matrix &other_matrix) const;
+        bool operator < (const Matrix &other_matrix) const;
+        bool operator <= (const Matrix &other_matrix) const;
+        bool operator > (const Matrix &other_matrix) const;
+        bool operator >= (const Matrix &other_matrix) const;
+        bool equal(const Matrix &other_matrix) const;
+        bool not_equal(const Matrix& other_matrix) const;
+        bool less(const Matrix& other_matrix) const;
+        bool less_equal(const Matrix& other_matrix) const;
+        bool greater(const Matrix& other_matrix) const;
+        bool greater_equal(const Matrix& other_matrix) const;
+
+        // ===============================
         //      Математические методы
         // ===============================
 
