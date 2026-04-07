@@ -2,6 +2,38 @@
 
 
 // ===============================
+//          MatrixRow
+// ===============================
+
+
+template <typename T>
+Matrix<T>::MatrixRow::size_type Matrix<T>::MatrixRow::size() const noexcept
+{
+    return m_data.size();
+}
+
+
+template <typename T>
+Matrix<T>::MatrixRow::reference Matrix<T>::MatrixRow::operator[](size_type col)
+{
+    if (col >= m_data.size())
+        throw std::out_of_range(MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR);
+
+    return m_data[col];
+}
+
+
+template <typename T>
+Matrix<T>::MatrixRow::const_reference Matrix<T>::MatrixRow::operator[](size_type col) const
+{
+    if (col >= m_data.size())
+        throw std::out_of_range(MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR);
+
+    return m_data[col];
+}
+
+
+// ===============================
 //          Конструкторы
 // ===============================
 
@@ -83,6 +115,51 @@ void Matrix<T>::reset_matrix()
     m_rows = 0;
     m_cols = 0;
     m_data.reset();
+}
+
+
+// ===============================
+//       Доступ к элементам
+// ===============================
+
+
+template <typename T>
+Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row)
+{
+    if (row >= m_rows)
+        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+
+    return MatrixRow(std::span<T>(m_data.get() + row * m_cols, m_cols));
+}
+
+
+template <typename T>
+const Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row) const
+{
+    if (row >= m_rows)
+        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+
+    return MatrixRow(std::span<T>(m_data.get() + row * m_cols, m_cols));
+}
+
+
+template <typename T>
+Matrix<T>::reference Matrix<T>::operator()(size_type row, size_type col)
+{
+    if (row >= m_rows || col >= m_cols)
+        throw std::out_of_range(MATRIX_INDEX_OUT_OF_RANGE_ERROR);
+
+    return m_data[row * m_cols + col];
+}
+
+
+template <typename T>
+Matrix<T>::const_reference Matrix<T>::operator()(size_type row, size_type col) const
+{
+    if (row >= m_rows || col >= m_cols)
+        throw std::out_of_range(MATRIX_INDEX_OUT_OF_RANGE_ERROR);
+
+    return m_data[row * m_cols + col];
 }
 
 
