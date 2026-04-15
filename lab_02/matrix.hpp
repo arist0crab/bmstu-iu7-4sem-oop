@@ -5,6 +5,7 @@
 #include <concepts>
 #include <memory>
 #include <type_traits>
+#include <random>
 #include <span>
 
 #define MATRIX_ELEMENT_TYPE_ERROR "Matrix element type must be copyable and destructible"
@@ -13,8 +14,12 @@
 #define MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR "Matrix row index out of range"
 #define MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR "Matrix column index out of range"
 #define MATRIX_INDEX_OUT_OF_RANGE_ERROR "Matrix index out of range"
+#define MATRIX_EXPONENTATION_ERROR "Matrix must be square for exponentiation"
+#define MATRIX_SQUARE_ERROR "Matrix must be square"
+#define MATRIX_EMPTY_ERROR "Matrix must be non-empty"
+#define MATRIX_TRACE_ERROR "Trace is only defined for square matrices"
+#define MATRIX_SINGULAR_ERROR "Matrix is singular"
 
-// элементы матрицы - арифметические типы
 template <typename T>
 concept MatrixElement = std::is_arithmetic_v<T>;
 
@@ -72,8 +77,7 @@ class Matrix
         Matrix(const Matrix &other_matrix);
         ~Matrix() = default;
 
-        // TODO оператор присваивания
-        // Matrix &operator=(Matrix other) noexcept;
+        reference operator = (Matrix other) noexcept;
 
         // ===============================
         //          Итераторы
@@ -97,7 +101,7 @@ class Matrix
         size_type rows() const noexcept;
         size_type cols() const noexcept;
         size_type size() const noexcept;
-        bool empty() const noexcept;
+        bool is_empty() const noexcept;
 
         // ===============================
         //          Модификаторы
@@ -134,17 +138,44 @@ class Matrix
         bool greater_equal(const Matrix& other_matrix) const;
 
         // ===============================
-        //      Математические методы
+        //          Методы матрицы
         // ===============================
 
-        // TODO
+        Matrix<T> inverse() const;
+        Matrix<T> transpose() const;
+        Matrix<T> pow(size_type exp) const;
+
+        T trace() const;
+        T determinant() const;
+
+        bool is_square() const noexcept;
+        bool is_symmetric() const noexcept;
+        bool is_diagonal() const noexcept;
+        bool is_identity() const noexcept;
+
+        size_type rank() const;
+
+        static Matrix<T> identity(size_type size) noexcept;
+        static Matrix<T> random(size_type rows, size_type cols, T min_val, T max_val) noexcept;
 
     private:
         size_type m_rows = 0;
         size_type m_cols = 0;
         std::unique_ptr<value_type[]> m_data = nullptr;
+
+        size_type find_pivot(size_type column) const;
+        void eliminate_column(size_type pivot_idx, reference extra_matrix);
+
+        static bool expect_char(std::istream& is, char expected);
+        static bool read_matrix_row(std::istream& is, reference matrix, size_type row_idx);
 };
 
+
+template <typename T>
+std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix);
+
+template <typename T>
+std::istream& operator >> (std::istream& is, Matrix<T>& matrix);
 
 template <typename T>
 Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs);

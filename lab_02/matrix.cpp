@@ -109,6 +109,17 @@ Matrix<T>::Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows),
 }
 
 
+template <typename T>
+typename Matrix<T>::reference Matrix<T>::operator=(Matrix<T> other) noexcept
+{
+    std::swap(m_rows, other.m_rows);
+    std::swap(m_cols, other.m_cols);
+    std::swap(m_data, other.m_data);
+
+    return *this;
+}
+
+
 // ===============================
 //       Операторы доступа
 // ===============================
@@ -181,7 +192,7 @@ Matrix<T>::size_type Matrix<T>::size() const noexcept
 
 
 template <typename T>
-bool Matrix<T>::empty() const noexcept
+bool Matrix<T>::is_empty() const noexcept
 {
     return m_rows == 0 || m_cols == 0;
 }
@@ -422,4 +433,325 @@ template <typename T>
 bool Matrix<T>::greater_equal(const Matrix& other_matrix) const
 {
     return !less(other_matrix);
+}
+
+
+// ===============================
+//  Операторы управления потоками
+// ===============================
+
+
+template <typename T>
+std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix)
+{
+    if (matrix.get_rows() == 0 || matrix.get_cols() == 0)
+        return os << "[]";
+
+    os << "[ ";
+    for (Matrix<T>::size_type i = 0; i < matrix.get_rows(); i++)
+    {
+        os << "[ ";
+        for (Matrix<T>::size_type j = 0; j < matrix.get_cols(); j++)
+        {
+            os << matrix(i, j);
+            if (j < matrix.get_cols() - 1)
+                os << ", ";
+        }
+        os << " ]";
+        if (i < matrix.get_rows() - 1)
+            os << ", ";
+    }
+    os << " ]";
+
+    return os;
+}
+
+
+template <typename T>
+std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
+{
+    if (!expect_char(is, '['))
+        return is;
+
+    for (Matrix<T>::size_type i = 0; i < matrix.get_rows(); i++)
+    {
+        if (!read_matrix_row(is, matrix, i))
+            return is;
+
+        if (i < matrix.get_rows() - 1)
+            if (!expect_char(is, ','))
+                return is;
+    }
+
+    expect_char(is, ']');
+    return is;
+}
+
+
+template <typename T>
+bool Matrix<T>::expect_char(std::istream& is, char expected)
+{
+    char actual;
+    if (!(is >> actual) || actual != expected)
+    {
+        is.setstate(std::ios::failbit);
+        return false;
+    }
+
+    return true;
+}
+
+
+template <typename T>
+bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type row_idx)
+{
+    if (!expect_char(is, '['))
+        return false;
+
+    for (Matrix<T>::size_type j = 0; j < matrix.get_cols(); j++)
+    {
+        if (!(is >> matrix(row_idx, j)))
+            return false;
+
+        if (j < matrix.get_cols() - 1)
+            if (!expect_char(is, ','))
+                return false;
+    }
+
+    return expect_char(is, ']');
+}
+
+
+// ===============================
+//          Методы матрицы
+// ===============================
+
+
+template <typename T>
+Matrix<T> Matrix<T>::inverse() const
+{
+    if (is_empty()) 
+        throw std::invalid_argument(MATRIX_EMPTY_ERROR);
+
+    if (!is_square()) 
+        throw std::invalid_argument(MATRIX_SQUARE_ERROR);
+
+    size_type n = m_rows;
+    Matrix<T> aug = *this;    
+    Matrix<T> inv = identity(n);   
+
+    for (size_type i = 0; i < n; ++i)
+    {
+        size_type pivot = aug.find_pivot(i);
+        if (std::abs(aug(pivot, i)) < 1e-9)
+            throw std::runtime_error(MATRIX_SINGULAR_ERROR);
+
+        aug.swap_rows(i, pivot);
+        inv.swap_rows(i, pivot);
+
+        T factor = 1.0 / aug(i, i);MATRIX_SINGULAR_ERROR
+        aug.scale_row(i, factor);
+        inv.scale_row(i, factor);
+
+        aug.eliminate_column(i, inv);
+    }
+
+    return inv;
+}
+
+
+template <typename T>
+Matrix<T>::size_type Matrix<T>::find_pivot(size_type column) const
+{
+    size_type pivot = column;
+    for (size_type j = column + 1; j < m_rows; ++j)
+    {
+        if (std::abs((*this)(j, column)) > std::abs((*this)(pivot, column)))
+            pivot = j;
+    }
+    return pivot;
+}
+
+
+template <typename T>
+void Matrix<T>::eliminate_column(size_type pivot_idx, reference extra_matrix)
+{
+    for (size_type k = 0; k < m_rows; ++k)
+    {
+        if (k != pivot_idx)
+        {
+            T multiplier = -(*this)(k, pivot_idx);
+            this->transform_rows(k, pivot_idx, multiplier, extra_matrix);
+        }
+    }
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::transpose() const
+{
+    if (is_empty())
+        throw std::invalid_argument(MATRIX_EMPTY_ERROR);
+
+    Matrix<T> result(m_cols, m_rows);
+
+    for (Matrix<T>::size_type i = 0; i < m_rows; i++)
+        for (Matrix<T>::size_type j = 0; j < m_cols; j++)
+            result(j, i) = (*this)(i, j);
+
+    return result;
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::pow(size_type exp) const
+{
+    if (is_empty())
+        throw std::invalid_argument(MATRIX_EMPTY_ERROR);
+
+    if (!is_square())
+        throw std::invalid_argument(MATRIX_EXPONENTATION_ERROR);
+
+    if (exp == 0)
+        return identity(m_rows);
+
+    Matrix<T> result = identity(m_rows);
+    Matrix<T> base = *this;
+
+    while (exp > 0)
+    {
+        if (exp % 2 == 1)
+            result = result * base;
+            
+        base = base * base;
+        exp /= 2;
+    }
+
+    return result;
+}
+
+
+template <typename T>
+T Matrix<T>::trace() const
+{
+    if (is_empty)
+        throw std::invalid_argument(MATRIX_EMPTY_ERROR);
+
+    if (!is_square())
+        throw std::invalid_argument(MATRIX_TRACE_ERROR);
+
+    T sum = 0;
+    for (size_type i = 0; i < m_rows; i++)
+        sum += (*this)(i, i);
+
+    return sum;
+}
+
+
+template <typename T>
+T Matrix<T>::determinant() const
+{
+
+}
+
+
+template <typename T>
+bool Matrix<T>::is_square() const noexcept
+{
+    return (m_rows == m_cols);
+}
+
+
+template <typename T>
+bool Matrix<T>::is_symmetric() const noexcept
+{
+    if (!is_square() || is_empty())
+        return false;
+
+    for (Matrix<T>::size_type i = 0; i < m_rows; i++)
+        for (Matrix<T>::size_type j = i + 1; j < m_cols; j++)
+            if ((*this)(i, j) != (*this)(j, i))
+                return false;
+
+    return true;
+}
+
+
+template <typename T>
+bool Matrix<T>::is_diagonal() const noexcept
+{
+    if (!is_square() || is_empty())
+        return false;
+
+    for (Matrix<T>::size_type i = 0; i < m_rows; i++)
+        for (Matrix<T>::size_type j = 0; j < m_cols; j++)
+            if (i != j && (*this)(i, j) != 0)
+                return false;
+
+    return true;
+}
+
+
+template <typename T>
+bool Matrix<T>::is_identity() const noexcept
+{
+    if (!is_square() || is_empty())
+        return false;
+
+    for (Matrix<T>::size_type i = 0; i < m_rows; i++)
+    {
+        for (Matrix<T>::size_type j = 0; j < m_cols; j++)
+        {
+            if (i != j && (*this)(i, j) != 0)
+                return false;
+            if (i == j && (*this)(i, j) != 1)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+
+template <typename T>
+Matrix<T>::size_type Matrix<T>::rank() const
+{
+
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::identity(Matrix<T>::size_type size) noexcept
+{
+    Matrix<T> res(size, size, 0);
+
+    for (Matrix<T>::size_type i = 0; i < size; i++)
+        res(i, i) = 1;
+
+    return res;
+}
+
+
+template <typename T>
+Matrix<T> Matrix<T>::random(Matrix<T>::size_type rows, Matrix<T>::size_type cols, T min_val, T max_val) noexcept
+{
+    Matrix<T> res(rows, cols);
+    
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    if constexpr (std::is_floating_point_v<T>)
+    {
+        std::uniform_real_distribution<T> dist(min_val, max_val);
+        for (Matrix<T>::size_type i = 0; i < rows * cols; ++i)
+            res.m_data[i] = dist(gen);
+    }
+    else
+    {
+        std::uniform_int_distribution<T> dist(min_val, max_val);
+        for (Matrix<T>::size_type i = 0; i < rows * cols; ++i)
+            res.m_data[i] = dist(gen);
+    }
+
+    return res;
 }
