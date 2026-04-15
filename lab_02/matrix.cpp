@@ -1,6 +1,9 @@
 #include "matrix.hpp"
 
 
+static bool expect_char(std::istream& is, char expected);
+
+
 // ===============================
 //          MatrixRow
 // ===============================
@@ -304,9 +307,9 @@ void Matrix<T>::clear() noexcept
 template <typename T>
 void Matrix<T>::swap(Matrix &other_matrix)
 {
-    std::swap(m_rows, other.m_rows);
-    std::swap(m_cols, other.m_cols);
-    std::swap(m_data, other.m_data);
+    std::swap(m_rows, other_matrix.m_rows);
+    std::swap(m_cols, other_matrix.m_cols);
+    std::swap(m_data, other_matrix.m_data);
 }
 
 
@@ -547,10 +550,10 @@ std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix)
         return os << "[]";
 
     os << "[ ";
-    for (Matrix<T>::size_type i = 0; i < matrix.get_rows(); i++)
+    for (typename Matrix<T>::size_type i = 0; i < matrix.get_rows(); i++)
     {
         os << "[ ";
-        for (Matrix<T>::size_type j = 0; j < matrix.get_cols(); j++)
+        for (typename Matrix<T>::size_type j = 0; j < matrix.get_cols(); j++)
         {
             os << matrix(i, j);
             if (j < matrix.get_cols() - 1)
@@ -572,7 +575,7 @@ std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
     if (!expect_char(is, '['))
         return is;
 
-    for (Matrix<T>::size_type i = 0; i < matrix.get_rows(); i++)
+    for (typename Matrix<T>::size_type i = 0; i < matrix.get_rows(); i++)
     {
         if (!read_matrix_row(is, matrix, i))
             return is;
@@ -648,7 +651,7 @@ Matrix<T> Matrix<T>::inverse() const
         aug.swap_rows(i, pivot);
         inv.swap_rows(i, pivot);
 
-        T factor = 1.0 / aug(i, i);MATRIX_SINGULAR_ERROR
+        T factor = 1.0 / aug(i, i);
         aug.scale_row(i, factor);
         inv.scale_row(i, factor);
 
@@ -656,6 +659,53 @@ Matrix<T> Matrix<T>::inverse() const
     }
 
     return inv;
+}
+
+
+template <typename T>
+void Matrix<T>::swap_rows(size_type row1, size_type row2)
+{
+    if (row1 >= m_rows || row2 >= m_rows)
+        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+
+    if (row1 == row2) return;
+
+    T* first = m_data + row1 * m_cols;
+    T* second = m_data + row2 * m_cols;
+
+    std::swap_ranges(first, first + m_cols, second);
+}
+
+
+template <typename T>
+void Matrix<T>::scale_row(size_type row, T factor)
+{
+    if (row >= m_rows)
+        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+
+    T* row_ptr = m_data + row * m_cols;
+    for (size_type j = 0; j < m_cols; ++j)
+        row_ptr[j] *= factor;
+}
+
+
+template <typename T>
+void Matrix<T>::transform_rows(size_type target, size_type source, T factor, Matrix<T>& extra)
+{
+    if (target >= m_rows || source >= m_rows)
+        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+
+    T* target_ptr = m_data + target * m_cols;
+    T* source_ptr = m_data + source * m_cols;
+    
+    T* extra_target_ptr = extra.m_data + target * extra.m_cols;
+    T* extra_source_ptr = extra.m_data + source * extra.m_cols;
+
+    for (size_type j = 0; j < m_cols; ++j)
+        target_ptr[j] -= factor * source_ptr[j];
+
+    for (size_type j = 0; j < extra.m_cols; ++j)
+        extra_target_ptr[j] -= factor * extra_source_ptr[j];
 }
 
 
@@ -813,9 +863,38 @@ bool Matrix<T>::is_identity() const noexcept
 
 
 template <typename T>
-Matrix<T>::size_type Matrix<T>::rank() const
+typename Matrix<T>::size_type Matrix<T>::rank() const
 {
+    if (is_empty()) return 0;
 
+    Matrix<T> temp = *this;
+    size_type r = 0;
+    size_type rows = m_rows;
+    size_type cols = m_cols;
+
+    for (size_type col = 0; col < cols && r < rows; ++col)
+    {
+        size_type pivot = r;
+        for (size_type i = r + 1; i < rows; ++i)
+            if (std::abs(temp(i, col)) > std::abs(temp(pivot, col)))
+                pivot = i;
+
+        if (std::abs(temp(pivot, col)) < 1e-9)
+            continue;
+
+        temp.swap_rows(r, pivot);
+
+        for (size_type i = r + 1; i < rows; ++i)
+        {
+            T factor = temp(i, col) / temp(r, col);
+            for (size_type j = col; j < cols; ++j)
+                temp(i, j) -= factor * temp(r, j);
+        }
+        
+        r++;
+    }
+
+    return r;
 }
 
 

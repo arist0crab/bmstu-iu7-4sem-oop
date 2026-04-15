@@ -181,6 +181,10 @@ class Matrix
         size_type find_pivot(size_type column) const;
         void eliminate_column(size_type pivot_idx, reference extra_matrix);
 
+        void swap_rows(size_type row1, size_type row2);
+        void scale_row(size_type row, T factor);
+        void transform_rows(size_type target, size_type source, T factor, Matrix<T>& extra);
+
         static bool expect_char(std::istream& is, char expected);
         static bool read_matrix_row(std::istream& is, reference matrix, size_type row_idx);
 };
