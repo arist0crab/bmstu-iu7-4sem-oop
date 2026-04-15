@@ -14,6 +14,7 @@
 #define MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR "Matrix row index out of range"
 #define MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR "Matrix column index out of range"
 #define MATRIX_INDEX_OUT_OF_RANGE_ERROR "Matrix index out of range"
+#define MATRIX_MULTIPLICATION_ERROR "Matrix dimensions must agree for multiplication"
 #define MATRIX_EXPONENTATION_ERROR "Matrix must be square for exponentiation"
 #define MATRIX_SQUARE_ERROR "Matrix must be square"
 #define MATRIX_EMPTY_ERROR "Matrix must be non-empty"
@@ -23,6 +24,7 @@
 template <typename T>
 concept MatrixElement = std::is_arithmetic_v<T>;
 
+#include "matrix_iterator.hpp"
 
 template <typename T>
 class Matrix
@@ -33,9 +35,9 @@ class Matrix
             using value_type = T;
             using reference = T&;
             using const_reference = const T&;
-            // TODO using iterator
-            // TODO using const_iterator
-            // TODO using difference_type
+            using iterator = T*;
+            using const_iterator = const T*;
+            using difference_type = std::ptrdiff_t;
             using size_type = std::size_t;
 
             size_type size() const noexcept;
@@ -59,9 +61,11 @@ class Matrix
         using value_type = T;
         using reference = T&;
         using const_reference = const T&;
-        // TODO using iterator
-        // TODO using const_iterator
-        // TODO using difference_type
+        using iterator = MatrixIterator<T, false>;
+        using const_iterator = MatrixIterator<T, true>;
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+        using difference_type = std::ptrdiff_t;
         using size_type = std::size_t;
 
         // ===============================
@@ -83,7 +87,18 @@ class Matrix
         //          Итераторы
         // ===============================
 
-        // TODO
+        iterator begin() noexcept;
+        const_iterator begin() const noexcept;
+        const_iterator cbegin() const noexcept;
+        iterator end() noexcept;
+        const_iterator end() const noexcept;
+        const_iterator cend() const noexcept;
+        reverse_iterator rbegin() noexcept;
+        const_reverse_iterator rbegin() const noexcept;
+        const_reverse_iterator crbegin() const noexcept;
+        reverse_iterator rend() noexcept;
+        const_reverse_iterator rend() const noexcept;
+        const_reverse_iterator crend() const noexcept;
 
         // ===============================
         //       Операторы доступа

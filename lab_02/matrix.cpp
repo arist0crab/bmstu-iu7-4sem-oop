@@ -121,6 +121,95 @@ typename Matrix<T>::reference Matrix<T>::operator=(Matrix<T> other) noexcept
 
 
 // ===============================
+//          Итераторы
+// ===============================
+
+
+template <typename T>
+typename Matrix<T>::iterator Matrix<T>::begin() noexcept
+{
+    return iterator(m_data);
+}
+
+
+template <typename T>
+typename Matrix<T>::const_iterator Matrix<T>::begin() const noexcept
+{
+    return const_iterator(m_data);
+}
+
+
+template <typename T>
+typename Matrix<T>::const_iterator Matrix<T>::cbegin() const noexcept
+{
+    return begin(); 
+}
+
+
+template <typename T>
+typename Matrix<T>::iterator Matrix<T>::end() noexcept
+{
+    return iterator(m_data + (m_rows * m_cols));
+}
+
+
+template <typename T>
+typename Matrix<T>::const_iterator Matrix<T>::end() const noexcept
+{
+    return const_iterator(m_data + (m_rows * m_cols));
+}
+
+
+template <typename T>
+typename Matrix<T>::const_iterator Matrix<T>::cend() const noexcept
+{
+    return end(); 
+}
+
+
+template <typename T>
+typename Matrix<T>::reverse_iterator Matrix<T>::rbegin() noexcept
+{
+    return reverse_iterator(end());
+}
+
+
+template <typename T>
+typename Matrix<T>::const_reverse_iterator Matrix<T>::rbegin() const noexcept
+{
+    return const_reverse_iterator(end());
+}
+
+
+template <typename T>
+typename Matrix<T>::const_reverse_iterator Matrix<T>::crbegin() const noexcept
+{
+    return rbegin();
+}
+
+
+template <typename T>
+typename Matrix<T>::reverse_iterator Matrix<T>::rend() noexcept
+{
+    return reverse_iterator(begin());
+}
+
+
+template <typename T>
+typename Matrix<T>::const_reverse_iterator Matrix<T>::rend() const noexcept
+{
+    return const_reverse_iterator(begin());
+}
+
+
+template <typename T>
+typename Matrix<T>::const_reverse_iterator Matrix<T>::crend() const noexcept
+{
+    return rend();
+}
+
+
+// ===============================
 //       Операторы доступа
 // ===============================
 
@@ -278,12 +367,22 @@ Matrix<T>& Matrix<T>::operator -= (const Matrix &other_matrix)
 template <typename T>
 Matrix<T>& Matrix<T>::operator *= (const Matrix &other_matrix)
 {
+    if (m_cols != other_matrix.m_rows)
+        throw std::invalid_argument(MATRIX_MULTIPLICATION_ERROR);
+
     Matrix<T> result_matrix(m_rows, other_matrix.m_cols, 0);
 
     for (size_type i = 0; i < m_rows; i++)
+    {
         for (size_type j = 0; j < other_matrix.m_cols; j++)
+        {
+            T sum = 0;
             for (size_type k = 0; k < m_cols; k++)
-                // TODO доделать операторы доступа
+                sum += (*this)(i, k) * other_matrix(k, j);
+
+            result_matrix(i, j) = sum;
+        }
+    }
 
     *this = std::move(result_matrix);
     
