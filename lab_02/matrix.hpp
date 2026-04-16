@@ -7,19 +7,8 @@
 #include <type_traits>
 #include <random>
 #include <span>
+#include "exception.hpp"
 
-#define MATRIX_ELEMENT_TYPE_ERROR "Matrix element type must be copyable and destructible"
-#define MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR "Inconsistent row lengths in initializer_list"
-#define MATRIX_UNARY_ADD_SUB_ERR "Matrix dimensions must match for addition"
-#define MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR "Matrix row index out of range"
-#define MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR "Matrix column index out of range"
-#define MATRIX_INDEX_OUT_OF_RANGE_ERROR "Matrix index out of range"
-#define MATRIX_MULTIPLICATION_ERROR "Matrix dimensions must agree for multiplication"
-#define MATRIX_EXPONENTATION_ERROR "Matrix must be square for exponentiation"
-#define MATRIX_SQUARE_ERROR "Matrix must be square"
-#define MATRIX_EMPTY_ERROR "Matrix must be non-empty"
-#define MATRIX_TRACE_ERROR "Trace is only defined for square matrices"
-#define MATRIX_SINGULAR_ERROR "Matrix is singular"
 
 template <typename T>
 concept MatrixElement = std::is_arithmetic_v<T>;
@@ -81,7 +70,7 @@ class Matrix
         Matrix(const Matrix &other_matrix);
         ~Matrix() = default;
 
-        reference operator = (Matrix other) noexcept;
+        Matrix &operator = (Matrix other) noexcept;
 
         // ===============================
         //          Итераторы
@@ -156,9 +145,9 @@ class Matrix
         //          Методы матрицы
         // ===============================
 
-        Matrix<T> inverse() const;
-        Matrix<T> transpose() const;
-        Matrix<T> pow(size_type exp) const;
+        Matrix inverse() const;
+        Matrix transpose() const;
+        Matrix pow(size_type exp) const;
 
         T trace() const;
         T determinant() const;
@@ -170,8 +159,8 @@ class Matrix
 
         size_type rank() const;
 
-        static Matrix<T> identity(size_type size) noexcept;
-        static Matrix<T> random(size_type rows, size_type cols, T min_val, T max_val) noexcept;
+        static Matrix identity(size_type size) noexcept;
+        static Matrix random(size_type rows, size_type cols, value_type min_val, value_type max_val) noexcept;
 
     private:
         size_type m_rows = 0;
@@ -179,11 +168,11 @@ class Matrix
         std::unique_ptr<value_type[]> m_data = nullptr;
 
         size_type find_pivot(size_type column) const;
-        void eliminate_column(size_type pivot_idx, reference extra_matrix);
+        void eliminate_column(size_type pivot_idx, Matrix& extra_matrix);
 
         void swap_rows(size_type row1, size_type row2);
-        void scale_row(size_type row, T factor);
-        void transform_rows(size_type target, size_type source, T factor, Matrix<T>& extra);
+        void scale_row(size_type row, value_type factor);
+        void transform_rows(size_type target, size_type source, value_type factor, Matrix<T>& extra);
 
         static bool expect_char(std::istream& is, char expected);
         static bool read_matrix_row(std::istream& is, reference matrix, size_type row_idx);

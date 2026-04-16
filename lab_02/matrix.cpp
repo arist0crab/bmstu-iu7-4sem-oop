@@ -10,6 +10,10 @@ static bool expect_char(std::istream& is, char expected);
 
 
 template <typename T>
+Matrix<T>::MatrixRow::MatrixRow(std::span<T> data) : m_data(data) {}
+
+
+template <typename T>
 Matrix<T>::MatrixRow::size_type Matrix<T>::MatrixRow::size() const noexcept
 {
     return m_data.size();
@@ -20,7 +24,7 @@ template <typename T>
 Matrix<T>::MatrixRow::reference Matrix<T>::MatrixRow::operator[](size_type col)
 {
     if (col >= m_data.size())
-        throw std::out_of_range(MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR);
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR);
 
     return m_data[col];
 }
@@ -30,7 +34,7 @@ template <typename T>
 Matrix<T>::MatrixRow::const_reference Matrix<T>::MatrixRow::operator[](size_type col) const
 {
     if (col >= m_data.size())
-        throw std::out_of_range(MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR);
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR);
 
     return m_data[col];
 }
@@ -83,7 +87,7 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_
         if (row.size() != m_cols) 
         {
             clear();
-            throw std::invalid_argument(MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR);
+            throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR);
         }
     }
 
@@ -113,12 +117,11 @@ Matrix<T>::Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows),
 
 
 template <typename T>
-typename Matrix<T>::reference Matrix<T>::operator=(Matrix<T> other) noexcept
+Matrix<T>& Matrix<T>::operator = (Matrix<T> other) noexcept
 {
     std::swap(m_rows, other.m_rows);
     std::swap(m_cols, other.m_cols);
     std::swap(m_data, other.m_data);
-
     return *this;
 }
 
@@ -131,14 +134,14 @@ typename Matrix<T>::reference Matrix<T>::operator=(Matrix<T> other) noexcept
 template <typename T>
 typename Matrix<T>::iterator Matrix<T>::begin() noexcept
 {
-    return iterator(m_data);
+    return iterator(m_data.get());
 }
 
 
 template <typename T>
 typename Matrix<T>::const_iterator Matrix<T>::begin() const noexcept
 {
-    return const_iterator(m_data);
+    return const_iterator(m_data.get());
 }
 
 
@@ -152,14 +155,14 @@ typename Matrix<T>::const_iterator Matrix<T>::cbegin() const noexcept
 template <typename T>
 typename Matrix<T>::iterator Matrix<T>::end() noexcept
 {
-    return iterator(m_data + (m_rows * m_cols));
+    return iterator(m_data.get() + (m_rows * m_cols));
 }
 
 
 template <typename T>
 typename Matrix<T>::const_iterator Matrix<T>::end() const noexcept
 {
-    return const_iterator(m_data + (m_rows * m_cols));
+    return const_iterator(m_data.get() + (m_rows * m_cols));
 }
 
 
@@ -221,7 +224,7 @@ template <typename T>
 Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row)
 {
     if (row >= m_rows)
-        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
 
     return MatrixRow(std::span<T>(m_data.get() + row * m_cols, m_cols));
 }
@@ -231,7 +234,7 @@ template <typename T>
 const Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row) const
 {
     if (row >= m_rows)
-        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
 
     return MatrixRow(std::span<T>(m_data.get() + row * m_cols, m_cols));
 }
@@ -241,7 +244,7 @@ template <typename T>
 Matrix<T>::reference Matrix<T>::operator()(size_type row, size_type col)
 {
     if (row >= m_rows || col >= m_cols)
-        throw std::out_of_range(MATRIX_INDEX_OUT_OF_RANGE_ERROR);
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_INDEX_OUT_OF_RANGE_ERROR);
 
     return m_data[row * m_cols + col];
 }
@@ -251,7 +254,7 @@ template <typename T>
 Matrix<T>::const_reference Matrix<T>::operator()(size_type row, size_type col) const
 {
     if (row >= m_rows || col >= m_cols)
-        throw std::out_of_range(MATRIX_INDEX_OUT_OF_RANGE_ERROR);
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_INDEX_OUT_OF_RANGE_ERROR);
 
     return m_data[row * m_cols + col];
 }
@@ -345,7 +348,7 @@ template <typename T>
 Matrix<T>& Matrix<T>::operator += (const Matrix& other_matrix)
 {
     if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
-        throw std::invalid_argument(MATRIX_UNARY_ADD_SUB_ERR);
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_UNARY_ADD_SUB_ERR);
 
     for (size_type i = 0; i < m_rows * m_cols; i++)
         m_data[i] += other_matrix.m_data[i];
@@ -358,7 +361,7 @@ template <typename T>
 Matrix<T>& Matrix<T>::operator -= (const Matrix &other_matrix)
 {
     if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
-        throw std::invalid_argument(MATRIX_UNARY_ADD_SUB_ERR);
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_UNARY_ADD_SUB_ERR);
 
     for (size_type i = 0; i < m_rows * m_cols; i++)
         m_data[i] -= other_matrix.m_data[i];
@@ -371,7 +374,7 @@ template <typename T>
 Matrix<T>& Matrix<T>::operator *= (const Matrix &other_matrix)
 {
     if (m_cols != other_matrix.m_rows)
-        throw std::invalid_argument(MATRIX_MULTIPLICATION_ERROR);
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_MULTIPLICATION_ERROR);
 
     Matrix<T> result_matrix(m_rows, other_matrix.m_cols, 0);
 
@@ -546,21 +549,21 @@ bool Matrix<T>::greater_equal(const Matrix& other_matrix) const
 template <typename T>
 std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix)
 {
-    if (matrix.get_rows() == 0 || matrix.get_cols() == 0)
+    if (matrix.rows() == 0 || matrix.cols() == 0)
         return os << "[]";
 
     os << "[ ";
-    for (typename Matrix<T>::size_type i = 0; i < matrix.get_rows(); i++)
+    for (typename Matrix<T>::size_type i = 0; i < matrix.rows(); i++)
     {
         os << "[ ";
-        for (typename Matrix<T>::size_type j = 0; j < matrix.get_cols(); j++)
+        for (typename Matrix<T>::size_type j = 0; j < matrix.cols(); j++)
         {
             os << matrix(i, j);
-            if (j < matrix.get_cols() - 1)
+            if (j < matrix.cols() - 1)
                 os << ", ";
         }
         os << " ]";
-        if (i < matrix.get_rows() - 1)
+        if (i < matrix.rows() - 1)
             os << ", ";
     }
     os << " ]";
@@ -575,12 +578,12 @@ std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
     if (!expect_char(is, '['))
         return is;
 
-    for (typename Matrix<T>::size_type i = 0; i < matrix.get_rows(); i++)
+    for (typename Matrix<T>::size_type i = 0; i < matrix.rows(); i++)
     {
         if (!read_matrix_row(is, matrix, i))
             return is;
 
-        if (i < matrix.get_rows() - 1)
+        if (i < matrix.rows() - 1)
             if (!expect_char(is, ','))
                 return is;
     }
@@ -610,12 +613,12 @@ bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type ro
     if (!expect_char(is, '['))
         return false;
 
-    for (Matrix<T>::size_type j = 0; j < matrix.get_cols(); j++)
+    for (Matrix<T>::size_type j = 0; j < matrix.cols(); j++)
     {
         if (!(is >> matrix(row_idx, j)))
             return false;
 
-        if (j < matrix.get_cols() - 1)
+        if (j < matrix.cols() - 1)
             if (!expect_char(is, ','))
                 return false;
     }
@@ -633,10 +636,10 @@ template <typename T>
 Matrix<T> Matrix<T>::inverse() const
 {
     if (is_empty()) 
-        throw std::invalid_argument(MATRIX_EMPTY_ERROR);
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
 
     if (!is_square()) 
-        throw std::invalid_argument(MATRIX_SQUARE_ERROR);
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SQUARE_ERROR);
 
     size_type n = m_rows;
     Matrix<T> aug = *this;    
@@ -646,7 +649,7 @@ Matrix<T> Matrix<T>::inverse() const
     {
         size_type pivot = aug.find_pivot(i);
         if (std::abs(aug(pivot, i)) < 1e-9)
-            throw std::runtime_error(MATRIX_SINGULAR_ERROR);
+            throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SINGULAR_ERROR);
 
         aug.swap_rows(i, pivot);
         inv.swap_rows(i, pivot);
@@ -666,40 +669,39 @@ template <typename T>
 void Matrix<T>::swap_rows(size_type row1, size_type row2)
 {
     if (row1 >= m_rows || row2 >= m_rows)
-        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
 
     if (row1 == row2) return;
 
-    T* first = m_data + row1 * m_cols;
-    T* second = m_data + row2 * m_cols;
+    T* first = m_data.get() + row1 * m_cols;
+    T* second = m_data.get() + row2 * m_cols;
 
     std::swap_ranges(first, first + m_cols, second);
 }
 
 
 template <typename T>
-void Matrix<T>::scale_row(size_type row, T factor)
+void Matrix<T>::scale_row(size_type row, value_type factor)
 {
     if (row >= m_rows)
-        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
 
-    T* row_ptr = m_data + row * m_cols;
+    T* row_ptr = m_data.get() + row * m_cols;
     for (size_type j = 0; j < m_cols; ++j)
         row_ptr[j] *= factor;
 }
 
 
 template <typename T>
-void Matrix<T>::transform_rows(size_type target, size_type source, T factor, Matrix<T>& extra)
+void Matrix<T>::transform_rows(size_type target, size_type source, value_type factor, Matrix<T>& extra)
 {
     if (target >= m_rows || source >= m_rows)
-        throw std::out_of_range(MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
-
-    T* target_ptr = m_data + target * m_cols;
-    T* source_ptr = m_data + source * m_cols;
+        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
+    T* target_ptr = m_data.get() + target * m_cols;
+    T* source_ptr = m_data.get() + source * m_cols;
     
-    T* extra_target_ptr = extra.m_data + target * extra.m_cols;
-    T* extra_source_ptr = extra.m_data + source * extra.m_cols;
+    T* extra_target_ptr = extra.m_data.get() + target * extra.m_cols;
+    T* extra_source_ptr = extra.m_data.get() + source * extra.m_cols;
 
     for (size_type j = 0; j < m_cols; ++j)
         target_ptr[j] -= factor * source_ptr[j];
@@ -713,24 +715,24 @@ template <typename T>
 Matrix<T>::size_type Matrix<T>::find_pivot(size_type column) const
 {
     size_type pivot = column;
+
     for (size_type j = column + 1; j < m_rows; ++j)
-    {
         if (std::abs((*this)(j, column)) > std::abs((*this)(pivot, column)))
             pivot = j;
-    }
+
     return pivot;
 }
 
 
 template <typename T>
-void Matrix<T>::eliminate_column(size_type pivot_idx, reference extra_matrix)
+void Matrix<T>::eliminate_column(size_type pivot_idx, Matrix<T>& extra_matrix)
 {
     for (size_type k = 0; k < m_rows; ++k)
     {
         if (k != pivot_idx)
         {
             T multiplier = -(*this)(k, pivot_idx);
-            this->transform_rows(k, pivot_idx, multiplier, extra_matrix);
+            transform_rows(k, pivot_idx, multiplier, extra_matrix);
         }
     }
 }
@@ -740,7 +742,7 @@ template <typename T>
 Matrix<T> Matrix<T>::transpose() const
 {
     if (is_empty())
-        throw std::invalid_argument(MATRIX_EMPTY_ERROR);
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
 
     Matrix<T> result(m_cols, m_rows);
 
@@ -756,10 +758,10 @@ template <typename T>
 Matrix<T> Matrix<T>::pow(size_type exp) const
 {
     if (is_empty())
-        throw std::invalid_argument(MATRIX_EMPTY_ERROR);
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
 
     if (!is_square())
-        throw std::invalid_argument(MATRIX_EXPONENTATION_ERROR);
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EXPONENTATION_ERROR);
 
     if (exp == 0)
         return identity(m_rows);
@@ -784,10 +786,10 @@ template <typename T>
 T Matrix<T>::trace() const
 {
     if (is_empty)
-        throw std::invalid_argument(MATRIX_EMPTY_ERROR);
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
 
     if (!is_square())
-        throw std::invalid_argument(MATRIX_TRACE_ERROR);
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_TRACE_ERROR);
 
     T sum = 0;
     for (size_type i = 0; i < m_rows; i++)
@@ -911,7 +913,7 @@ Matrix<T> Matrix<T>::identity(Matrix<T>::size_type size) noexcept
 
 
 template <typename T>
-Matrix<T> Matrix<T>::random(Matrix<T>::size_type rows, Matrix<T>::size_type cols, T min_val, T max_val) noexcept
+Matrix<T> Matrix<T>::random(size_type rows, size_type cols, value_type min_val, value_type max_val) noexcept
 {
     Matrix<T> res(rows, cols);
     
