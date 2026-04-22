@@ -78,13 +78,21 @@ class Matrix
         Matrix(size_type rows, size_type cols); 
         Matrix(size_type rows, size_type cols, const_reference value);
         Matrix(std::initializer_list<std::initializer_list<value_type>> init_list);
-        
+        Matrix(size_type rows, size_type cols, T** c_matrix);
+
         Matrix(Matrix &&other_matrix) noexcept;
         Matrix(const Matrix &other_matrix);
-        // TODO получить матрицу из сишной матрицы
-        // TODO матрицу из другого контейнера
-        // TODO через итераторы другого контейнера
-        // TODO через матрицу другого типа если это возможно
+
+        template <std::input_iterator It>
+        Matrix(size_type rows, size_type cols, It begin, It end);
+
+        template <typename Container>
+        requires std::ranges::range<Container>
+        Matrix(size_type rows, size_type cols, const Container& container);
+
+        template <typename U>
+        explicit Matrix(const Matrix<U>& other);
+        
         ~Matrix() = default;
 
         Matrix& operator = (const Matrix &other_matrix);

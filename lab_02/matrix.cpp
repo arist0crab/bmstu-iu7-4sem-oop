@@ -75,6 +75,56 @@ Matrix<T>::Matrix(size_type rows, size_type cols, const_reference value) : m_row
 
 
 template <typename T>
+Matrix<T>::Matrix(size_type rows, size_type cols, T** c_matrix) : m_rows(rows), m_cols(cols)
+{
+    if (!c_matrix)
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_C_MATRIX_DOESNT_EXIST_ERROR); 
+    
+    m_data = new T[m_rows * m_cols];
+    for (size_type i = 0; i < m_rows; ++i)
+        for (size_type j = 0; j < m_cols; ++j)
+            m_data[i * m_cols + j] = c_matrix[i][j];
+
+}
+
+
+template <typename T>
+template <std::input_iterator It>
+Matrix<T>::Matrix(size_type rows, size_type cols, It begin, It end) : m_rows(rows), m_cols(cols)
+{
+    m_data = new T[m_rows * m_cols];
+    size_type i = 0;
+    for (auto it = begin; it != end && i < m_rows * m_cols; ++it, ++i)
+        m_data[i] = static_cast<T>(*it);
+}
+
+
+template <typename T>
+template <typename Container>
+requires std::ranges::range<Container>
+Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : m_rows(rows), m_cols(cols)
+{
+    m_data = std::make_unique<T[]>(m_rows * m_cols);
+    size_type i = 0;
+    for (const auto& item : container) 
+    {
+        if (i >= m_rows * m_cols) 
+            break;
+        m_data[i++] = static_cast<T>(item);
+    }
+}
+
+
+template <typename T>
+template <typename U>
+Matrix<T>::Matrix(const Matrix<U>& other) : m_rows(other.get_rows()), m_cols(other.get_cols())
+{
+    m_data = new T[m_rows * m_cols];
+    for (size_type i = 0; i < m_rows * m_cols; ++i)
+        m_data[i] = static_cast<T>(other[i / m_cols][i % m_cols]);
+}
+
+template <typename T>
 Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_list) : Matrix(init_list.size(), (init_list.size() > 0 ? init_list.begin()->size() : 0))
 {
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
@@ -650,7 +700,7 @@ Matrix<T>& Matrix<T>::mult(const Matrix<T> &other_matrix)
     if (m_cols != other_matrix.m_rows)
         throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_MULTIPLICATION_ERROR);
 
-    Matrix<T> result_matrix(m_rows, other_matrix.m_cols, 0);
+    Matrix<T> result_matrix(m_rows, other_matrix.m_cols, T{});
 
     for (size_type i = 0; i < m_rows; i++)
     {
@@ -997,7 +1047,7 @@ typename Matrix<T>::size_type Matrix<T>::rank() const
 template <typename T>
 Matrix<T> Matrix<T>::identity(Matrix<T>::size_type size) noexcept
 {
-    Matrix<T> res(size, size, 0);
+    Matrix<T> res(size, size, T{});
 
     for (Matrix<T>::size_type i = 0; i < size; i++)
         res(i, i) = 1;

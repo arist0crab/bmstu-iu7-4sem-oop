@@ -18,6 +18,7 @@ class MatrixIterator
         //          Конструкторы
         // ===============================
 
+        MatrixIterator() : m_ptr(nullptr) {}
         explicit MatrixIterator(pointer ptr) : m_ptr(ptr) {}
         MatrixIterator(const MatrixIterator& other) = default;
         MatrixIterator& operator=(const MatrixIterator& other) = default;
@@ -26,6 +27,7 @@ class MatrixIterator
         //   Операторы разыменовывания
         // ===============================
 
+        reference operator [] (difference_type n) const { return *(m_ptr + n); }
         reference operator * () const { return *m_ptr; }
         pointer operator -> () const { return m_ptr; }
 
@@ -65,6 +67,13 @@ class MatrixIterator
 
 
 template <typename T>
+MatrixIterator<T> operator + (typename MatrixIterator<T>::difference_type n, const MatrixIterator<T>& it) 
+{ 
+    return it + n; 
+}
+
+
+template <typename T>
 class MatrixConstIterator 
 {
     public:
@@ -78,6 +87,7 @@ class MatrixConstIterator
         //          Конструкторы
         // ===============================
 
+        MatrixConstIterator() : m_ptr(nullptr) {}
         explicit MatrixConstIterator(pointer ptr) : m_ptr(ptr) {}
         MatrixConstIterator(const MatrixConstIterator& other) = default;
         MatrixConstIterator(const MatrixIterator<T>& other) : m_ptr(other.operator->()) {}
@@ -88,6 +98,7 @@ class MatrixConstIterator
         //   Операторы разыменовывания
         // ===============================
 
+        reference operator [] (difference_type n) const { return *(m_ptr + n); }
         reference operator * () const { return *m_ptr; }
         pointer operator -> () const { return m_ptr; }
 
@@ -124,5 +135,13 @@ class MatrixConstIterator
     private:
         pointer m_ptr;
 };
+
+
+template <typename T>
+MatrixConstIterator<T> operator + (typename MatrixConstIterator<T>::difference_type n, const MatrixConstIterator<T>& it) 
+{ 
+    return it + n; 
+}
+
 
 #endif

@@ -9,6 +9,7 @@
 #define MATRIX_CONST_ITERATOR_RANDOM_ACCESS_CORRESPONDENCE_ERROR "MatrixConstIterator must meet RandomAccessIterator requirements."
 #define MATRIX_ITERATOR_VALUE_TYPE_ERROR "Iterator value_type must match Matrix value_type."
 
+#define MATRIX_C_MATRIX_DOESNT_EXIST_ERROR "C-matrix pointer is null"
 #define MATRIX_ELEMENT_TYPE_ERROR "Matrix element type must be copyable and destructible"
 #define MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR "Inconsistent row lengths in initializer_list"
 #define MATRIX_SAME_DIMENSIONS_ERROR "Matrix dimensions must match for addition"
