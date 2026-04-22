@@ -11,11 +11,22 @@
 
 
 template <typename T>
-concept MatrixElement = std::is_arithmetic_v<T>;
+concept MatrixElement = requires(T a, T b) 
+{
+    { a + b } -> std::convertible_to<T>;
+    { a - b } -> std::convertible_to<T>;
+    { a * b } -> std::convertible_to<T>;
+    { a / b } -> std::convertible_to<T>;
+    { a += b } -> std::same_as<T&>;
+    { a -= b } -> std::same_as<T&>;
+    { a *= b } -> std::same_as<T&>;
+    { a /= b } -> std::same_as<T&>;
+    T(0);
+};
 
 #include "matrix_iterator.hpp"
 
-template <typename T>
+template <MatrixElement T>
 class Matrix
 {
     class MatrixRow
@@ -212,25 +223,25 @@ class Matrix
 };
 
 
-template <typename T>
+template <MatrixElement T>
 std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix);
 
-template <typename T>
+template <MatrixElement T>
 std::istream& operator >> (std::istream& is, Matrix<T>& matrix);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator * (Matrix<T> lhs, const T& number);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator * (const T& number, Matrix<T> rhs);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator*(Matrix<T> lhs, const Matrix<T>& rhs);
 
 

@@ -9,18 +9,18 @@ static bool expect_char(std::istream& is, char expected);
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::MatrixRow::MatrixRow(std::span<T> data) : m_data(data) {}
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::MatrixRow::size_type Matrix<T>::MatrixRow::size() const noexcept
 {
     return m_data.size();
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::MatrixRow::reference Matrix<T>::MatrixRow::operator[](size_type col)
 {
     if (col >= m_data.size())
@@ -30,7 +30,7 @@ Matrix<T>::MatrixRow::reference Matrix<T>::MatrixRow::operator[](size_type col)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::MatrixRow::const_reference Matrix<T>::MatrixRow::operator[](size_type col) const
 {
     if (col >= m_data.size())
@@ -45,14 +45,14 @@ Matrix<T>::MatrixRow::const_reference Matrix<T>::MatrixRow::operator[](size_type
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix() : m_rows(0), m_cols(0), m_data(nullptr)
 {
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), m_data(std::make_unique<value_type[]>(rows * cols))
 {
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
@@ -62,7 +62,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), 
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(size_type rows, size_type cols, const_reference value) : m_rows(rows), m_cols(cols), m_data(std::make_unique<value_type[]>(rows * cols))
 {
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
@@ -74,7 +74,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols, const_reference value) : m_row
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(size_type rows, size_type cols, T** c_matrix) : m_rows(rows), m_cols(cols)
 {
     if (!c_matrix)
@@ -88,7 +88,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols, T** c_matrix) : m_rows(rows), 
 }
 
 
-template <typename T>
+template <MatrixElement T>
 template <std::input_iterator It>
 Matrix<T>::Matrix(size_type rows, size_type cols, It begin, It end) : m_rows(rows), m_cols(cols)
 {
@@ -99,7 +99,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols, It begin, It end) : m_rows(row
 }
 
 
-template <typename T>
+template <MatrixElement T>
 template <typename Container>
 requires std::ranges::range<Container>
 Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : m_rows(rows), m_cols(cols)
@@ -115,7 +115,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : 
 }
 
 
-template <typename T>
+template <MatrixElement T>
 template <typename U>
 Matrix<T>::Matrix(const Matrix<U>& other) : m_rows(other.get_rows()), m_cols(other.get_cols())
 {
@@ -124,7 +124,7 @@ Matrix<T>::Matrix(const Matrix<U>& other) : m_rows(other.get_rows()), m_cols(oth
         m_data[i] = static_cast<T>(other[i / m_cols][i % m_cols]);
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_list) : Matrix(init_list.size(), (init_list.size() > 0 ? init_list.begin()->size() : 0))
 {
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
@@ -150,7 +150,7 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(const Matrix &other_matrix) : Matrix(other_matrix.m_rows, other_matrix.m_cols)
 {
     if (m_data)
@@ -158,7 +158,7 @@ Matrix<T>::Matrix(const Matrix &other_matrix) : Matrix(other_matrix.m_rows, othe
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows), m_cols(other_matrix.m_cols), m_data(std::move(other_matrix.m_data))
 {
     other_matrix.m_rows = 0;
@@ -166,7 +166,7 @@ Matrix<T>::Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows),
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator = (const Matrix<T> &other_matrix)
 {
     if (this != &other_matrix)
@@ -179,7 +179,7 @@ Matrix<T>& Matrix<T>::operator = (const Matrix<T> &other_matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator = (Matrix<T> &&other_matrix)
 {
     if (this != &other_matrix)
@@ -194,84 +194,84 @@ Matrix<T>& Matrix<T>::operator = (Matrix<T> &&other_matrix)
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::iterator Matrix<T>::begin() noexcept
 {
     return iterator(m_data.get());
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::const_iterator Matrix<T>::begin() const noexcept
 {
     return const_iterator(m_data.get());
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::const_iterator Matrix<T>::cbegin() const noexcept
 {
     return begin(); 
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::iterator Matrix<T>::end() noexcept
 {
     return iterator(m_data.get() + (m_rows * m_cols));
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::const_iterator Matrix<T>::end() const noexcept
 {
     return const_iterator(m_data.get() + (m_rows * m_cols));
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::const_iterator Matrix<T>::cend() const noexcept
 {
     return end(); 
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::reverse_iterator Matrix<T>::rbegin() noexcept
 {
     return reverse_iterator(end());
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::const_reverse_iterator Matrix<T>::rbegin() const noexcept
 {
     return const_reverse_iterator(end());
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::const_reverse_iterator Matrix<T>::crbegin() const noexcept
 {
     return rbegin();
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::reverse_iterator Matrix<T>::rend() noexcept
 {
     return reverse_iterator(begin());
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::const_reverse_iterator Matrix<T>::rend() const noexcept
 {
     return const_reverse_iterator(begin());
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::const_reverse_iterator Matrix<T>::crend() const noexcept
 {
     return rend();
@@ -283,7 +283,7 @@ typename Matrix<T>::const_reverse_iterator Matrix<T>::crend() const noexcept
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row)
 {
     if (row >= m_rows)
@@ -293,7 +293,7 @@ Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 const Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row) const
 {
     if (row >= m_rows)
@@ -303,7 +303,7 @@ const Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row) const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::reference Matrix<T>::operator()(size_type row, size_type col)
 {
     if (row >= m_rows || col >= m_cols)
@@ -313,7 +313,7 @@ Matrix<T>::reference Matrix<T>::operator()(size_type row, size_type col)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::const_reference Matrix<T>::operator()(size_type row, size_type col) const
 {
     if (row >= m_rows || col >= m_cols)
@@ -328,28 +328,28 @@ Matrix<T>::const_reference Matrix<T>::operator()(size_type row, size_type col) c
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::size_type Matrix<T>::rows() const noexcept
 {
     return m_rows;
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::size_type Matrix<T>::cols() const noexcept
 {
     return m_cols;
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::size_type Matrix<T>::size() const noexcept
 {
     return m_rows * m_cols;
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::is_empty() const noexcept
 {
     return m_rows == 0 || m_cols == 0;
@@ -361,7 +361,7 @@ bool Matrix<T>::is_empty() const noexcept
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::clear() noexcept
 {
     m_rows = 0;
@@ -370,7 +370,7 @@ void Matrix<T>::clear() noexcept
 }
 
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::swap(Matrix &other_matrix)
 {
     std::swap(m_rows, other_matrix.m_rows);
@@ -379,7 +379,7 @@ void Matrix<T>::swap(Matrix &other_matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::resize(size_type new_rows, size_type new_cols)
 {
     if (new_rows == m_rows || new_cols == m_cols)
@@ -407,42 +407,42 @@ void Matrix<T>::resize(size_type new_rows, size_type new_cols)
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator += (const Matrix& other_matrix)
 {
     return this->add(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator -= (const Matrix &other_matrix)
 {
     return this->sub(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator *= (const Matrix &other_matrix)
 {
     return this->mult(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator *= (const_reference number)
 {
     return this->mult_scalar(number);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator &= (const Matrix &other_matrix)
 {
     return this->mult_hadamard(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs)
 {
     lhs += rhs;
@@ -450,7 +450,7 @@ Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs)
 {
     lhs -= rhs;
@@ -458,7 +458,7 @@ Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator * (Matrix<T> lhs, const T& number)
 {
     lhs *= number;
@@ -466,7 +466,7 @@ Matrix<T> operator * (Matrix<T> lhs, const T& number)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator * (const T& number, Matrix<T> rhs)
 {
     rhs *= number;
@@ -474,7 +474,7 @@ Matrix<T> operator * (const T& number, Matrix<T> rhs)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator * (Matrix<T> lhs, const Matrix<T>& rhs)
 {
     lhs *= rhs;
@@ -487,49 +487,49 @@ Matrix<T> operator * (Matrix<T> lhs, const Matrix<T>& rhs)
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::operator == (const Matrix &other_matrix) const
 {
     return equal(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::operator != (const Matrix &other_matrix) const
 {
     return not_equal(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::operator < (const Matrix &other_matrix) const
 {
     return less(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::operator <= (const Matrix &other_matrix) const
 {
     return less_equal(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::operator > (const Matrix &other_matrix) const
 {
     return greater(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::operator >= (const Matrix &other_matrix) const
 {
     return greater_equal(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::equal(const Matrix &other_matrix) const
 {
     if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
@@ -539,14 +539,14 @@ bool Matrix<T>::equal(const Matrix &other_matrix) const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::not_equal(const Matrix& other_matrix) const
 {
     return !equal(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::less(const Matrix& other_matrix) const
 {
     if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
@@ -556,21 +556,21 @@ bool Matrix<T>::less(const Matrix& other_matrix) const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::less_equal(const Matrix& other_matrix) const
 {
     return less(other_matrix) || equal(other_matrix);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::greater(const Matrix& other_matrix) const
 {
     return other_matrix.less(*this);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::greater_equal(const Matrix& other_matrix) const
 {
     return !less(other_matrix);
@@ -582,7 +582,7 @@ bool Matrix<T>::greater_equal(const Matrix& other_matrix) const
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix)
 {
     if (matrix.rows() == 0 || matrix.cols() == 0)
@@ -608,7 +608,7 @@ std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
 {
     if (!expect_char(is, '['))
@@ -629,7 +629,7 @@ std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::expect_char(std::istream& is, char expected)
 {
     char actual;
@@ -643,7 +643,7 @@ bool Matrix<T>::expect_char(std::istream& is, char expected)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type row_idx)
 {
     if (!expect_char(is, '['))
@@ -668,7 +668,7 @@ bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type ro
 // ===============================
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::add(const Matrix<T> &other_matrix)
 {
     if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
@@ -681,7 +681,7 @@ Matrix<T>& Matrix<T>::add(const Matrix<T> &other_matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::sub(const Matrix<T> &other_matrix)
 {
     if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
@@ -694,7 +694,7 @@ Matrix<T>& Matrix<T>::sub(const Matrix<T> &other_matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::mult(const Matrix<T> &other_matrix)
 {
     if (m_cols != other_matrix.m_rows)
@@ -720,7 +720,7 @@ Matrix<T>& Matrix<T>::mult(const Matrix<T> &other_matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::mult_scalar(const_reference number)
 {
     for (size_type i = 0; i < m_rows * m_cols; i++)
@@ -730,7 +730,7 @@ Matrix<T>& Matrix<T>::mult_scalar(const_reference number)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>& Matrix<T>::mult_hadamard(const Matrix<T> &other_matrix)
 {
     if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
@@ -743,7 +743,7 @@ Matrix<T>& Matrix<T>::mult_hadamard(const Matrix<T> &other_matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> Matrix<T>::inverse() const
 {
     if (is_empty()) 
@@ -776,7 +776,7 @@ Matrix<T> Matrix<T>::inverse() const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::swap_rows(size_type row1, size_type row2)
 {
     if (row1 >= m_rows || row2 >= m_rows)
@@ -791,7 +791,7 @@ void Matrix<T>::swap_rows(size_type row1, size_type row2)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::scale_row(size_type row, value_type factor)
 {
     if (row >= m_rows)
@@ -803,7 +803,7 @@ void Matrix<T>::scale_row(size_type row, value_type factor)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::transform_rows(size_type target, size_type source, value_type factor, Matrix<T>& extra)
 {
     if (target >= m_rows || source >= m_rows)
@@ -822,7 +822,7 @@ void Matrix<T>::transform_rows(size_type target, size_type source, value_type fa
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::size_type Matrix<T>::find_pivot(size_type column) const
 {
     size_type pivot = column;
@@ -835,7 +835,7 @@ Matrix<T>::size_type Matrix<T>::find_pivot(size_type column) const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::eliminate_column(size_type pivot_idx, Matrix<T>& extra_matrix)
 {
     for (size_type k = 0; k < m_rows; ++k)
@@ -849,7 +849,7 @@ void Matrix<T>::eliminate_column(size_type pivot_idx, Matrix<T>& extra_matrix)
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> Matrix<T>::transpose() const
 {
     if (is_empty())
@@ -865,7 +865,7 @@ Matrix<T> Matrix<T>::transpose() const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> Matrix<T>::pow(size_type exp) const
 {
     if (is_empty())
@@ -893,7 +893,7 @@ Matrix<T> Matrix<T>::pow(size_type exp) const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::value_type Matrix<T>::trace() const
 {
     if (is_empty)
@@ -910,7 +910,7 @@ Matrix<T>::value_type Matrix<T>::trace() const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::value_type Matrix<T>::determinant() const
 {
     if (is_empty())
@@ -950,14 +950,14 @@ typename Matrix<T>::value_type Matrix<T>::determinant() const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::is_square() const noexcept
 {
     return (m_rows == m_cols);
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::is_symmetric() const noexcept
 {
     if (!is_square() || is_empty())
@@ -972,7 +972,7 @@ bool Matrix<T>::is_symmetric() const noexcept
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::is_diagonal() const noexcept
 {
     if (!is_square() || is_empty())
@@ -987,7 +987,7 @@ bool Matrix<T>::is_diagonal() const noexcept
 }
 
 
-template <typename T>
+template <MatrixElement T>
 bool Matrix<T>::is_identity() const noexcept
 {
     if (!is_square() || is_empty())
@@ -1008,7 +1008,7 @@ bool Matrix<T>::is_identity() const noexcept
 }
 
 
-template <typename T>
+template <MatrixElement T>
 typename Matrix<T>::size_type Matrix<T>::rank() const
 {
     if (is_empty()) return 0;
@@ -1044,7 +1044,7 @@ typename Matrix<T>::size_type Matrix<T>::rank() const
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> Matrix<T>::identity(Matrix<T>::size_type size) noexcept
 {
     Matrix<T> res(size, size, T{});
@@ -1056,7 +1056,7 @@ Matrix<T> Matrix<T>::identity(Matrix<T>::size_type size) noexcept
 }
 
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> Matrix<T>::random(size_type rows, size_type cols, value_type min_val, value_type max_val) noexcept
 {
     Matrix<T> res(rows, cols);
