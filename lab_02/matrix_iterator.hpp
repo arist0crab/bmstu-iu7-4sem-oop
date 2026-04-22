@@ -2,63 +2,127 @@
 #define MATRIX_ITERATOR_HPP
 
 #include <iterator>
-#include <type_traits>
+#include <cstddef>
 
-// TODO в классе матрицы делать static assert подходит ли этот итератор или нет
-// TODO разнести константный и не константный итератор по разным классам
-
-template <typename T, bool IsConst>
+template <typename T>
 class MatrixIterator 
 {
-public:
-    using iterator_category = std::random_access_iterator_tag;
-    using value_type = T;
-    using difference_type = std::ptrdiff_t;
-    
-    using pointer = std::conditional_t<IsConst, const T*, T*>;
-    using reference = std::conditional_t<IsConst, const T&, T&>;
+    public:
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = T*;
+        using reference = T&;
 
-    // ===============================
-    //          Конструкторы
-    // ===============================
+        // ===============================
+        //          Конструкторы
+        // ===============================
 
-    explicit MatrixIterator(pointer ptr) : m_ptr(ptr) {}
+        explicit MatrixIterator(pointer ptr) : m_ptr(ptr) {}
+        MatrixIterator(const MatrixIterator& other) = default;
+        MatrixIterator& operator=(const MatrixIterator& other) = default;
 
-    // ===============================
-    //   Операторы разыменовывания
-    // ===============================
+        // ===============================
+        //   Операторы разыменовывания
+        // ===============================
 
-    reference operator * () const { return *m_ptr; }
-    pointer operator -> () const { return m_ptr; }
+        reference operator * () const { return *m_ptr; }
+        pointer operator -> () const { return m_ptr; }
 
-    // ===============================
-    //     Инкременты и декременты
-    // ===============================
+        // ===============================
+        //     Инкременты и декременты
+        // ===============================
 
-    MatrixIterator& operator++() { ++m_ptr; return *this; }
-    MatrixIterator operator++(int) { MatrixIterator tmp = *this; ++m_ptr; return tmp; }
-    MatrixIterator& operator--() { --m_ptr; return *this; }
-    MatrixIterator operator--(int) { MatrixIterator tmp = *this; --m_ptr; return tmp; }
+        MatrixIterator& operator++() { ++m_ptr; return *this; }
+        MatrixIterator operator++(int) { MatrixIterator tmp = *this; ++m_ptr; return tmp; }
+        MatrixIterator& operator--() { --m_ptr; return *this; }
+        MatrixIterator operator--(int) { MatrixIterator tmp = *this; --m_ptr; return tmp; }
 
-    // ===============================
-    //     Арифметика итераторов
-    // ===============================
+        // ===============================
+        //     Арифметика итераторов
+        // ===============================
 
-    MatrixIterator operator + (difference_type n) const { return MatrixIterator(m_ptr + n); }
-    MatrixIterator operator - (difference_type n) const { return MatrixIterator(m_ptr - n); }
-    difference_type operator - (const MatrixIterator& other) const { return m_ptr - other.m_ptr; }
+        MatrixIterator& operator += (difference_type n) { m_ptr += n; return *this; }
+        MatrixIterator& operator -= (difference_type n) { m_ptr -= n; return *this; }
+        MatrixIterator operator + (difference_type n) const { return MatrixIterator(m_ptr + n); }
+        MatrixIterator operator - (difference_type n) const { return MatrixIterator(m_ptr - n); }
+        difference_type operator - (const MatrixIterator& other) const { return m_ptr - other.m_ptr; }
 
-    // ===============================
-    //       Операторы сравнения
-    // ===============================
+        // ===============================
+        //       Операторы сравнения
+        // ===============================
 
-    bool operator == (const MatrixIterator& other) const { return m_ptr == other.m_ptr; }
-    bool operator != (const MatrixIterator& other) const { return m_ptr != other.m_ptr; }
-    bool operator < (const MatrixIterator& other) const { return m_ptr < other.m_ptr; }
-    bool operator > (const MatrixIterator& other) const { return m_ptr > other.m_ptr; }
+        bool operator == (const MatrixIterator& other) const { return m_ptr == other.m_ptr; }
+        bool operator != (const MatrixIterator& other) const { return m_ptr != other.m_ptr; }
+        bool operator < (const MatrixIterator& other) const { return m_ptr < other.m_ptr; }
+        bool operator > (const MatrixIterator& other) const { return m_ptr > other.m_ptr; }
+        bool operator <= (const MatrixIterator& other) const { return m_ptr <= other.m_ptr; }
+        bool operator >= (const MatrixIterator& other) const { return m_ptr >= other.m_ptr; }
 
     private:
-        pointer m_ptr; 
+        pointer m_ptr;
+};
+
+
+template <typename T>
+class MatrixConstIterator 
+{
+    public:
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = const T*;
+        using reference = const T&;
+
+        // ===============================
+        //          Конструкторы
+        // ===============================
+
+        explicit MatrixConstIterator(pointer ptr) : m_ptr(ptr) {}
+        MatrixConstIterator(const MatrixConstIterator& other) = default;
+        MatrixConstIterator(const MatrixIterator<T>& other) : m_ptr(other.operator->()) {}
+        
+        MatrixConstIterator& operator=(const MatrixConstIterator& other) = default;
+
+        // ===============================
+        //   Операторы разыменовывания
+        // ===============================
+
+        reference operator * () const { return *m_ptr; }
+        pointer operator -> () const { return m_ptr; }
+
+        // ===============================
+        //     Инкременты и декременты
+        // ===============================
+
+        MatrixConstIterator& operator++() { ++m_ptr; return *this; }
+        MatrixConstIterator operator++(int) { MatrixConstIterator tmp = *this; ++m_ptr; return tmp; }
+        MatrixConstIterator& operator--() { --m_ptr; return *this; }
+        MatrixConstIterator operator--(int) { MatrixConstIterator tmp = *this; --m_ptr; return tmp; }
+
+        // ===============================
+        //     Арифметика итераторов
+        // ===============================
+
+        MatrixConstIterator& operator += (difference_type n) { m_ptr += n; return *this; }
+        MatrixConstIterator& operator -= (difference_type n) { m_ptr -= n; return *this; }
+        MatrixConstIterator operator + (difference_type n) const { return MatrixConstIterator(m_ptr + n); }
+        MatrixConstIterator operator - (difference_type n) const { return MatrixConstIterator(m_ptr - n); }
+        difference_type operator - (const MatrixConstIterator& other) const { return m_ptr - other.m_ptr; }
+
+        // ===============================
+        //       Операторы сравнения
+        // ===============================
+
+        bool operator == (const MatrixConstIterator& other) const { return m_ptr == other.m_ptr; }
+        bool operator != (const MatrixConstIterator& other) const { return m_ptr != other.m_ptr; }
+        bool operator < (const MatrixConstIterator& other) const { return m_ptr < other.m_ptr; }
+        bool operator > (const MatrixConstIterator& other) const { return m_ptr > other.m_ptr; }
+        bool operator <= (const MatrixConstIterator& other) const { return m_ptr <= other.m_ptr; }
+        bool operator >= (const MatrixConstIterator& other) const { return m_ptr >= other.m_ptr; }
+
+    private:
+        pointer m_ptr;
 };
 
 #endif

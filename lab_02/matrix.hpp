@@ -50,12 +50,25 @@ class Matrix
         using value_type = T;
         using reference = T&;
         using const_reference = const T&;
-        using iterator = MatrixIterator<T, false>;
-        using const_iterator = MatrixIterator<T, true>;
+        using pointer = T*;
+        using const_pointer = const T*;
+
+        using iterator = MatrixIterator<T>;
+        using const_iterator = MatrixConstIterator<T>;
+        
         using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+        
         using difference_type = std::ptrdiff_t;
         using size_type = std::size_t;
+
+        // ===============================
+        //      Проверка итераторов
+        // ===============================
+        
+        static_assert(std::random_access_iterator<iterator>, MATRIX_ITERATOR_RANDOM_ACCESS_CORRESPONDENCE_ERROR);   
+        static_assert(std::random_access_iterator<const_iterator>, MATRIX_CONST_ITERATOR_RANDOM_ACCESS_CORRESPONDENCE_ERROR);
+        static_assert(std::is_same_v<typename std::iterator_traits<iterator>::value_type, T>, MATRIX_ITERATOR_VALUE_TYPE_ERROR);
 
         // ===============================
         //          Конструкторы
@@ -75,7 +88,7 @@ class Matrix
         ~Matrix() = default;
 
         Matrix& operator = (const Matrix &other_matrix);
-        Matrix& operator = (const Matrix &&other_matrix);
+        Matrix& operator = (Matrix &&other_matrix);
 
         // ===============================
         //          Итераторы

@@ -130,11 +130,11 @@ Matrix<T>& Matrix<T>::operator = (const Matrix<T> &other_matrix)
 
 
 template <typename T>
-Matrix<T>& Matrix<T>::operator = (const Matrix<T> &&other_matrix)
+Matrix<T>& Matrix<T>::operator = (Matrix<T> &&other_matrix)
 {
     if (this != &other_matrix)
         this->swap(other_matrix); 
-        
+
     return *this;
 }
 
