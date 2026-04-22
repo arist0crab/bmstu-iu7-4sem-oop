@@ -68,9 +68,14 @@ class Matrix
         
         Matrix(Matrix &&other_matrix) noexcept;
         Matrix(const Matrix &other_matrix);
+        // TODO получить матрицу из сишной матрицы
+        // TODO матрицу из другого контейнера
+        // TODO через итераторы другого контейнера
+        // TODO через матрицу другого типа если это возможно
         ~Matrix() = default;
 
-        Matrix &operator = (Matrix other) noexcept;
+        Matrix& operator = (const Matrix &other_matrix);
+        Matrix& operator = (const Matrix &&other_matrix);
 
         // ===============================
         //          Итераторы
@@ -123,6 +128,7 @@ class Matrix
         Matrix &operator += (const Matrix &other_matrix);
         Matrix &operator *= (const Matrix &other_matrix);
         Matrix &operator *= (const_reference number); 
+        Matrix &operator &= (const Matrix &other_matrix);
 
         // ===============================
         //       Операторы сравнения
@@ -145,12 +151,18 @@ class Matrix
         //          Методы матрицы
         // ===============================
 
+        Matrix& add(const Matrix &other_matrix);
+        Matrix& sub(const Matrix &other_matrix);
+        Matrix& mult(const Matrix &other_matrix);
+        Matrix& mult_scalar(const_reference number);
+        Matrix& mult_hadamard(const Matrix &other_matrix);
+
         Matrix inverse() const;
         Matrix transpose() const;
         Matrix pow(size_type exp) const;
 
-        T trace() const;
-        T determinant() const;
+        value_type trace() const;
+        value_type determinant() const;
 
         bool is_square() const noexcept;
         bool is_symmetric() const noexcept;

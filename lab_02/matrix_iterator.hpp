@@ -4,6 +4,9 @@
 #include <iterator>
 #include <type_traits>
 
+// TODO в классе матрицы делать static assert подходит ли этот итератор или нет
+// TODO разнести константный и не константный итератор по разным классам
+
 template <typename T, bool IsConst>
 class MatrixIterator 
 {

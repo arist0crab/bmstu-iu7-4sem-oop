@@ -117,11 +117,24 @@ Matrix<T>::Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows),
 
 
 template <typename T>
-Matrix<T>& Matrix<T>::operator = (Matrix<T> other) noexcept
+Matrix<T>& Matrix<T>::operator = (const Matrix<T> &other_matrix)
 {
-    std::swap(m_rows, other.m_rows);
-    std::swap(m_cols, other.m_cols);
-    std::swap(m_data, other.m_data);
+    if (this != &other_matrix)
+    {
+        Matrix<T> temp(other_matrix);
+        this->swap(temp);
+    }
+
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator = (const Matrix<T> &&other_matrix)
+{
+    if (this != &other_matrix)
+        this->swap(other_matrix); 
+        
     return *this;
 }
 
@@ -347,62 +360,35 @@ void Matrix<T>::resize(size_type new_rows, size_type new_cols)
 template <typename T>
 Matrix<T>& Matrix<T>::operator += (const Matrix& other_matrix)
 {
-    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
-        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_UNARY_ADD_SUB_ERR);
-
-    for (size_type i = 0; i < m_rows * m_cols; i++)
-        m_data[i] += other_matrix.m_data[i];
-
-    return *this;
+    return this->add(other_matrix);
 }
 
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator -= (const Matrix &other_matrix)
 {
-    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
-        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_UNARY_ADD_SUB_ERR);
-
-    for (size_type i = 0; i < m_rows * m_cols; i++)
-        m_data[i] -= other_matrix.m_data[i];
-
-    return *this;
+    return this->sub(other_matrix);
 }
 
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator *= (const Matrix &other_matrix)
 {
-    if (m_cols != other_matrix.m_rows)
-        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_MULTIPLICATION_ERROR);
-
-    Matrix<T> result_matrix(m_rows, other_matrix.m_cols, 0);
-
-    for (size_type i = 0; i < m_rows; i++)
-    {
-        for (size_type j = 0; j < other_matrix.m_cols; j++)
-        {
-            T sum = 0;
-            for (size_type k = 0; k < m_cols; k++)
-                sum += (*this)(i, k) * other_matrix(k, j);
-
-            result_matrix(i, j) = sum;
-        }
-    }
-
-    *this = std::move(result_matrix);
-    
-    return *this;
+    return this->mult(other_matrix);
 }
 
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator *= (const_reference number)
 {
-    for (size_type i = 0; i < m_rows * m_cols; i++)
-        m_data[i] *= number;
+    return this->mult_scalar(number);
+}
 
-    return *this;
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator &= (const Matrix &other_matrix)
+{
+    return this->mult_hadamard(other_matrix);
 }
 
 
@@ -633,6 +619,81 @@ bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type ro
 
 
 template <typename T>
+Matrix<T>& Matrix<T>::add(const Matrix<T> &other_matrix)
+{
+    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SAME_DIMENSIONS_ERROR);
+
+    for (size_type i = 0; i < m_rows * m_cols; i++)
+        m_data[i] += other_matrix.m_data[i];
+
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::sub(const Matrix<T> &other_matrix)
+{
+    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SAME_DIMENSIONS_ERROR);
+
+    for (size_type i = 0; i < m_rows * m_cols; i++)
+        m_data[i] -= other_matrix.m_data[i];
+
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::mult(const Matrix<T> &other_matrix)
+{
+    if (m_cols != other_matrix.m_rows)
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_MULTIPLICATION_ERROR);
+
+    Matrix<T> result_matrix(m_rows, other_matrix.m_cols, 0);
+
+    for (size_type i = 0; i < m_rows; i++)
+    {
+        for (size_type j = 0; j < other_matrix.m_cols; j++)
+        {
+            T sum = 0;
+            for (size_type k = 0; k < m_cols; k++)
+                sum += (*this)(i, k) * other_matrix(k, j);
+
+            result_matrix(i, j) = sum;
+        }
+    }
+
+    *this = std::move(result_matrix);
+    
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::mult_scalar(const_reference number)
+{
+    for (size_type i = 0; i < m_rows * m_cols; i++)
+        m_data[i] *= number;
+
+    return *this;
+}
+
+
+template <typename T>
+Matrix<T>& Matrix<T>::mult_hadamard(const Matrix<T> &other_matrix)
+{
+    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SAME_DIMENSIONS_ERROR);
+
+    for (size_type i = 0; i < m_rows * m_cols; ++i)
+        m_data[i] *= other_matrix.m_data[i];
+    
+    return *this;
+}
+
+
+template <typename T>
 Matrix<T> Matrix<T>::inverse() const
 {
     if (is_empty()) 
@@ -642,7 +703,7 @@ Matrix<T> Matrix<T>::inverse() const
         throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SQUARE_ERROR);
 
     size_type n = m_rows;
-    Matrix<T> aug = *this;    
+    Matrix<T> aug(*this);    
     Matrix<T> inv = identity(n);   
 
     for (size_type i = 0; i < n; ++i)
@@ -783,7 +844,7 @@ Matrix<T> Matrix<T>::pow(size_type exp) const
 
 
 template <typename T>
-T Matrix<T>::trace() const
+Matrix<T>::value_type Matrix<T>::trace() const
 {
     if (is_empty)
         throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
@@ -800,9 +861,42 @@ T Matrix<T>::trace() const
 
 
 template <typename T>
-T Matrix<T>::determinant() const
+typename Matrix<T>::value_type Matrix<T>::determinant() const
 {
+    if (is_empty())
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
 
+    if (!is_square())
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SQUARE_ERROR);
+
+    if (m_rows == 1)
+        return (*this)(0, 0);
+
+    if (m_rows == 2)
+        return (*this)(0, 0) * (*this)(1, 1) - (*this)(0, 1) * (*this)(1, 0);
+
+    value_type det = value_type{};
+    
+    for (size_type col = 0; col < m_cols; ++col)
+    {
+        Matrix<T> minor(m_rows - 1, m_cols - 1);
+
+        for (size_type i = 1; i < m_rows; ++i)
+        {
+            size_type minor_col = 0;
+            for (size_type j = 0; j < m_cols; ++j)
+            {
+                if (j == col) continue;
+                minor(i - 1, minor_col) = (*this)(i, j);
+                ++minor_col;
+            }
+        }
+
+        value_type sign = (col % 2 == 0) ? value_type(1) : value_type(-1);
+        det += sign * (*this)(0, col) * minor.determinant();
+    }
+
+    return det;
 }
 
 
@@ -869,7 +963,7 @@ typename Matrix<T>::size_type Matrix<T>::rank() const
 {
     if (is_empty()) return 0;
 
-    Matrix<T> temp = *this;
+    Matrix<T> temp(*this);
     size_type r = 0;
     size_type rows = m_rows;
     size_type cols = m_cols;

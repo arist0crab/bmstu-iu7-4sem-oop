@@ -7,7 +7,7 @@
 
 #define MATRIX_ELEMENT_TYPE_ERROR "Matrix element type must be copyable and destructible"
 #define MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR "Inconsistent row lengths in initializer_list"
-#define MATRIX_UNARY_ADD_SUB_ERR "Matrix dimensions must match for addition"
+#define MATRIX_SAME_DIMENSIONS_ERROR "Matrix dimensions must match for addition"
 #define MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR "Matrix row index out of range"
 #define MATRIX_COL_INDEX_OUT_OF_RANGE_ERROR "Matrix column index out of range"
 #define MATRIX_INDEX_OUT_OF_RANGE_ERROR "Matrix index out of range"
