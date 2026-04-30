@@ -88,14 +88,18 @@ Matrix<T>::Matrix(size_type rows, size_type cols, T** c_matrix) : m_rows(rows), 
 }
 
 
-template <MatrixElement T>
-template <ConvertibleInputIterator<T> It>
-Matrix<T>::Matrix(size_type rows, size_type cols, It begin, It end) : m_rows(rows), m_cols(cols)
+template<MatrixElement T>
+template <ConvertibleInputIterator<T> It, Sentinel<It> Sent>
+Matrix<T>::Matrix(size_type rows, size_type cols, It begin, Sent end) : m_rows(rows), m_cols(cols), m_data(std::make_shared<value_type[]>(rows * cols))
 {
-    m_data = new T[m_rows * m_cols];
-    size_type i = 0;
-    for (auto it = begin; it != end && i < m_rows * m_cols; ++it, ++i)
-        m_data[i] = static_cast<T>(*it);
+    size_type index = 0;
+    size_type total_size = rows * cols;
+    
+    for (It it = begin; it != end && index < total_size; ++it)
+        m_data[index++] = static_cast<value_type>(*it);
+    
+    if (index < total_size)
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ITERATOR_CONSTRUCTOR_ERROR);
 }
 
 

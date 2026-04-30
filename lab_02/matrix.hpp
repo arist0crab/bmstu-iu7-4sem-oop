@@ -80,8 +80,8 @@ class Matrix
         Matrix(Matrix &&other_matrix) noexcept;
         explicit Matrix(const Matrix &other_matrix);
 
-        template <ConvertibleInputIterator<T> It>
-        Matrix(size_type rows, size_type cols, It begin, It end);
+        template <ConvertibleInputIterator<T> It, Sentinel<It> Sent>
+        Matrix(size_type rows, size_type cols, It begin, Sent end);
 
         template <typename Container>
         requires ConvertibleRange<Container, T>
