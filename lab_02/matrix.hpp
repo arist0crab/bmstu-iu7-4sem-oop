@@ -7,23 +7,9 @@
 #include <type_traits>
 #include <random>
 #include <span>
+
 #include "exception.hpp"
-
-
-template <typename T>
-concept MatrixElement = requires(T a, T b) 
-{
-    { a + b } -> std::convertible_to<T>;
-    { a - b } -> std::convertible_to<T>;
-    { a * b } -> std::convertible_to<T>;
-    { a / b } -> std::convertible_to<T>;
-    { a += b } -> std::same_as<T&>;
-    { a -= b } -> std::same_as<T&>;
-    { a *= b } -> std::same_as<T&>;
-    { a /= b } -> std::same_as<T&>;
-    T(0);
-};
-
+#include "concepts.hpp"
 #include "matrix_iterator.hpp"
 
 template <MatrixElement T>
@@ -94,14 +80,14 @@ class Matrix
         Matrix(Matrix &&other_matrix) noexcept;
         Matrix(const Matrix &other_matrix);
 
-        template <std::input_iterator It>
+        template <ConvertibleInputIterator<T> It>
         Matrix(size_type rows, size_type cols, It begin, It end);
 
         template <typename Container>
-        requires std::ranges::range<Container>
+        requires ConvertibleRange<Container, T>
         Matrix(size_type rows, size_type cols, const Container& container);
 
-        template <typename U>
+        template <ConvertibleTo<T> U>
         explicit Matrix(const Matrix<U>& other);
         
         ~Matrix() = default;
@@ -223,6 +209,10 @@ class Matrix
 };
 
 
+// ===============================
+//    Внешние операторы
+// ===============================
+
 template <MatrixElement T>
 std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix);
 
@@ -230,21 +220,25 @@ template <MatrixElement T>
 std::istream& operator >> (std::istream& is, Matrix<T>& matrix);
 
 template <MatrixElement T>
+requires SameSizeMatrices<Matrix<T>, Matrix<T>>
 Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs);
 
 template <MatrixElement T>
+requires SameSizeMatrices<Matrix<T>, Matrix<T>>
 Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs);
 
-template <MatrixElement T>
+template <ArithmeticScalar T>
 Matrix<T> operator * (Matrix<T> lhs, const T& number);
 
-template <MatrixElement T>
+template <ArithmeticScalar T>
 Matrix<T> operator * (const T& number, Matrix<T> rhs);
 
 template <MatrixElement T>
+requires MultipliableMatrices<Matrix<T>, Matrix<T>>
 Matrix<T> operator*(Matrix<T> lhs, const Matrix<T>& rhs);
 
 
 #include "matrix.cpp"
 
-#endif 
+
+#endif

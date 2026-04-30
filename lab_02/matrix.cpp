@@ -89,7 +89,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols, T** c_matrix) : m_rows(rows), 
 
 
 template <MatrixElement T>
-template <std::input_iterator It>
+template <ConvertibleInputIterator<T> It>
 Matrix<T>::Matrix(size_type rows, size_type cols, It begin, It end) : m_rows(rows), m_cols(cols)
 {
     m_data = new T[m_rows * m_cols];
@@ -101,7 +101,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols, It begin, It end) : m_rows(row
 
 template <MatrixElement T>
 template <typename Container>
-requires std::ranges::range<Container>
+requires ConvertibleRange<Container, T>
 Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : m_rows(rows), m_cols(cols)
 {
     m_data = std::make_unique<T[]>(m_rows * m_cols);
@@ -116,13 +116,14 @@ Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : 
 
 
 template <MatrixElement T>
-template <typename U>
-Matrix<T>::Matrix(const Matrix<U>& other) : m_rows(other.get_rows()), m_cols(other.get_cols())
+template <ConvertibleTo<T> U>
+Matrix<T>::Matrix(const Matrix<U>& other) : m_rows(other.rows()), m_cols(other.cols())
 {
     m_data = new T[m_rows * m_cols];
     for (size_type i = 0; i < m_rows * m_cols; ++i)
         m_data[i] = static_cast<T>(other[i / m_cols][i % m_cols]);
 }
+
 
 template <MatrixElement T>
 Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_list) : Matrix(init_list.size(), (init_list.size() > 0 ? init_list.begin()->size() : 0))
@@ -443,6 +444,7 @@ Matrix<T>& Matrix<T>::operator &= (const Matrix &other_matrix)
 
 
 template <MatrixElement T>
+requires SameSizeMatrices<Matrix<T>, Matrix<T>>
 Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs)
 {
     lhs += rhs;
@@ -451,14 +453,15 @@ Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs)
 
 
 template <MatrixElement T>
+requires SameSizeMatrices<Matrix<T>, Matrix<T>>
 Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs)
 {
     lhs -= rhs;
-    return rhs;
+    return lhs;
 }
 
 
-template <MatrixElement T>
+template <ArithmeticScalar T>
 Matrix<T> operator * (Matrix<T> lhs, const T& number)
 {
     lhs *= number;
@@ -466,7 +469,7 @@ Matrix<T> operator * (Matrix<T> lhs, const T& number)
 }
 
 
-template <MatrixElement T>
+template <ArithmeticScalar T>
 Matrix<T> operator * (const T& number, Matrix<T> rhs)
 {
     rhs *= number;
@@ -475,6 +478,7 @@ Matrix<T> operator * (const T& number, Matrix<T> rhs)
 
 
 template <MatrixElement T>
+requires MultipliableMatrices<Matrix<T>, Matrix<T>>
 Matrix<T> operator * (Matrix<T> lhs, const Matrix<T>& rhs)
 {
     lhs *= rhs;
@@ -896,7 +900,7 @@ Matrix<T> Matrix<T>::pow(size_type exp) const
 template <MatrixElement T>
 Matrix<T>::value_type Matrix<T>::trace() const
 {
-    if (is_empty)
+    if (is_empty())
         throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
 
     if (!is_square())
