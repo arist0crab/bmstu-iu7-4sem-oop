@@ -462,10 +462,11 @@ Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs)
 
 
 template <ArithmeticScalar T>
-Matrix<T> operator * (Matrix<T> lhs, const T& number)
+Matrix<T> operator * (const Matrix<T>& lhs, const T& number)
 {
-    lhs *= number;
-    return lhs;
+    Matrix<T> result(lhs); 
+    result *= number;
+    return result;
 }
 
 
@@ -479,10 +480,11 @@ Matrix<T> operator * (const T& number, Matrix<T> rhs)
 
 template <MatrixElement T>
 requires MultipliableMatrices<Matrix<T>, Matrix<T>>
-Matrix<T> operator * (Matrix<T> lhs, const Matrix<T>& rhs)
+Matrix<T> operator * (const Matrix<T>& lhs, const Matrix<T>& rhs)
 {
-    lhs *= rhs;
-    return lhs;
+    Matrix<T> result(lhs); 
+    result *= rhs;
+    return result;
 }
 
 

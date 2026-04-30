@@ -78,7 +78,7 @@ class Matrix
         Matrix(size_type rows, size_type cols, T** c_matrix);
 
         Matrix(Matrix &&other_matrix) noexcept;
-        Matrix(const Matrix &other_matrix);
+        explicit Matrix(const Matrix &other_matrix);
 
         template <ConvertibleInputIterator<T> It>
         Matrix(size_type rows, size_type cols, It begin, It end);
@@ -228,14 +228,14 @@ requires SameSizeMatrices<Matrix<T>, Matrix<T>>
 Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs);
 
 template <ArithmeticScalar T>
-Matrix<T> operator * (Matrix<T> lhs, const T& number);
+Matrix<T> operator * (const Matrix<T>& lhs, const T& number);
 
 template <ArithmeticScalar T>
 Matrix<T> operator * (const T& number, Matrix<T> rhs);
 
 template <MatrixElement T>
 requires MultipliableMatrices<Matrix<T>, Matrix<T>>
-Matrix<T> operator*(Matrix<T> lhs, const Matrix<T>& rhs);
+Matrix<T> operator * (const Matrix<T>& lhs, const Matrix<T>& rhs);
 
 
 #include "matrix.cpp"
