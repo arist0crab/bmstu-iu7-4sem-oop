@@ -105,7 +105,6 @@ Matrix<T>::Matrix(size_type rows, size_type cols, It begin, Sent end) : m_rows(r
 
 template <MatrixElement T>
 template <typename Container>
-requires ConvertibleRange<Container, T>
 Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : m_rows(rows), m_cols(cols)
 {
     m_data = std::make_shared<T[]>(m_rows * m_cols);

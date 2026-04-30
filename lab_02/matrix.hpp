@@ -84,7 +84,6 @@ class Matrix
         Matrix(size_type rows, size_type cols, It begin, Sent end);
 
         template <typename Container>
-        requires ConvertibleRange<Container, T>
         Matrix(size_type rows, size_type cols, const Container& container);
 
         template <ConvertibleTo<T> U>
