@@ -195,7 +195,7 @@ class Matrix
     private:
         size_type m_rows = 0;
         size_type m_cols = 0;
-        std::unique_ptr<value_type[]> m_data = nullptr;
+        std::shared_ptr<value_type[]> m_data = nullptr;
 
         size_type find_pivot(size_type column) const;
         void eliminate_column(size_type pivot_idx, Matrix& extra_matrix);

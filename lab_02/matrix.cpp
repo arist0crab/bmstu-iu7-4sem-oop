@@ -53,7 +53,7 @@ Matrix<T>::Matrix() : m_rows(0), m_cols(0), m_data(nullptr)
 
 
 template <MatrixElement T>
-Matrix<T>::Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), m_data(std::make_unique<value_type[]>(rows * cols))
+Matrix<T>::Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), m_data(std::make_shared<value_type[]>(rows * cols))
 {
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
 
@@ -63,7 +63,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), 
 
 
 template <MatrixElement T>
-Matrix<T>::Matrix(size_type rows, size_type cols, const_reference value) : m_rows(rows), m_cols(cols), m_data(std::make_unique<value_type[]>(rows * cols))
+Matrix<T>::Matrix(size_type rows, size_type cols, const_reference value) : m_rows(rows), m_cols(cols), m_data(std::make_shared<value_type[]>(rows * cols))
 {
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
 
@@ -104,7 +104,7 @@ template <typename Container>
 requires ConvertibleRange<Container, T>
 Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : m_rows(rows), m_cols(cols)
 {
-    m_data = std::make_unique<T[]>(m_rows * m_cols);
+    m_data = std::make_shared<T[]>(m_rows * m_cols);
     size_type i = 0;
     for (const auto& item : container) 
     {
@@ -198,14 +198,14 @@ Matrix<T>& Matrix<T>::operator = (Matrix<T> &&other_matrix)
 template <MatrixElement T>
 typename Matrix<T>::iterator Matrix<T>::begin() noexcept
 {
-    return iterator(m_data.get());
+    return iterator(m_data, 0);
 }
 
 
 template <MatrixElement T>
 typename Matrix<T>::const_iterator Matrix<T>::begin() const noexcept
 {
-    return const_iterator(m_data.get());
+    return const_iterator(m_data, 0);
 }
 
 
@@ -219,14 +219,14 @@ typename Matrix<T>::const_iterator Matrix<T>::cbegin() const noexcept
 template <MatrixElement T>
 typename Matrix<T>::iterator Matrix<T>::end() noexcept
 {
-    return iterator(m_data.get() + (m_rows * m_cols));
+    return iterator(m_data, m_rows * m_cols);
 }
 
 
 template <MatrixElement T>
 typename Matrix<T>::const_iterator Matrix<T>::end() const noexcept
 {
-    return const_iterator(m_data.get() + (m_rows * m_cols));
+    return const_iterator(m_data, m_rows * m_cols);
 }
 
 
@@ -386,7 +386,7 @@ void Matrix<T>::resize(size_type new_rows, size_type new_cols)
     if (new_rows == m_rows || new_cols == m_cols)
         return;
 
-    auto new_data = std::make_unique<T[]>(new_rows * new_cols);
+    auto new_data = std::make_shared<T[]>(new_rows * new_cols);
 
     size_type min_rows = std::min(m_rows, new_rows);
     size_type min_cols = std::min(m_cols, new_cols);
