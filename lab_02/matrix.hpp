@@ -11,9 +11,10 @@
 #include "exception.hpp"
 #include "concepts.hpp"
 #include "matrix_iterator.hpp"
+#include "base_matrix.hpp"
 
 template <MatrixElement T>
-class Matrix
+class Matrix : public BaseMatrix<T>
 {
     class MatrixRow
     {
@@ -89,7 +90,7 @@ class Matrix
         template <ConvertibleTo<T> U>
         explicit Matrix(const Matrix<U>& other);
         
-        ~Matrix() = default;
+        ~Matrix() override = default;
 
         Matrix& operator = (const Matrix &other_matrix);
         Matrix& operator = (Matrix &&other_matrix);
@@ -117,23 +118,23 @@ class Matrix
 
         MatrixRow operator [](size_type row);
         const MatrixRow operator [](size_type row) const;
-        reference operator()(size_type row, size_type col);
-        const_reference operator()(size_type row, size_type col) const;
+        reference operator()(size_type row, size_type col) override;
+        const_reference operator()(size_type row, size_type col) const override;
 
         // ===============================
         //           Вместимость
         // ===============================
 
-        size_type rows() const noexcept;
-        size_type cols() const noexcept;
-        size_type size() const noexcept;
-        bool is_empty() const noexcept;
+        size_type rows() const noexcept override;
+        size_type cols() const noexcept override;
+        size_type size() const noexcept override;
+        bool is_empty() const noexcept override;
 
         // ===============================
         //          Модификаторы
         // ===============================
 
-        void clear() noexcept;
+        void clear() noexcept override;
         void swap(Matrix &other_matrix);
         void resize(size_type new_rows, size_type new_cols);
 
@@ -174,17 +175,17 @@ class Matrix
         Matrix& mult_scalar(const_reference number);
         Matrix& mult_hadamard(const Matrix &other_matrix);
 
-        Matrix inverse() const;
-        Matrix transpose() const;
+        Matrix inverse() const override;
+        Matrix transpose() const override;
         Matrix pow(size_type exp) const;
 
-        value_type trace() const;
-        value_type determinant() const;
+        value_type trace() const override;
+        value_type determinant() const override;
 
-        bool is_square() const noexcept;
-        bool is_symmetric() const noexcept;
-        bool is_diagonal() const noexcept;
-        bool is_identity() const noexcept;
+        bool is_square() const noexcept override;
+        bool is_symmetric() const noexcept override;
+        bool is_diagonal() const noexcept override;
+        bool is_identity() const noexcept override;
 
         size_type rank() const;
 
