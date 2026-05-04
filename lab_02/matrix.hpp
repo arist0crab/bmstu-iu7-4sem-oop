@@ -7,6 +7,9 @@
 #include <type_traits>
 #include <random>
 #include <span>
+#include <ranges>
+#include <algorithm>
+#include <numeric>
 
 #include "exception.hpp"
 #include "concepts.hpp"
