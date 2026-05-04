@@ -51,7 +51,7 @@ class MatrixException : public BaseException
             char temp[512];
             std::snprintf(temp, sizeof(temp), "Matrix Error -> %s", m_msg);
             std::strncpy(m_msg, temp, sizeof(m_msg));
-            m_msg[sizeof(m_msg) - 1] = '\0';
+            m_msg[sizeof(m_msg) - 1] = '\0';  // TODO
         }
 };
 

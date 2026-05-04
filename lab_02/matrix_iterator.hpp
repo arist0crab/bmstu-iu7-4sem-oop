@@ -5,6 +5,10 @@
 #include <cstddef>
 #include <memory>
 
+// TODO и тот и тот в реверсе
+// TODO noexcept добавить
+// TODO налоить ограничения на тип т
+
 template <typename T>
 class MatrixIterator 
 {
