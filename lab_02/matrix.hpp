@@ -87,6 +87,9 @@ class Matrix : public BaseMatrix<T>
         template <ConvertibleInputIterator<T> It, Sentinel<It> Sent>
         Matrix(size_type rows, size_type cols, It begin, Sent end);
 
+        template <std::ranges::input_range R>
+        Matrix(size_type rows, size_type cols, R&& range);
+
         template <typename Container>
         Matrix(size_type rows, size_type cols, const Container& container);
 

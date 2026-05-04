@@ -88,6 +88,21 @@ Matrix<T>::Matrix(size_type rows, size_type cols, It begin, Sent end) : m_rows(r
 }
 
 template <MatrixElement T>
+template <std::ranges::input_range R>
+Matrix<T>::Matrix(size_type rows, size_type cols, R&& range) : m_rows(rows), m_cols(cols), m_data(std::make_shared<value_type[]>(rows * cols))
+{
+    auto total_size = rows * cols;
+    auto taken = range | std::views::take(total_size);
+    
+    auto res = std::ranges::transform(taken, m_data.get(), [](const auto& val) {
+        return static_cast<value_type>(val);
+    });
+    
+    if (static_cast<size_type>(res.out - m_data.get()) < total_size)
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ITERATOR_CONSTRUCTOR_ERROR);
+}
+
+template <MatrixElement T>
 template <typename Container>
 Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : m_rows(rows), m_cols(cols)
 {
