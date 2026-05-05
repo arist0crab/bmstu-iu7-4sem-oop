@@ -117,17 +117,6 @@ Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : 
     }
 }
 
-
-template <MatrixElement T>
-template <ConvertibleTo<T> U>
-Matrix<T>::Matrix(const Matrix<U>& other) : m_rows(other.rows()), m_cols(other.cols())
-{
-    m_data = new T[m_rows * m_cols];
-    for (size_type i = 0; i < m_rows * m_cols; ++i)
-        m_data[i] = static_cast<T>(other[i / m_cols][i % m_cols]);
-}
-
-
 template <MatrixElement T>
 Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_list) : Matrix(init_list.size(), (init_list.size() > 0 ? init_list.begin()->size() : 0))
 {
@@ -169,6 +158,57 @@ Matrix<T>::Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows),
     other_matrix.m_cols = 0;
 }
 
+
+template <MatrixElement T>
+template <ConvertibleTo<T> U>
+Matrix<T>::Matrix(Matrix<U> &&other_matrix) noexcept : m_rows(other_matrix.rows()), m_cols(other_matrix.cols()), m_data(std::make_shared<T[]>(other_matrix.rows() * other_matrix.cols()))
+{
+    std::ranges::transform(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        m_data.get(),
+        [&](size_type i) {
+            return T(other_matrix(i / m_cols, i % m_cols));
+        }
+    );
+    
+    other_matrix.clear();
+}
+
+template <MatrixElement T>
+template <ConvertibleTo<T> U>
+Matrix<T>::Matrix(const Matrix<U> &other_matrix) : m_rows(other_matrix.rows()), m_cols(other_matrix.cols()), m_data(std::make_shared<T[]>(other_matrix.rows() * other_matrix.cols()))
+{
+    std::ranges::transform(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        m_data.get(),
+        [&](size_type i) {
+            return T(other_matrix(i / m_cols, i % m_cols));
+        }
+    );
+}
+
+template <MatrixElement T>
+template <MatrixElement U>
+requires ConvertibleTo<U, T>
+Matrix<T>& Matrix<T>::operator = (const Matrix<U>& other_matrix)
+{
+    if (this == reinterpret_cast<const Matrix<T>*>(&other_matrix))
+        return *this;
+    
+    m_rows = other_matrix.rows();
+    m_cols = other_matrix.cols();
+    m_data = std::make_shared<T[]>(m_rows * m_cols);
+    
+    std::ranges::transform(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        m_data.get(),
+        [&](size_type i) {
+            return T(other_matrix(i / m_cols, i % m_cols));
+        }
+    );
+    
+    return *this;
+}
 
 template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator = (const Matrix<T> &other_matrix)
@@ -382,7 +422,6 @@ void Matrix<T>::swap(Matrix &other_matrix)
     std::swap(m_data, other_matrix.m_data);
 }
 
-
 template <MatrixElement T>
 void Matrix<T>::resize(size_type new_rows, size_type new_cols)
 {
@@ -495,7 +534,8 @@ requires HasCommon<T, U> && MultipliableMatrices<Matrix<T>, Matrix<U>>
 auto operator * (const Matrix<T>& lhs, const Matrix<U>& rhs)
 {
     using CommonType = std::common_type_t<T, U>;
-    Matrix<CommonType> result = lhs;
+    Matrix<CommonType> result(lhs.rows(), lhs.cols());
+    result = lhs;
     result *= rhs;
     return result;
 }
@@ -503,6 +543,29 @@ auto operator * (const Matrix<T>& lhs, const Matrix<U>& rhs)
 // ===============================
 //       Операторы сравнения
 // ===============================
+
+template <MatrixElement T>
+template <MatrixElement U>
+requires EqualityComparable<T, U>
+auto Matrix<T>::operator<=>(const Matrix<U>& other) const
+{
+    if (m_rows != other.rows() || m_cols != other.cols())
+        return m_rows * m_cols <=> other.rows() * other.cols();
+    
+    auto mismatch = std::ranges::mismatch(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        [&](size_type idx1, size_type idx2) {
+            return (*this)(idx1 / m_cols, idx1 % m_cols) == other(idx2 / m_cols, idx2 % m_cols);
+        }
+    );
+    
+    if (mismatch.in1 == std::ranges::end(std::views::iota(size_type{0}, m_rows * m_cols)))
+        return std::strong_ordering::equal;
+    
+    size_type idx = *mismatch.in1;
+    return (*this)(idx / m_cols, idx % m_cols) <=> other(idx / m_cols, idx % m_cols);
+}
 
 template <MatrixElement T>
 auto Matrix<T>::operator<=>(const Matrix &other) const
@@ -734,7 +797,7 @@ Matrix<T>& Matrix<T>::mult_hadamard(const Matrix<U>& other_matrix)
 }
 
 template <MatrixElement T>
-Matrix<T> Matrix<T>::inverse() const
+std::shared_ptr<BaseMatrix> Matrix<T>::inverse() const
 {
     if (is_empty()) 
         throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
@@ -762,9 +825,8 @@ Matrix<T> Matrix<T>::inverse() const
         aug.eliminate_column(i, inv);
     }
 
-    return inv;
+    return std::make_shared<Matrix<T>>(std::move(inv));
 }
-
 
 template <MatrixElement T>
 void Matrix<T>::swap_rows(size_type row1, size_type row2)
@@ -840,16 +902,16 @@ void Matrix<T>::eliminate_column(size_type pivot_idx, Matrix<T>& extra_matrix)
 
 
 template <MatrixElement T>
-Matrix<T> Matrix<T>::transpose() const
+std::shared_ptr<BaseMatrix> Matrix<T>::transpose() const
 {
     if (is_empty())
         throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
 
-    Matrix<T> result(m_cols, m_rows);
+    auto result = std::make_shared<Matrix<T>>(m_cols, m_rows);
 
-    for (Matrix<T>::size_type i = 0; i < m_rows; i++)
-        for (Matrix<T>::size_type j = 0; j < m_cols; j++)
-            result(j, i) = (*this)(i, j);
+    for (size_type i = 0; i < m_rows; i++)
+        for (size_type j = 0; j < m_cols; j++)
+            (*result)(j, i) = (*this)(i, j);
 
     return result;
 }
@@ -884,7 +946,7 @@ Matrix<T> Matrix<T>::pow(size_type exp) const
 
 
 template <MatrixElement T>
-Matrix<T>::value_type Matrix<T>::trace() const
+std::any Matrix<T>::trace() const
 {
     if (is_empty())
         throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
@@ -901,7 +963,7 @@ Matrix<T>::value_type Matrix<T>::trace() const
 
 
 template <MatrixElement T>
-typename Matrix<T>::value_type Matrix<T>::determinant() const
+std::any Matrix<T>::determinant() const
 {
     if (is_empty())
         throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
@@ -933,7 +995,7 @@ typename Matrix<T>::value_type Matrix<T>::determinant() const
         }
 
         value_type sign = (col % 2 == 0) ? value_type(1) : value_type(-1);
-        det += sign * (*this)(0, col) * minor.determinant();
+        det += sign * (*this)(0, col) * std::any_cast<T>(minor.determinant());
     }
 
     return det;

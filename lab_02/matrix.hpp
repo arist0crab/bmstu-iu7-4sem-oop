@@ -14,7 +14,7 @@
 #include "base_matrix.hpp"
 
 template <MatrixElement T>
-class Matrix : public BaseMatrix<T>
+class Matrix : public BaseMatrix
 {
     class MatrixRow
     {
@@ -81,19 +81,26 @@ class Matrix : public BaseMatrix<T>
         Matrix(Matrix &&other_matrix) noexcept;
         explicit Matrix(const Matrix &other_matrix);
 
+        template <ConvertibleTo<T> U>
+        explicit Matrix(Matrix<U> &&other_matrix) noexcept;
+
+        template <ConvertibleTo<T> U>
+        explicit Matrix(const Matrix<U> &other_matrix);
+
         template <ConvertibleInputIterator<T> It, Sentinel<It> Sent>
         Matrix(size_type rows, size_type cols, It begin, Sent end);
 
         template <CommonContainer<T> Container>
         Matrix(size_type rows, size_type cols, const Container& container);
-
-        template <ConvertibleTo<T> U>
-        explicit Matrix(const Matrix<U>& other);
         
         ~Matrix() override = default;
 
         Matrix& operator = (const Matrix &other_matrix);
         Matrix& operator = (Matrix &&other_matrix);
+
+        template <MatrixElement U>
+        requires ConvertibleTo<U, T>
+        Matrix& operator = (const Matrix<U>& other_matrix);
 
         // ===============================
         //          Итераторы
@@ -118,8 +125,8 @@ class Matrix : public BaseMatrix<T>
 
         MatrixRow operator [](size_type row);
         const MatrixRow operator [](size_type row) const;
-        reference operator()(size_type row, size_type col) override;
-        const_reference operator()(size_type row, size_type col) const override;
+        reference operator()(size_type row, size_type col);
+        const_reference operator()(size_type row, size_type col) const;
 
         // ===============================
         //           Вместимость
@@ -135,8 +142,10 @@ class Matrix : public BaseMatrix<T>
         // ===============================
 
         void clear() noexcept override;
-        void swap(Matrix &other_matrix);
+
         void resize(size_type new_rows, size_type new_cols);
+        
+        void swap(Matrix &other_matrix);
 
         // ===============================
         //    Математические операторы
@@ -164,8 +173,25 @@ class Matrix : public BaseMatrix<T>
         //       Операторы сравнения
         // ===============================
 
-        auto operator<=>(const Matrix &other) const;
+        template <MatrixElement U>
+        requires EqualityComparable<T, U>
+        bool equal(const Matrix<U>& other_matrix) const;
+
+        template <MatrixElement U>
+        requires EqualityComparable<T, U>
+        auto operator<=>(const Matrix<U>& other) const;
+
+        template <MatrixElement U>
+        requires EqualityComparable<T, U>
+        bool operator==(const Matrix<U>& other) const;
+
+        template <MatrixElement U>
+        requires EqualityComparable<T, U>
+        bool operator!=(const Matrix<U>& other) const;
+
         bool equal(const Matrix &other_matrix) const;
+
+        auto operator<=>(const Matrix &other) const;
 
         // ===============================
         //          Методы матрицы
@@ -189,12 +215,12 @@ class Matrix : public BaseMatrix<T>
         requires HasCommon<T, U>
         Matrix& mult_hadamard(const Matrix<U>& other_matrix);
 
-        Matrix inverse() const override;
-        Matrix transpose() const override;
+        std::shared_ptr<BaseMatrix> inverse() const;
+        std::shared_ptr<BaseMatrix> transpose() const;
         Matrix pow(size_type exp) const;
 
-        value_type trace() const override;
-        value_type determinant() const override;
+        std::any trace() const override;
+        std::any determinant() const override;
 
         bool is_square() const noexcept override;
         bool is_symmetric() const noexcept override;

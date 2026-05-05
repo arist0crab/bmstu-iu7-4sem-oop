@@ -27,10 +27,6 @@ class BaseMatrix
         virtual size_type cols() const noexcept = 0;
         virtual size_type size() const noexcept = 0;
         virtual bool is_empty() const noexcept = 0;
-        
-        virtual std::any operator()(size_type row, size_type col) = 0;
-        virtual const std::any operator()(size_type row, size_type col) const = 0;
-        
         virtual std::shared_ptr<BaseMatrix> transpose() const = 0;
         virtual std::shared_ptr<BaseMatrix> inverse() const = 0;
         virtual std::any determinant() const = 0;
