@@ -183,19 +183,11 @@ class Matrix : public BaseMatrix
         requires EqualityComparable<T, U>
         bool equal(const Matrix<U>& other_matrix) const;
 
+        bool equal(const Matrix &other_matrix) const;
+
         template <MatrixElement U>
         requires EqualityComparable<T, U>
         auto operator<=>(const Matrix<U>& other) const;
-
-        template <MatrixElement U>
-        requires EqualityComparable<T, U>
-        bool operator==(const Matrix<U>& other) const;
-
-        template <MatrixElement U>
-        requires EqualityComparable<T, U>
-        bool operator!=(const Matrix<U>& other) const;
-
-        bool equal(const Matrix &other_matrix) const;
 
         auto operator<=>(const Matrix &other) const;
 
