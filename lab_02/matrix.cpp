@@ -3,22 +3,18 @@
 
 static bool expect_char(std::istream& is, char expected);
 
-
 // ===============================
-//          MatrixRow
+//         MatrixRow
 // ===============================
-
 
 template <MatrixElement T>
 Matrix<T>::MatrixRow::MatrixRow(std::span<T> data) : m_data(data) {}
-
 
 template <MatrixElement T>
 Matrix<T>::MatrixRow::size_type Matrix<T>::MatrixRow::size() const noexcept
 {
     return m_data.size();
 }
-
 
 template <MatrixElement T>
 Matrix<T>::MatrixRow::reference Matrix<T>::MatrixRow::operator[](size_type col)
@@ -29,7 +25,6 @@ Matrix<T>::MatrixRow::reference Matrix<T>::MatrixRow::operator[](size_type col)
     return m_data[col];
 }
 
-
 template <MatrixElement T>
 Matrix<T>::MatrixRow::const_reference Matrix<T>::MatrixRow::operator[](size_type col) const
 {
@@ -39,18 +34,15 @@ Matrix<T>::MatrixRow::const_reference Matrix<T>::MatrixRow::operator[](size_type
     return m_data[col];
 }
 
-
 // ===============================
-//          Конструкторы
+//         Конструкторы
 // ===============================
-
 
 template <MatrixElement T>
 Matrix<T>::Matrix() : m_rows(0), m_cols(0), m_data(nullptr)
 {
     static_assert(MatrixElement<T>, MATRIX_ELEMENT_TYPE_ERROR);
 }
-
 
 template <MatrixElement T>
 Matrix<T>::Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), m_data(std::make_shared<value_type[]>(rows * cols))
@@ -61,7 +53,6 @@ Matrix<T>::Matrix(size_type rows, size_type cols) : m_rows(rows), m_cols(cols), 
         clear();
 }
 
-
 template <MatrixElement T>
 Matrix<T>::Matrix(size_type rows, size_type cols, const_reference value) : m_rows(rows), m_cols(cols), m_data(std::make_shared<value_type[]>(rows * cols))
 {
@@ -70,9 +61,8 @@ Matrix<T>::Matrix(size_type rows, size_type cols, const_reference value) : m_row
     if (m_rows == 0 || m_cols == 0)
         clear();
     else 
-        std::fill(m_data.get(), m_data.get() + rows * cols, value);
+        std::ranges::fill(std::span(m_data.get(), m_rows * m_cols), value);
 }
-
 
 template <MatrixElement T>
 Matrix<T>::Matrix(size_type rows, size_type cols, T** c_matrix) : m_rows(rows), m_cols(cols)
@@ -80,41 +70,44 @@ Matrix<T>::Matrix(size_type rows, size_type cols, T** c_matrix) : m_rows(rows), 
     if (!c_matrix)
         throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_C_MATRIX_DOESNT_EXIST_ERROR); 
     
-    m_data = new T[m_rows * m_cols];
-    for (size_type i = 0; i < m_rows; ++i)
-        for (size_type j = 0; j < m_cols; ++j)
-            m_data[i * m_cols + j] = c_matrix[i][j];
-
+    m_data = std::make_shared<T[]>(m_rows * m_cols);
+    auto indices = std::views::iota(size_type{0}, m_rows * m_cols);
+    std::ranges::transform(indices, m_data.get(), [c_matrix, cols](auto idx) {
+        return c_matrix[idx / cols][idx % cols];
+    });
 }
-
 
 template<MatrixElement T>
 template <ConvertibleInputIterator<T> It, Sentinel<It> Sent>
 Matrix<T>::Matrix(size_type rows, size_type cols, It begin, Sent end) : m_rows(rows), m_cols(cols), m_data(std::make_shared<value_type[]>(rows * cols))
 {
-    size_type index = 0;
-    size_type total_size = rows * cols;
+    auto res = std::ranges::copy(std::ranges::subrange(begin, end) | std::views::take(rows * cols), m_data.get());
     
-    for (It it = begin; it != end && index < total_size; ++it)
-        m_data[index++] = static_cast<value_type>(*it);
-    
-    if (index < total_size)
+    if (static_cast<size_type>(res.out - m_data.get()) < rows * cols)
         throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ITERATOR_CONSTRUCTOR_ERROR);
 }
 
+template <MatrixElement T>
+template <std::ranges::input_range R>
+Matrix<T>::Matrix(size_type rows, size_type cols, R&& range) : m_rows(rows), m_cols(cols), m_data(std::make_shared<value_type[]>(rows * cols))
+{
+    auto total_size = rows * cols;
+    auto taken = range | std::views::take(total_size);
+    
+    auto res = std::ranges::transform(taken, m_data.get(), [](const auto& val) {
+        return static_cast<value_type>(val);
+    });
+    
+    if (static_cast<size_type>(res.out - m_data.get()) < total_size)
+        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ITERATOR_CONSTRUCTOR_ERROR);
+}
 
 template <MatrixElement T>
 template <CommonContainer<T> Container>
 Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : m_rows(rows), m_cols(cols)
 {
     m_data = std::make_shared<T[]>(m_rows * m_cols);
-    size_type i = 0;
-    for (const auto& item : container) 
-    {
-        if (i >= m_rows * m_cols) 
-            break;
-        m_data[i++] = static_cast<T>(item);
-    }
+    std::ranges::copy(container | std::views::take(m_rows * m_cols), m_data.get());
 }
 
 template <MatrixElement T>
@@ -125,31 +118,27 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_
     if (m_rows == 0 || m_cols == 0) 
         return;
 
-    for (const auto& row : init_list) 
+    bool all_match = std::ranges::all_of(init_list, [this](const auto& row) { return row.size() == m_cols; });
+    if (!all_match) 
     {
-        if (row.size() != m_cols) 
-        {
-            clear();
-            throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR);
-        }
+        clear();
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR);
     }
 
-    size_type row_idx = 0;
-    for (const auto& row : init_list) 
+    auto row_indices = std::views::iota(size_type{0}, m_rows);
+    for (const auto& row : init_list)
     {
-        std::copy(row.begin(), row.end(), m_data.get() + row_idx * m_cols);
-        row_idx++;
+        size_type row_idx = &row - init_list.begin();
+        std::ranges::copy(row, m_data.get() + row_idx * m_cols);
     }
 }
-
 
 template <MatrixElement T>
 Matrix<T>::Matrix(const Matrix &other_matrix) : Matrix(other_matrix.m_rows, other_matrix.m_cols)
 {
     if (m_data)
-        std::copy(other_matrix.m_data.get(), other_matrix.m_data.get() + m_rows * m_cols, m_data.get());
+        std::ranges::copy(std::span(other_matrix.m_data.get(), m_rows * m_cols), m_data.get());
 }
-
 
 template <MatrixElement T>
 Matrix<T>::Matrix(Matrix &&other_matrix) noexcept : m_rows(other_matrix.m_rows), m_cols(other_matrix.m_cols), m_data(std::move(other_matrix.m_data))
@@ -218,192 +207,105 @@ Matrix<T>& Matrix<T>::operator = (const Matrix<T> &other_matrix)
         Matrix<T> temp(other_matrix);
         this->swap(temp);
     }
-
     return *this;
 }
-
 
 template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator = (Matrix<T> &&other_matrix)
 {
     if (this != &other_matrix)
         this->swap(other_matrix); 
-
     return *this;
 }
 
-
 // ===============================
-//          Итераторы
+//         Итераторы
 // ===============================
 
+template <MatrixElement T>
+typename Matrix<T>::iterator Matrix<T>::begin() noexcept { return iterator(m_data, 0); }
 
 template <MatrixElement T>
-typename Matrix<T>::iterator Matrix<T>::begin() noexcept
-{
-    return iterator(m_data, 0);
-}
-
+typename Matrix<T>::const_iterator Matrix<T>::begin() const noexcept { return const_iterator(m_data, 0); }
 
 template <MatrixElement T>
-typename Matrix<T>::const_iterator Matrix<T>::begin() const noexcept
-{
-    return const_iterator(m_data, 0);
-}
-
+typename Matrix<T>::const_iterator Matrix<T>::cbegin() const noexcept { return begin(); }
 
 template <MatrixElement T>
-typename Matrix<T>::const_iterator Matrix<T>::cbegin() const noexcept
-{
-    return begin(); 
-}
-
+typename Matrix<T>::iterator Matrix<T>::end() noexcept { return iterator(m_data, m_rows * m_cols); }
 
 template <MatrixElement T>
-typename Matrix<T>::iterator Matrix<T>::end() noexcept
-{
-    return iterator(m_data, m_rows * m_cols);
-}
-
+typename Matrix<T>::const_iterator Matrix<T>::end() const noexcept { return const_iterator(m_data, m_rows * m_cols); }
 
 template <MatrixElement T>
-typename Matrix<T>::const_iterator Matrix<T>::end() const noexcept
-{
-    return const_iterator(m_data, m_rows * m_cols);
-}
-
+typename Matrix<T>::const_iterator Matrix<T>::cend() const noexcept { return end(); }
 
 template <MatrixElement T>
-typename Matrix<T>::const_iterator Matrix<T>::cend() const noexcept
-{
-    return end(); 
-}
-
+typename Matrix<T>::reverse_iterator Matrix<T>::rbegin() noexcept { return reverse_iterator(end()); }
 
 template <MatrixElement T>
-typename Matrix<T>::reverse_iterator Matrix<T>::rbegin() noexcept
-{
-    return reverse_iterator(end());
-}
-
+typename Matrix<T>::const_reverse_iterator Matrix<T>::rbegin() const noexcept { return const_reverse_iterator(end()); }
 
 template <MatrixElement T>
-typename Matrix<T>::const_reverse_iterator Matrix<T>::rbegin() const noexcept
-{
-    return const_reverse_iterator(end());
-}
-
+typename Matrix<T>::const_reverse_iterator Matrix<T>::crbegin() const noexcept { return rbegin(); }
 
 template <MatrixElement T>
-typename Matrix<T>::const_reverse_iterator Matrix<T>::crbegin() const noexcept
-{
-    return rbegin();
-}
-
+typename Matrix<T>::reverse_iterator Matrix<T>::rend() noexcept { return reverse_iterator(begin()); }
 
 template <MatrixElement T>
-typename Matrix<T>::reverse_iterator Matrix<T>::rend() noexcept
-{
-    return reverse_iterator(begin());
-}
-
+typename Matrix<T>::const_reverse_iterator Matrix<T>::rend() const noexcept { return const_reverse_iterator(begin()); }
 
 template <MatrixElement T>
-typename Matrix<T>::const_reverse_iterator Matrix<T>::rend() const noexcept
-{
-    return const_reverse_iterator(begin());
-}
-
-
-template <MatrixElement T>
-typename Matrix<T>::const_reverse_iterator Matrix<T>::crend() const noexcept
-{
-    return rend();
-}
-
+typename Matrix<T>::const_reverse_iterator Matrix<T>::crend() const noexcept { return rend(); }
 
 // ===============================
 //       Операторы доступа
 // ===============================
-
 
 template <MatrixElement T>
 Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row)
 {
     if (row >= m_rows)
         throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
-
     return MatrixRow(std::span<T>(m_data.get() + row * m_cols, m_cols));
 }
-
 
 template <MatrixElement T>
 const Matrix<T>::MatrixRow Matrix<T>::operator[](size_type row) const
 {
     if (row >= m_rows)
         throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
-
     return MatrixRow(std::span<T>(m_data.get() + row * m_cols, m_cols));
 }
-
 
 template <MatrixElement T>
 Matrix<T>::reference Matrix<T>::operator()(size_type row, size_type col)
 {
     if (row >= m_rows || col >= m_cols)
         throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_INDEX_OUT_OF_RANGE_ERROR);
-
     return m_data[row * m_cols + col];
 }
-
 
 template <MatrixElement T>
 Matrix<T>::const_reference Matrix<T>::operator()(size_type row, size_type col) const
 {
     if (row >= m_rows || col >= m_cols)
         throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_INDEX_OUT_OF_RANGE_ERROR);
-
     return m_data[row * m_cols + col];
 }
 
-
 // ===============================
-//           Вместимость
+//            Вместимость
 // ===============================
 
-
-template <MatrixElement T>
-Matrix<T>::size_type Matrix<T>::rows() const noexcept
-{
-    return m_rows;
-}
-
-
-template <MatrixElement T>
-Matrix<T>::size_type Matrix<T>::cols() const noexcept
-{
-    return m_cols;
-}
-
-
-template <MatrixElement T>
-Matrix<T>::size_type Matrix<T>::size() const noexcept
-{
-    return m_rows * m_cols;
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::is_empty() const noexcept
-{
-    return m_rows == 0 || m_cols == 0;
-}
-
+template <MatrixElement T> Matrix<T>::size_type Matrix<T>::rows() const noexcept { return m_rows; }
+template <MatrixElement T> Matrix<T>::size_type Matrix<T>::cols() const noexcept { return m_cols; }
+template <MatrixElement T> Matrix<T>::size_type Matrix<T>::size() const noexcept { return m_rows * m_cols; }
+template <MatrixElement T> bool Matrix<T>::is_empty() const noexcept { return m_rows == 0 || m_cols == 0; }
 
 // ===============================
 //          Модификаторы
 // ===============================
-
 
 template <MatrixElement T>
 void Matrix<T>::clear() noexcept
@@ -412,7 +314,6 @@ void Matrix<T>::clear() noexcept
     m_cols = 0;
     m_data.reset();
 }
-
 
 template <MatrixElement T>
 void Matrix<T>::swap(Matrix &other_matrix)
@@ -425,30 +326,25 @@ void Matrix<T>::swap(Matrix &other_matrix)
 template <MatrixElement T>
 void Matrix<T>::resize(size_type new_rows, size_type new_cols)
 {
-    if (new_rows == m_rows || new_cols == m_cols)
-        return;
+    if (new_rows == m_rows && new_cols == m_cols) return;
 
     auto new_data = std::make_shared<T[]>(new_rows * new_cols);
+    std::ranges::fill(std::span(new_data.get(), new_rows * new_cols), T{});
 
     size_type min_rows = std::min(m_rows, new_rows);
     size_type min_cols = std::min(m_cols, new_cols);
 
-    for (size_type i = 0; i < min_rows; i++)
-        std::copy(m_data.get() + i * m_cols, m_data.get() + i * m_cols + min_cols, new_data.get() + i * new_cols);
-
-    if (new_rows * new_cols > min_rows * min_cols)
-        std::fill(new_data.get() + min_rows * new_cols, new_data.get() + new_rows * new_cols, T{});
+    for (auto i : std::views::iota(size_type{0}, min_rows))
+        std::ranges::copy(std::span(m_data.get() + i * m_cols, min_cols), new_data.get() + i * new_cols);
 
     m_data = std::move(new_data);
-    m_rows = new_cols;
+    m_rows = new_rows;
     m_cols = new_cols;
 }
-
 
 // ===============================
 //    Математические операторы
 // ===============================
-
 
 template <MatrixElement T>
 template <MatrixElement U>
@@ -487,7 +383,6 @@ Matrix<T>& Matrix<T>::operator &= (const Matrix<U>& other_matrix)
 {
     return mult_hadamard(other_matrix);
 }
-
 
 template <MatrixElement T, MatrixElement U>
 requires HasCommon<T, U> && SameSizeMatrices<Matrix<T>, Matrix<U>>
@@ -590,42 +485,35 @@ auto Matrix<T>::operator<=>(const Matrix &other) const
 template <MatrixElement T>
 bool Matrix<T>::equal(const Matrix &other_matrix) const
 {
-    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
-        return false;
-
-    return std::equal(begin(), end(), other_matrix.begin());
+    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols) return false;
+    return std::ranges::equal(*this, other_matrix);
 }
 
 // ===============================
-//  Операторы управления потоками
+//  Управление потоками
 // ===============================
-
 
 template <MatrixElement T>
 std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix)
 {
-    if (matrix.rows() == 0 || matrix.cols() == 0)
-        return os << "[]";
+    if (matrix.is_empty()) return os << "[]";
 
     os << "[ ";
-    for (typename Matrix<T>::size_type i = 0; i < matrix.rows(); i++)
-    {
+
+    auto rows_indices = std::views::iota(size_t{0}, matrix.rows());
+    std::ranges::for_each(rows_indices, [&](auto i) {
+        if (i > 0) os << ", ";
         os << "[ ";
-        for (typename Matrix<T>::size_type j = 0; j < matrix.cols(); j++)
-        {
+        auto cols_indices = std::views::iota(size_t{0}, matrix.cols());
+        std::ranges::for_each(cols_indices, [&](auto j) {
+            if (j > 0) os << ", ";
             os << matrix(i, j);
-            if (j < matrix.cols() - 1)
-                os << ", ";
-        }
+        });
         os << " ]";
-        if (i < matrix.rows() - 1)
-            os << ", ";
-    }
-    os << " ]";
+    });
 
-    return os;
+    return os << " ]";
 }
-
 
 template <MatrixElement T>
 std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
@@ -635,7 +523,7 @@ std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
 
     for (typename Matrix<T>::size_type i = 0; i < matrix.rows(); i++)
     {
-        if (!read_matrix_row(is, matrix, i))
+        if (!Matrix<T>::read_matrix_row(is, matrix, i))
             return is;
 
         if (i < matrix.rows() - 1)
@@ -646,7 +534,6 @@ std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
     expect_char(is, ']');
     return is;
 }
-
 
 template <MatrixElement T>
 bool Matrix<T>::expect_char(std::istream& is, char expected)
@@ -660,7 +547,6 @@ bool Matrix<T>::expect_char(std::istream& is, char expected)
 
     return true;
 }
-
 
 template <MatrixElement T>
 bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type row_idx)
@@ -680,7 +566,6 @@ bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type ro
 
     return expect_char(is, ']');
 }
-
 
 // ===============================
 //          Методы матрицы
@@ -758,7 +643,6 @@ Matrix<T>& Matrix<T>::mult(const Matrix<U>& other_matrix)
     );
 
     *this = std::move(result_matrix);
-    
     return *this;
 }
 
@@ -831,17 +715,10 @@ std::shared_ptr<BaseMatrix> Matrix<T>::inverse() const
 template <MatrixElement T>
 void Matrix<T>::swap_rows(size_type row1, size_type row2)
 {
-    if (row1 >= m_rows || row2 >= m_rows)
-        throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
-
+    if (row1 >= m_rows || row2 >= m_rows) throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
     if (row1 == row2) return;
-
-    T* first = m_data.get() + row1 * m_cols;
-    T* second = m_data.get() + row2 * m_cols;
-
-    std::swap_ranges(first, first + m_cols, second);
+    std::ranges::swap_ranges(std::span(m_data.get() + row1 * m_cols, m_cols), std::span(m_data.get() + row2 * m_cols, m_cols));
 }
-
 
 template <MatrixElement T>
 void Matrix<T>::scale_row(size_type row, value_type factor)
@@ -850,29 +727,25 @@ void Matrix<T>::scale_row(size_type row, value_type factor)
         throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
 
     T* row_ptr = m_data.get() + row * m_cols;
-    for (size_type j = 0; j < m_cols; ++j)
-        row_ptr[j] *= factor;
+    std::ranges::transform(std::span(row_ptr, m_cols), row_ptr, [factor](const T& val) { return val * factor; });
 }
-
 
 template <MatrixElement T>
 void Matrix<T>::transform_rows(size_type target, size_type source, value_type factor, Matrix<T>& extra)
 {
     if (target >= m_rows || source >= m_rows)
         throw MatrixIndexException(__FILE__, __LINE__, __FUNCTION__, MATRIX_ROW_INDEX_OUT_OF_RANGE_ERROR);
-    T* target_ptr = m_data.get() + target * m_cols;
-    T* source_ptr = m_data.get() + source * m_cols;
     
-    T* extra_target_ptr = extra.m_data.get() + target * extra.m_cols;
-    T* extra_source_ptr = extra.m_data.get() + source * extra.m_cols;
-
-    for (size_type j = 0; j < m_cols; ++j)
-        target_ptr[j] -= factor * source_ptr[j];
-
-    for (size_type j = 0; j < extra.m_cols; ++j)
-        extra_target_ptr[j] -= factor * extra_source_ptr[j];
+    auto target_span = std::span(m_data.get() + target * m_cols, m_cols);
+    auto source_span = std::span(m_data.get() + source * m_cols, m_cols);
+    std::ranges::transform(target_span, source_span, target_span.begin(),
+        [factor](const T& t, const T& s) { return t - factor * s; });
+    
+    auto extra_target_span = std::span(extra.m_data.get() + target * extra.m_cols, extra.m_cols);
+    auto extra_source_span = std::span(extra.m_data.get() + source * extra.m_cols, extra.m_cols);
+    std::ranges::transform(extra_target_span, extra_source_span, extra_target_span.begin(),
+        [factor](const T& t, const T& s) { return t - factor * s; });
 }
-
 
 template <MatrixElement T>
 Matrix<T>::size_type Matrix<T>::find_pivot(size_type column) const
@@ -886,20 +759,18 @@ Matrix<T>::size_type Matrix<T>::find_pivot(size_type column) const
     return pivot;
 }
 
-
 template <MatrixElement T>
 void Matrix<T>::eliminate_column(size_type pivot_idx, Matrix<T>& extra_matrix)
 {
-    for (size_type k = 0; k < m_rows; ++k)
+    auto k_view = std::views::iota(size_type{0}, m_rows) 
+        | std::views::filter([pivot_idx](auto k) { return k != pivot_idx; });
+    
+    for (auto k : k_view)
     {
-        if (k != pivot_idx)
-        {
-            T multiplier = -(*this)(k, pivot_idx);
-            transform_rows(k, pivot_idx, multiplier, extra_matrix);
-        }
+        T multiplier = -(*this)(k, pivot_idx);
+        transform_rows(k, pivot_idx, multiplier, extra_matrix);
     }
 }
-
 
 template <MatrixElement T>
 std::shared_ptr<BaseMatrix> Matrix<T>::transpose() const
@@ -915,7 +786,6 @@ std::shared_ptr<BaseMatrix> Matrix<T>::transpose() const
 
     return result;
 }
-
 
 template <MatrixElement T>
 Matrix<T> Matrix<T>::pow(size_type exp) const
@@ -944,23 +814,15 @@ Matrix<T> Matrix<T>::pow(size_type exp) const
     return result;
 }
 
-
 template <MatrixElement T>
 std::any Matrix<T>::trace() const
 {
-    if (is_empty())
-        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
+    if (!is_square()) throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_TRACE_ERROR);
+    if (is_empty()) throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_EMPTY_ERROR);
 
-    if (!is_square())
-        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_TRACE_ERROR);
-
-    T sum = 0;
-    for (size_type i = 0; i < m_rows; i++)
-        sum += (*this)(i, i);
-
-    return sum;
+    auto diag = std::views::iota(size_type{0}, m_rows) | std::views::transform([this](auto i) { return (*this)(i, i); });
+    return std::ranges::fold_left(diag, T{0}, std::plus<T>());
 }
-
 
 template <MatrixElement T>
 std::any Matrix<T>::determinant() const
@@ -1001,13 +863,11 @@ std::any Matrix<T>::determinant() const
     return det;
 }
 
-
 template <MatrixElement T>
 bool Matrix<T>::is_square() const noexcept
 {
     return (m_rows == m_cols);
 }
-
 
 template <MatrixElement T>
 bool Matrix<T>::is_symmetric() const noexcept
@@ -1023,7 +883,6 @@ bool Matrix<T>::is_symmetric() const noexcept
     return true;
 }
 
-
 template <MatrixElement T>
 bool Matrix<T>::is_diagonal() const noexcept
 {
@@ -1037,7 +896,6 @@ bool Matrix<T>::is_diagonal() const noexcept
 
     return true;
 }
-
 
 template <MatrixElement T>
 bool Matrix<T>::is_identity() const noexcept
@@ -1058,7 +916,6 @@ bool Matrix<T>::is_identity() const noexcept
 
     return true;
 }
-
 
 template <MatrixElement T>
 typename Matrix<T>::size_type Matrix<T>::rank() const
@@ -1095,18 +952,14 @@ typename Matrix<T>::size_type Matrix<T>::rank() const
     return r;
 }
 
-
 template <MatrixElement T>
 Matrix<T> Matrix<T>::identity(Matrix<T>::size_type size) noexcept
 {
-    Matrix<T> res(size, size, T{});
-
-    for (Matrix<T>::size_type i = 0; i < size; i++)
-        res(i, i) = 1;
-
+    Matrix<T> res(size, size, T{0});
+    auto indices = std::views::iota(size_type{0}, size);
+    std::ranges::for_each(indices, [&res](auto i) { res(i, i) = 1; });
     return res;
 }
-
 
 template <MatrixElement T>
 Matrix<T> Matrix<T>::random(size_type rows, size_type cols, value_type min_val, value_type max_val) noexcept
@@ -1115,19 +968,12 @@ Matrix<T> Matrix<T>::random(size_type rows, size_type cols, value_type min_val, 
     
     static std::random_device rd;
     static std::mt19937 gen(rd());
+    
+    auto generate_val = [&]() {
+        if constexpr (std::is_floating_point_v<T>) return std::uniform_real_distribution<T>(min_val, max_val)(gen);
+        else return std::uniform_int_distribution<T>(min_val, max_val)(gen);
+    };
 
-    if constexpr (std::is_floating_point_v<T>)
-    {
-        std::uniform_real_distribution<T> dist(min_val, max_val);
-        for (Matrix<T>::size_type i = 0; i < rows * cols; ++i)
-            res.m_data[i] = dist(gen);
-    }
-    else
-    {
-        std::uniform_int_distribution<T> dist(min_val, max_val);
-        for (Matrix<T>::size_type i = 0; i < rows * cols; ++i)
-            res.m_data[i] = dist(gen);
-    }
-
+    std::ranges::generate(std::span(res.m_data.get(), rows * cols), generate_val);
     return res;
 }

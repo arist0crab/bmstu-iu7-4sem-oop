@@ -7,6 +7,9 @@
 #include <type_traits>
 #include <random>
 #include <span>
+#include <ranges>
+#include <algorithm>
+#include <numeric>
 
 #include "exception.hpp"
 #include "concepts.hpp"
@@ -89,6 +92,9 @@ class Matrix : public BaseMatrix
 
         template <ConvertibleInputIterator<T> It, Sentinel<It> Sent>
         Matrix(size_type rows, size_type cols, It begin, Sent end);
+
+        template <std::ranges::input_range R>
+        Matrix(size_type rows, size_type cols, R&& range);
 
         template <CommonContainer<T> Container>
         Matrix(size_type rows, size_type cols, const Container& container);
