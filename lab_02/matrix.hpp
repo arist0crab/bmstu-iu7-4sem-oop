@@ -84,7 +84,7 @@ class Matrix : public BaseMatrix<T>
         template <ConvertibleInputIterator<T> It, Sentinel<It> Sent>
         Matrix(size_type rows, size_type cols, It begin, Sent end);
 
-        template <typename Container>
+        template <CommonContainer<T> Container>
         Matrix(size_type rows, size_type cols, const Container& container);
 
         template <ConvertibleTo<T> U>
@@ -142,38 +142,52 @@ class Matrix : public BaseMatrix<T>
         //    Математические операторы
         // ===============================
 
-        Matrix &operator -= (const Matrix &other_matrix);
-        Matrix &operator += (const Matrix &other_matrix);
-        Matrix &operator *= (const Matrix &other_matrix);
-        Matrix &operator *= (const_reference number); 
-        Matrix &operator &= (const Matrix &other_matrix);
+        template <MatrixElement U>
+        requires HasCommon<T, U>
+        Matrix& operator += (const Matrix<U>& other_matrix);
+
+        template <MatrixElement U>
+        requires HasCommon<T, U>
+        Matrix& operator -= (const Matrix<U>& other_matrix);
+
+        template <MatrixElement U>
+        requires HasCommon<T, U>
+        Matrix& operator *= (const Matrix<U>& other_matrix);
+
+        Matrix& operator *= (const_reference number);
+
+        template <MatrixElement U>
+        requires HasCommon<T, U>
+        Matrix& operator &= (const Matrix<U>& other_matrix);
 
         // ===============================
         //       Операторы сравнения
         // ===============================
 
-        bool operator == (const Matrix &other_matrix) const;
-        bool operator != (const Matrix &other_matrix) const;
-        bool operator < (const Matrix &other_matrix) const;
-        bool operator <= (const Matrix &other_matrix) const;
-        bool operator > (const Matrix &other_matrix) const;
-        bool operator >= (const Matrix &other_matrix) const;
+        auto operator<=>(const Matrix &other) const;
         bool equal(const Matrix &other_matrix) const;
-        bool not_equal(const Matrix& other_matrix) const;
-        bool less(const Matrix& other_matrix) const;
-        bool less_equal(const Matrix& other_matrix) const;
-        bool greater(const Matrix& other_matrix) const;
-        bool greater_equal(const Matrix& other_matrix) const;
 
         // ===============================
         //          Методы матрицы
         // ===============================
 
-        Matrix& add(const Matrix &other_matrix);
-        Matrix& sub(const Matrix &other_matrix);
-        Matrix& mult(const Matrix &other_matrix);
+        template <MatrixElement U>
+        requires HasCommon<T, U>
+        Matrix& add(const Matrix<U>& other_matrix);
+
+        template <MatrixElement U>
+        requires HasCommon<T, U>
+        Matrix& sub(const Matrix<U>& other_matrix);
+
+        template <MatrixElement U>
+        requires HasCommon<T, U>
+        Matrix& mult(const Matrix<U>& other_matrix);
+
         Matrix& mult_scalar(const_reference number);
-        Matrix& mult_hadamard(const Matrix &other_matrix);
+
+        template <MatrixElement U>
+        requires HasCommon<T, U>
+        Matrix& mult_hadamard(const Matrix<U>& other_matrix);
 
         Matrix inverse() const override;
         Matrix transpose() const override;
@@ -219,24 +233,25 @@ std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix);
 template <MatrixElement T>
 std::istream& operator >> (std::istream& is, Matrix<T>& matrix);
 
-template <MatrixElement T>
-requires SameSizeMatrices<Matrix<T>, Matrix<T>>
-Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs);
+template <MatrixElement T, MatrixElement U>
+requires HasCommon<T, U> && SameSizeMatrices<Matrix<T>, Matrix<U>>
+auto operator + (const Matrix<T>& lhs, const Matrix<U>& rhs);
 
-template <MatrixElement T>
-requires SameSizeMatrices<Matrix<T>, Matrix<T>>
-Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs);
+template <MatrixElement T, MatrixElement U>
+requires HasCommon<T, U> && SameSizeMatrices<Matrix<T>, Matrix<U>>
+auto operator - (const Matrix<T>& lhs, const Matrix<U>& rhs);
 
-template <ArithmeticScalar T>
-Matrix<T> operator * (const Matrix<T>& lhs, const T& number);
+template <MatrixElement T, ArithmeticScalar U>
+requires HasCommon<T, U>
+auto operator * (const Matrix<T>& lhs, const U& number);
 
-template <ArithmeticScalar T>
-Matrix<T> operator * (const T& number, Matrix<T> rhs);
+template <ArithmeticScalar T, MatrixElement U>
+requires HasCommon<T, U>
+auto operator * (const T& number, const Matrix<U>& rhs);
 
-template <MatrixElement T>
-requires MultipliableMatrices<Matrix<T>, Matrix<T>>
-Matrix<T> operator * (const Matrix<T>& lhs, const Matrix<T>& rhs);
-
+template <MatrixElement T, MatrixElement U>
+requires HasCommon<T, U> && MultipliableMatrices<Matrix<T>, Matrix<U>>
+auto operator * (const Matrix<T>& lhs, const Matrix<U>& rhs);
 
 #include "matrix.cpp"
 

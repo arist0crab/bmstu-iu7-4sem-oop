@@ -104,7 +104,7 @@ Matrix<T>::Matrix(size_type rows, size_type cols, It begin, Sent end) : m_rows(r
 
 
 template <MatrixElement T>
-template <typename Container>
+template <CommonContainer<T> Container>
 Matrix<T>::Matrix(size_type rows, size_type cols, const Container& container) : m_rows(rows), m_cols(cols)
 {
     m_data = std::make_shared<T[]>(m_rows * m_cols);
@@ -412,131 +412,117 @@ void Matrix<T>::resize(size_type new_rows, size_type new_cols)
 
 
 template <MatrixElement T>
-Matrix<T>& Matrix<T>::operator += (const Matrix& other_matrix)
+template <MatrixElement U>
+requires HasCommon<T, U>
+Matrix<T>& Matrix<T>::operator += (const Matrix<U>& other_matrix)
 {
-    return this->add(other_matrix);
+    return add(other_matrix);
 }
-
 
 template <MatrixElement T>
-Matrix<T>& Matrix<T>::operator -= (const Matrix &other_matrix)
+template <MatrixElement U>
+requires HasCommon<T, U>
+Matrix<T>& Matrix<T>::operator -= (const Matrix<U>& other_matrix)
 {
-    return this->sub(other_matrix);
+    return sub(other_matrix);
 }
-
 
 template <MatrixElement T>
-Matrix<T>& Matrix<T>::operator *= (const Matrix &other_matrix)
+template <MatrixElement U>
+requires HasCommon<T, U>
+Matrix<T>& Matrix<T>::operator *= (const Matrix<U>& other_matrix)
 {
-    return this->mult(other_matrix);
+    return mult(other_matrix);
 }
-
 
 template <MatrixElement T>
 Matrix<T>& Matrix<T>::operator *= (const_reference number)
 {
-    return this->mult_scalar(number);
+    return mult_scalar(number);
 }
-
 
 template <MatrixElement T>
-Matrix<T>& Matrix<T>::operator &= (const Matrix &other_matrix)
+template <MatrixElement U>
+requires HasCommon<T, U>
+Matrix<T>& Matrix<T>::operator &= (const Matrix<U>& other_matrix)
 {
-    return this->mult_hadamard(other_matrix);
+    return mult_hadamard(other_matrix);
 }
 
 
-template <MatrixElement T>
-requires SameSizeMatrices<Matrix<T>, Matrix<T>>
-Matrix<T> operator + (Matrix<T> lhs, const Matrix<T>& rhs)
+template <MatrixElement T, MatrixElement U>
+requires HasCommon<T, U> && SameSizeMatrices<Matrix<T>, Matrix<U>>
+auto operator + (const Matrix<T>& lhs, const Matrix<U>& rhs)
 {
-    lhs += rhs;
-    return lhs;
+    using CommonType = std::common_type_t<T, U>;
+    Matrix<CommonType> result = lhs;
+    result += rhs;
+    return result;
 }
 
-
-template <MatrixElement T>
-requires SameSizeMatrices<Matrix<T>, Matrix<T>>
-Matrix<T> operator - (Matrix<T> lhs, const Matrix<T>& rhs)
+template <MatrixElement T, MatrixElement U>
+requires HasCommon<T, U> && SameSizeMatrices<Matrix<T>, Matrix<U>>
+auto operator - (const Matrix<T>& lhs, const Matrix<U>& rhs)
 {
-    lhs -= rhs;
-    return lhs;
+    using CommonType = std::common_type_t<T, U>;
+    Matrix<CommonType> result = lhs;
+    result -= rhs;
+    return result;
 }
 
-
-template <ArithmeticScalar T>
-Matrix<T> operator * (const Matrix<T>& lhs, const T& number)
+template <MatrixElement T, ArithmeticScalar U>
+requires HasCommon<T, U>
+auto operator * (const Matrix<T>& lhs, const U& number)
 {
-    Matrix<T> result(lhs); 
+    using CommonType = std::common_type_t<T, U>;
+    Matrix<CommonType> result = lhs;
     result *= number;
     return result;
 }
 
-
-template <ArithmeticScalar T>
-Matrix<T> operator * (const T& number, Matrix<T> rhs)
+template <ArithmeticScalar T, MatrixElement U>
+requires HasCommon<T, U>
+auto operator * (const T& number, const Matrix<U>& rhs)
 {
-    rhs *= number;
-    return rhs;
-}
-
-
-template <MatrixElement T>
-requires MultipliableMatrices<Matrix<T>, Matrix<T>>
-Matrix<T> operator * (const Matrix<T>& lhs, const Matrix<T>& rhs)
-{
-    Matrix<T> result(lhs); 
-    result *= rhs;
+    using CommonType = std::common_type_t<T, U>;
+    Matrix<CommonType> result = rhs;
+    result *= number;
     return result;
 }
 
+template <MatrixElement T, MatrixElement U>
+requires HasCommon<T, U> && MultipliableMatrices<Matrix<T>, Matrix<U>>
+auto operator * (const Matrix<T>& lhs, const Matrix<U>& rhs)
+{
+    using CommonType = std::common_type_t<T, U>;
+    Matrix<CommonType> result = lhs;
+    result *= rhs;
+    return result;
+}
 
 // ===============================
 //       Операторы сравнения
 // ===============================
 
-
 template <MatrixElement T>
-bool Matrix<T>::operator == (const Matrix &other_matrix) const
+auto Matrix<T>::operator<=>(const Matrix &other) const
 {
-    return equal(other_matrix);
+    if (auto cmp = m_rows <=> other.m_rows; cmp != 0)
+        return cmp;
+    
+    if (auto cmp = m_cols <=> other.m_cols; cmp != 0)
+        return cmp;
+    
+    auto other_it = other.begin();
+    for (const auto &val : *this)
+    {
+        if (auto cmp = val <=> *other_it; cmp != 0)
+            return cmp;
+        ++other_it;
+    }
+    
+    return std::strong_ordering::equal;
 }
-
-
-template <MatrixElement T>
-bool Matrix<T>::operator != (const Matrix &other_matrix) const
-{
-    return not_equal(other_matrix);
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::operator < (const Matrix &other_matrix) const
-{
-    return less(other_matrix);
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::operator <= (const Matrix &other_matrix) const
-{
-    return less_equal(other_matrix);
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::operator > (const Matrix &other_matrix) const
-{
-    return greater(other_matrix);
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::operator >= (const Matrix &other_matrix) const
-{
-    return greater_equal(other_matrix);
-}
-
 
 template <MatrixElement T>
 bool Matrix<T>::equal(const Matrix &other_matrix) const
@@ -546,45 +532,6 @@ bool Matrix<T>::equal(const Matrix &other_matrix) const
 
     return std::equal(begin(), end(), other_matrix.begin());
 }
-
-
-template <MatrixElement T>
-bool Matrix<T>::not_equal(const Matrix& other_matrix) const
-{
-    return !equal(other_matrix);
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::less(const Matrix& other_matrix) const
-{
-    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
-        return size() < other_matrix.size();
-
-    return std::lexicographical_compare(begin(), end(), other_matrix.begin(), other_matrix.end());
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::less_equal(const Matrix& other_matrix) const
-{
-    return less(other_matrix) || equal(other_matrix);
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::greater(const Matrix& other_matrix) const
-{
-    return other_matrix.less(*this);
-}
-
-
-template <MatrixElement T>
-bool Matrix<T>::greater_equal(const Matrix& other_matrix) const
-{
-    return !less(other_matrix);
-}
-
 
 // ===============================
 //  Операторы управления потоками
@@ -676,81 +623,115 @@ bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type ro
 //          Методы матрицы
 // ===============================
 
-
 template <MatrixElement T>
-Matrix<T>& Matrix<T>::add(const Matrix<T> &other_matrix)
+template <MatrixElement U>
+requires HasCommon<T, U>
+Matrix<T>& Matrix<T>::add(const Matrix<U>& other_matrix)
 {
-    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+    if (m_rows != other_matrix.rows() || m_cols != other_matrix.cols())
         throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SAME_DIMENSIONS_ERROR);
 
-    for (size_type i = 0; i < m_rows * m_cols; i++)
-        m_data[i] += other_matrix.m_data[i];
+    std::ranges::transform(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        m_data.get(),
+        m_data.get(),
+        [&](size_type i) {
+            return m_data[i] + static_cast<T>(other_matrix(i / m_cols, i % m_cols));
+        }
+    );
 
     return *this;
 }
 
-
 template <MatrixElement T>
-Matrix<T>& Matrix<T>::sub(const Matrix<T> &other_matrix)
+template <MatrixElement U>
+requires HasCommon<T, U>
+Matrix<T>& Matrix<T>::sub(const Matrix<U>& other_matrix)
 {
-    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
+    if (m_rows != other_matrix.rows() || m_cols != other_matrix.cols())
         throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SAME_DIMENSIONS_ERROR);
 
-    for (size_type i = 0; i < m_rows * m_cols; i++)
-        m_data[i] -= other_matrix.m_data[i];
+    std::ranges::transform(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        m_data.get(),
+        m_data.get(),
+        [&](size_type i) {
+            return m_data[i] - static_cast<T>(other_matrix(i / m_cols, i % m_cols));
+        }
+    );
 
     return *this;
 }
 
-
 template <MatrixElement T>
-Matrix<T>& Matrix<T>::mult(const Matrix<T> &other_matrix)
+template <MatrixElement U>
+requires HasCommon<T, U>
+Matrix<T>& Matrix<T>::mult(const Matrix<U>& other_matrix)
 {
-    if (m_cols != other_matrix.m_rows)
+    if (m_cols != other_matrix.rows())
         throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_MULTIPLICATION_ERROR);
 
-    Matrix<T> result_matrix(m_rows, other_matrix.m_cols, T{});
+    Matrix<T> result_matrix(m_rows, other_matrix.cols(), T{});
 
-    for (size_type i = 0; i < m_rows; i++)
-    {
-        for (size_type j = 0; j < other_matrix.m_cols; j++)
-        {
-            T sum = 0;
-            for (size_type k = 0; k < m_cols; k++)
-                sum += (*this)(i, k) * other_matrix(k, j);
+    auto flat_indices = std::views::iota(size_type{0}, m_rows * other_matrix.cols());
+    auto k_indices = std::views::iota(size_type{0}, m_cols);
 
-            result_matrix(i, j) = sum;
+    std::ranges::transform(
+        flat_indices,
+        result_matrix.m_data.get(),
+        [&](size_type idx) {
+            size_type i = idx / other_matrix.cols();
+            size_type j = idx % other_matrix.cols();
+            return std::transform_reduce(
+                k_indices.begin(),
+                k_indices.end(),
+                T{},
+                std::plus{},
+                [&](size_type k) {
+                    return (*this)(i, k) * static_cast<T>(other_matrix(k, j));
+                }
+            );
         }
-    }
+    );
 
     *this = std::move(result_matrix);
     
     return *this;
 }
 
-
 template <MatrixElement T>
 Matrix<T>& Matrix<T>::mult_scalar(const_reference number)
 {
-    for (size_type i = 0; i < m_rows * m_cols; i++)
-        m_data[i] *= number;
+    std::ranges::transform(
+        std::span<T>(m_data.get(), m_rows * m_cols),
+        m_data.get(),
+        [&](const_reference value) {
+            return value * number;
+        }
+    );
 
     return *this;
 }
-
 
 template <MatrixElement T>
-Matrix<T>& Matrix<T>::mult_hadamard(const Matrix<T> &other_matrix)
+template <MatrixElement U>
+requires HasCommon<T, U>
+Matrix<T>& Matrix<T>::mult_hadamard(const Matrix<U>& other_matrix)
 {
-    if (m_rows != other_matrix.m_rows || m_cols != other_matrix.m_cols)
-        throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SAME_DIMENSIONS_ERROR);
+    if (m_rows != other_matrix.rows() || m_cols != other_matrix.cols())
+        throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SAME_DIMENSIONS_ERROR);
 
-    for (size_type i = 0; i < m_rows * m_cols; ++i)
-        m_data[i] *= other_matrix.m_data[i];
-    
+    std::ranges::transform(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        m_data.get(),
+        m_data.get(),
+        [&](size_type i) {
+            return m_data[i] * static_cast<T>(other_matrix(i / m_cols, i % m_cols));
+        }
+    );
+
     return *this;
 }
-
 
 template <MatrixElement T>
 Matrix<T> Matrix<T>::inverse() const
