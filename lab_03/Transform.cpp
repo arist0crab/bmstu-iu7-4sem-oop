@@ -13,6 +13,15 @@ Transform Transform::translation(double dx, double dy, double dz)
     return t;
 }
 
+Transform Transform::translation(const Vertex &point)
+{
+    const double dx = point.X();
+    const double dy = point.Y();
+    const double dz = point.Z();
+
+    return Transform::translation(dx, dy, dz);
+}
+
 Transform Transform::rotate(double angleX, double angleY, double angleZ)
 {
     return rotateZ(angleZ) * rotateY(angleY) * rotateX(angleX);
@@ -80,6 +89,18 @@ Transform Transform::scale(double uniform)
     return scale(uniform, uniform, uniform);
 }
 
+Transform Transform::identity()
+{
+    Transform t;
+    t.m_data = {{
+        {1, 0, 0, 0},
+        {0, 1, 0, 0},
+        {0, 0, 1, 0},
+        {0, 0, 0, 1}
+    }};
+    return t;
+}
+
 Transform Transform::zero()
 {
     Transform t;
@@ -88,6 +109,47 @@ Transform Transform::zero()
         row.fill(0);
 
     return t;
+}
+
+void Transform::setTranslation(double dx, double dy, double dz) noexcept
+{
+    m_data[0][3] = dx;
+    m_data[1][3] = dy;
+    m_data[2][3] = dz;
+}
+
+void Transform::setRotation(double angleX, double angleY, double angleZ) noexcept
+{
+    Transform rot = rotate(angleX, angleY, angleZ);
+    
+    double dx = m_data[0][3];
+    double dy = m_data[1][3];
+    double dz = m_data[2][3];
+    
+    for (size_t i = 0; i < 3; i++)
+        for (size_t j = 0; j < 3; j++)
+            m_data[i][j] = rot(i, j);
+    
+    m_data[0][3] = dx;
+    m_data[1][3] = dy;
+    m_data[2][3] = dz;
+}
+
+void Transform::setScale(double sx, double sy, double sz) noexcept
+{
+    Transform scl = scale(sx, sy, sz);
+    
+    double dx = m_data[0][3];
+    double dy = m_data[1][3];
+    double dz = m_data[2][3];
+    
+    for (size_t i = 0; i < 3; i++)
+        for (size_t j = 0; j < 3; j++)
+            m_data[i][j] = scl(i, j);
+    
+    m_data[0][3] = dx;
+    m_data[1][3] = dy;
+    m_data[2][3] = dz;
 }
 
 double Transform::operator()(size_t row, size_t col) const
