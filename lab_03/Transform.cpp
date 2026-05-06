@@ -90,6 +90,16 @@ Transform Transform::zero()
     return t;
 }
 
+double Transform::operator()(size_t row, size_t col) const
+{
+    return m_data[row][col];
+}
+
+double& Transform::operator()(size_t row, size_t col)
+{
+    return m_data[row][col];
+}
+
 Transform Transform::operator*(const Transform &other) const
 {
     Transform t = Transform::zero();

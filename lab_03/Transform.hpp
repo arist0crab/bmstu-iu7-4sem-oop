@@ -17,6 +17,9 @@ class Transform
         static Transform scale(double uniform);
         static Transform zero();
 
+        double operator()(size_t row, size_t col) const;
+        double& operator()(size_t row, size_t col);
+        
         Transform operator*(const Transform &other) const;
         Transform operator*=(const Transform &other);
 
