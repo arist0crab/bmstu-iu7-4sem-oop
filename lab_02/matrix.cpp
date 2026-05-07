@@ -125,12 +125,15 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<value_type>> init_
         throw MatrixDimensionException(__FILE__, __LINE__, __FUNCTION__, MATRIX_INITIALIZER_LIST_CONSTRUCTOR_ERROR);
     }
 
-    auto row_indices = std::views::iota(size_type{0}, m_rows);
-    for (const auto& row : init_list)
-    {
-        size_type row_idx = &row - init_list.begin();
-        std::ranges::copy(row, m_data.get() + row_idx * m_cols);
-    }
+    std::ranges::transform(
+        std::views::enumerate(init_list),
+        std::ranges::begin(std::views::iota(size_type{0}, m_rows)),
+        [this](const auto& item) {
+            const auto& [row_idx, row] = item;
+            std::ranges::copy(row, m_data.get() + row_idx * m_cols);
+            return row_idx;
+        }
+    );
 }
 
 template <MatrixElement T>
@@ -331,11 +334,21 @@ void Matrix<T>::resize(size_type new_rows, size_type new_cols)
     auto new_data = std::make_shared<T[]>(new_rows * new_cols);
     std::ranges::fill(std::span(new_data.get(), new_rows * new_cols), T{});
 
-    size_type min_rows = std::min(m_rows, new_rows);
     size_type min_cols = std::min(m_cols, new_cols);
 
-    for (auto i : std::views::iota(size_type{0}, min_rows))
-        std::ranges::copy(std::span(m_data.get() + i * m_cols, min_cols), new_data.get() + i * new_cols);
+    auto source_rows = std::views::iota(size_type{0}, std::min(m_rows, new_rows));
+    
+    std::ranges::transform(
+        source_rows,
+        std::ranges::begin(source_rows),
+        [&](size_type i) {
+            std::ranges::copy(
+                std::span(m_data.get() + i * m_cols, min_cols),
+                new_data.get() + i * new_cols
+            );
+            return i;
+        }
+    );
 
     m_data = std::move(new_data);
     m_rows = new_rows;
@@ -471,15 +484,19 @@ auto Matrix<T>::operator<=>(const Matrix &other) const
     if (auto cmp = m_cols <=> other.m_cols; cmp != 0)
         return cmp;
     
-    auto other_it = other.begin();
-    for (const auto &val : *this)
-    {
-        if (auto cmp = val <=> *other_it; cmp != 0)
-            return cmp;
-        ++other_it;
-    }
+    auto mismatch = std::ranges::mismatch(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        [&](size_type idx1, size_type idx2) {
+            return (*this)(idx1 / m_cols, idx1 % m_cols) == other(idx2 / m_cols, idx2 % m_cols);
+        }
+    );
     
-    return std::strong_ordering::equal;
+    if (mismatch.in1 == std::ranges::end(std::views::iota(size_type{0}, m_rows * m_cols)))
+        return std::strong_ordering::equal;
+    
+    size_type idx = *mismatch.in1;
+    return (*this)(idx / m_cols, idx % m_cols) <=> other(idx / m_cols, idx % m_cols);
 }
 
 template <MatrixElement T>
@@ -518,20 +535,26 @@ std::ostream& operator << (std::ostream& os, const Matrix<T>& matrix)
 template <MatrixElement T>
 std::istream& operator >> (std::istream& is, Matrix<T>& matrix)
 {
-    if (!expect_char(is, '['))
+    if (!Matrix<T>::expect_char(is, '['))
         return is;
 
-    for (typename Matrix<T>::size_type i = 0; i < matrix.rows(); i++)
-    {
+    auto row_indices = std::views::iota(typename Matrix<T>::size_type{0}, matrix.rows());
+    
+    auto result = std::ranges::all_of(row_indices, [&](typename Matrix<T>::size_type i) {
         if (!Matrix<T>::read_matrix_row(is, matrix, i))
-            return is;
+            return false;
 
         if (i < matrix.rows() - 1)
-            if (!expect_char(is, ','))
-                return is;
-    }
+            if (!Matrix<T>::expect_char(is, ','))
+                return false;
+        
+        return true;
+    });
 
-    expect_char(is, ']');
+    if (!result)
+        return is;
+
+    Matrix<T>::expect_char(is, ']');
     return is;
 }
 
@@ -554,15 +577,21 @@ bool Matrix<T>::read_matrix_row(std::istream& is, reference matrix, size_type ro
     if (!expect_char(is, '['))
         return false;
 
-    for (Matrix<T>::size_type j = 0; j < matrix.cols(); j++)
-    {
+    auto col_indices = std::views::iota(size_type{0}, matrix.cols());
+    
+    auto result = std::ranges::all_of(col_indices, [&](size_type j) {
         if (!(is >> matrix(row_idx, j)))
             return false;
 
         if (j < matrix.cols() - 1)
             if (!expect_char(is, ','))
                 return false;
-    }
+        
+        return true;
+    });
+
+    if (!result)
+        return false;
 
     return expect_char(is, ']');
 }
@@ -693,8 +722,9 @@ std::shared_ptr<BaseMatrix> Matrix<T>::inverse() const
     Matrix<T> aug(*this);    
     Matrix<T> inv = identity(n);   
 
-    for (size_type i = 0; i < n; ++i)
-    {
+    auto row_indices = std::views::iota(size_type{0}, n);
+    
+    std::ranges::all_of(row_indices, [&](size_type i) {
         size_type pivot = aug.find_pivot(i);
         if (std::abs(aug(pivot, i)) < 1e-9)
             throw MatrixException(__FILE__, __LINE__, __FUNCTION__, MATRIX_SINGULAR_ERROR);
@@ -707,7 +737,9 @@ std::shared_ptr<BaseMatrix> Matrix<T>::inverse() const
         inv.scale_row(i, factor);
 
         aug.eliminate_column(i, inv);
-    }
+        
+        return true;
+    });
 
     return std::make_shared<Matrix<T>>(std::move(inv));
 }
@@ -750,13 +782,20 @@ void Matrix<T>::transform_rows(size_type target, size_type source, value_type fa
 template <MatrixElement T>
 Matrix<T>::size_type Matrix<T>::find_pivot(size_type column) const
 {
-    size_type pivot = column;
-
-    for (size_type j = column + 1; j < m_rows; ++j)
-        if (std::abs((*this)(j, column)) > std::abs((*this)(pivot, column)))
-            pivot = j;
-
-    return pivot;
+    auto candidates = std::views::iota(column + 1, m_rows);
+    
+    auto best = std::ranges::max_element(
+        candidates,
+        [&](size_type a, size_type b) {
+            return std::abs((*this)(a, column)) < std::abs((*this)(b, column));
+        }
+    );
+    
+    if (best != std::ranges::end(candidates) && 
+        std::abs((*this)(*best, column)) > std::abs((*this)(column, column)))
+        return *best;
+    
+    return column;
 }
 
 template <MatrixElement T>
@@ -765,11 +804,11 @@ void Matrix<T>::eliminate_column(size_type pivot_idx, Matrix<T>& extra_matrix)
     auto k_view = std::views::iota(size_type{0}, m_rows) 
         | std::views::filter([pivot_idx](auto k) { return k != pivot_idx; });
     
-    for (auto k : k_view)
-    {
+    std::ranges::all_of(k_view, [&](size_type k) {
         T multiplier = -(*this)(k, pivot_idx);
         transform_rows(k, pivot_idx, multiplier, extra_matrix);
-    }
+        return true;
+    });
 }
 
 template <MatrixElement T>
@@ -780,9 +819,15 @@ std::shared_ptr<BaseMatrix> Matrix<T>::transpose() const
 
     auto result = std::make_shared<Matrix<T>>(m_cols, m_rows);
 
-    for (size_type i = 0; i < m_rows; i++)
-        for (size_type j = 0; j < m_cols; j++)
+    std::ranges::all_of(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        [&](size_type idx) {
+            size_type i = idx / m_cols;
+            size_type j = idx % m_cols;
             (*result)(j, i) = (*this)(i, j);
+            return true;
+        }
+    );
 
     return result;
 }
@@ -802,14 +847,17 @@ Matrix<T> Matrix<T>::pow(size_type exp) const
     Matrix<T> result = identity(m_rows);
     Matrix<T> base = *this;
 
-    while (exp > 0)
-    {
-        if (exp % 2 == 1)
-            result = result * base;
-            
-        base = base * base;
-        exp /= 2;
-    }
+    std::ranges::find_if(
+        std::views::iota(0),
+        [&](int) {
+            bool should_mult = (exp % 2 == 1);
+            if (should_mult)
+                result = result * base;
+            base = base * base;
+            exp /= 2;
+            return exp == 0;
+        }
+    );
 
     return result;
 }
@@ -841,24 +889,33 @@ std::any Matrix<T>::determinant() const
 
     value_type det = value_type{};
     
-    for (size_type col = 0; col < m_cols; ++col)
-    {
-        Matrix<T> minor(m_rows - 1, m_cols - 1);
+    std::ranges::all_of(
+        std::views::iota(size_type{0}, m_cols),
+        [&](size_type col) {
+            Matrix<T> minor(m_rows - 1, m_cols - 1);
 
-        for (size_type i = 1; i < m_rows; ++i)
-        {
-            size_type minor_col = 0;
-            for (size_type j = 0; j < m_cols; ++j)
-            {
-                if (j == col) continue;
-                minor(i - 1, minor_col) = (*this)(i, j);
-                ++minor_col;
-            }
+            std::ranges::all_of(
+                std::views::iota(size_type{1}, m_rows),
+                [&](size_type i) {
+                    size_type minor_col = 0;
+                    std::ranges::all_of(
+                        std::views::iota(size_type{0}, m_cols)
+                            | std::views::filter([col](size_type j) { return j != col; }),
+                        [&](size_type j) {
+                            minor(i - 1, minor_col) = (*this)(i, j);
+                            ++minor_col;
+                            return true;
+                        }
+                    );
+                    return true;
+                }
+            );
+
+            value_type sign = (col % 2 == 0) ? value_type(1) : value_type(-1);
+            det += sign * (*this)(0, col) * std::any_cast<T>(minor.determinant());
+            return true;
         }
-
-        value_type sign = (col % 2 == 0) ? value_type(1) : value_type(-1);
-        det += sign * (*this)(0, col) * std::any_cast<T>(minor.determinant());
-    }
+    );
 
     return det;
 }
@@ -875,12 +932,14 @@ bool Matrix<T>::is_symmetric() const noexcept
     if (!is_square() || is_empty())
         return false;
 
-    for (Matrix<T>::size_type i = 0; i < m_rows; i++)
-        for (Matrix<T>::size_type j = i + 1; j < m_cols; j++)
-            if ((*this)(i, j) != (*this)(j, i))
-                return false;
-
-    return true;
+    auto row_indices = std::views::iota(size_type{0}, m_rows);
+    
+    return std::ranges::all_of(row_indices, [&](size_type i) {
+        auto col_indices = std::views::iota(i + 1, m_cols);
+        return std::ranges::all_of(col_indices, [&](size_type j) {
+            return (*this)(i, j) == (*this)(j, i);
+        });
+    });
 }
 
 template <MatrixElement T>
@@ -889,12 +948,14 @@ bool Matrix<T>::is_diagonal() const noexcept
     if (!is_square() || is_empty())
         return false;
 
-    for (Matrix<T>::size_type i = 0; i < m_rows; i++)
-        for (Matrix<T>::size_type j = 0; j < m_cols; j++)
-            if (i != j && (*this)(i, j) != 0)
-                return false;
-
-    return true;
+    return std::ranges::all_of(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        [this](size_type idx) {
+            size_type i = idx / m_cols;
+            size_type j = idx % m_cols;
+            return i == j || (*this)(i, j) == 0;
+        }
+    );
 }
 
 template <MatrixElement T>
@@ -903,18 +964,14 @@ bool Matrix<T>::is_identity() const noexcept
     if (!is_square() || is_empty())
         return false;
 
-    for (Matrix<T>::size_type i = 0; i < m_rows; i++)
-    {
-        for (Matrix<T>::size_type j = 0; j < m_cols; j++)
-        {
-            if (i != j && (*this)(i, j) != 0)
-                return false;
-            if (i == j && (*this)(i, j) != 1)
-                return false;
+    return std::ranges::all_of(
+        std::views::iota(size_type{0}, m_rows * m_cols),
+        [this](size_type idx) {
+            size_type i = idx / m_cols;
+            size_type j = idx % m_cols;
+            return (i == j && (*this)(i, j) == 1) || (i != j && (*this)(i, j) == 0);
         }
-    }
-
-    return true;
+    );
 }
 
 template <MatrixElement T>
@@ -924,30 +981,45 @@ typename Matrix<T>::size_type Matrix<T>::rank() const
 
     Matrix<T> temp(*this);
     size_type r = 0;
-    size_type rows = m_rows;
-    size_type cols = m_cols;
 
-    for (size_type col = 0; col < cols && r < rows; ++col)
-    {
-        size_type pivot = r;
-        for (size_type i = r + 1; i < rows; ++i)
-            if (std::abs(temp(i, col)) > std::abs(temp(pivot, col)))
-                pivot = i;
+    std::ranges::all_of(
+        std::views::iota(size_type{0}, m_cols),
+        [&](size_type col) {
+            if (r >= m_rows) return false;
 
-        if (std::abs(temp(pivot, col)) < 1e-9)
-            continue;
+            auto pivot = std::ranges::max_element(
+                std::views::iota(r, m_rows),
+                [&](size_type a, size_type b) {
+                    return std::abs(temp(a, col)) < std::abs(temp(b, col));
+                }
+            );
+            
+            size_type pivot_idx = *pivot;
 
-        temp.swap_rows(r, pivot);
+            if (std::abs(temp(pivot_idx, col)) < 1e-9)
+                return true;
 
-        for (size_type i = r + 1; i < rows; ++i)
-        {
-            T factor = temp(i, col) / temp(r, col);
-            for (size_type j = col; j < cols; ++j)
-                temp(i, j) -= factor * temp(r, j);
+            temp.swap_rows(r, pivot_idx);
+
+            std::ranges::all_of(
+                std::views::iota(r + 1, m_rows),
+                [&](size_type i) {
+                    T factor = temp(i, col) / temp(r, col);
+                    std::ranges::all_of(
+                        std::views::iota(col, m_cols),
+                        [&](size_type j) {
+                            temp(i, j) -= factor * temp(r, j);
+                            return true;
+                        }
+                    );
+                    return true;
+                }
+            );
+            
+            r++;
+            return true;
         }
-        
-        r++;
-    }
+    );
 
     return r;
 }
