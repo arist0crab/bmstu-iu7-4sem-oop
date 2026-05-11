@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1459</width>
+    <height>711</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>3D-viewer</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow &gt; QWidget
+{
+	background-color: rgb(29, 61, 100);
+}
+
+QFrame
+{
+	border: 5px solid rgb(70, 109, 163);
+	border-radius: 10px;
+	background-color: transparent;
+ 	padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+QLabel
+{
+	color: rgb(226, 194, 155);
+	font: 600 16px &quot;JetBrains Mono&quot;;
+	qproperty-alignment: AlignCenter;
+	border: none;
+}
+
+QPushButton
+{
+    background-color: rgb(226, 194, 155);
+    border: none;
+    border-radius: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+
+QDoubleSpinBox, QSpinBox, QLineEdit
+{
+	color: rgb(226, 194, 155);
+	background-color: rgb(20, 42, 69);
+    border-radius: 7px;
+	border: none;
+    padding: 3px 7px;
+}
+
+QDoubleSpinBox::up-button, QDoubleSpinBox::down-button, 
+QSpinBox::up-button, QSpinBox::down-button {
+    width: 18px;
+    border: none;
+    background-color: transparent;
+}
+
+QCheckBox
+{
+    color: rgb(226, 194, 155);
+	font-weight: 600;
+}
+
+QCheckBox::indicator
+{
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    border: 1.5px solid rgb(226, 194, 155);
+    background-color: transparent;
+}
+
+QCheckBox::indicator:checked
+{
+    border-color: rgb(226, 194, 155);
+	background-color: rgb(226, 194, 155);
+}
+
+QGraphicsView
+{
+	background-color: rgb(20, 42, 69);
+	border: 5px solid rgb(70, 109, 163);
+	border-radius: 10px;
+}
+
+QRadioButton
+{
+    color: rgb(226, 194, 155);
+    font-weight: 600;
+}
+
+QRadioButton::indicator
+{
+    width: 15px;
+    height: 15px;
+    border-radius: 7px;  
+    border: 1.5px solid rgb(226, 194, 155);
+    background-color: transparent;
+}
+
+QRadioButton::indicator:checked
+{
+    border-color: rgb(226, 194, 155);
+    background-color: rgb(226, 194, 155);
+}
+
+QTabWidget
+{
+    background-color: rgb(20, 42, 69);
+    border: 5px solid rgb(70, 109, 163);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 0px;
+}
+
+QTabWidget QWidget
+{
+    background-color: rgb(20, 42, 69);
+}
+
+QTabWidget::pane
+{
+    border: none;
+    background-color: rgb(20, 42, 69);
+    top: -5px;
+}
+
+QTabBar::tab
+{
+    background-color: rgba(70, 109, 163, 120);
+    color: rgb(226, 194, 155);
+    font: 600 14px &quot;JetBrains Mono&quot;;
+    border: 5px solid rgb(70, 109, 163);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding: 8px 12px;
+    min-width: 80px;
+    margin-right: -5px;
+    margin-bottom: 0;
+}
+
+QTabBar::tab:last
+{
+    margin-right: 0;
+}
+
+QTabBar::tab:hover
+{
+    background-color: rgb(70, 109, 163);
+    color: rgb(255, 255, 255);
+}
+
+QTabBar::tab:selected
+{
+    background-color: rgb(20, 42, 69);
+    color: rgb(226, 194, 155);
+    border-bottom-color: rgb(20, 42, 69);
+    margin-bottom: -5px;
+}
+
+QTabBar::tab:disabled
+{
+    color: rgb(100, 100, 100);
+}
+
+QTabWidget QPushButton
+{
+    background-color: rgb(226, 194, 155);
+    border: none;
+    border-radius: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+QTabWidget QPushButton:hover
+{
+    background-color: rgb(240, 210, 170);
+}
+
+QTabWidget QPushButton:pressed
+{
+    background-color: rgb(200, 170, 130);
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_9">
+    <item row="0" column="0">
+     <widget class="QGraphicsView" name="graphicsView"/>
+    </item>
+    <item row="0" column="1" rowspan="2">
+     <layout class="QGridLayout" name="gridLayout_8">
+      <item row="0" column="0">
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>Модель</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="2" column="1">
+           <widget class="QPushButton" name="loadFigureButton">
+            <property name="text">
+             <string>Подгрузить</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Policy::Preferred</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="2">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Policy::Preferred</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QRadioButton" name="radioButton_2">
+            <property name="text">
+             <string>Матрица смежности</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="3">
+           <widget class="QRadioButton" name="radioButton">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Список вершин и ребер</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>Камера</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0" colspan="3">
+           <widget class="QRadioButton" name="radioButton_3">
+            <property name="text">
+             <string>Обычная</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QRadioButton" name="radioButton_4">
+            <property name="text">
+             <string>Необычная</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QPushButton" name="loadCameraButton">
+            <property name="text">
+             <string>Подгрузить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QFrame" name="frame_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_10">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Действия</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="pushButton_7">
+           <property name="text">
+            <string>Удалить</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="pushButton_8">
+           <property name="text">
+            <string>Еще что-нибудь</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QTableWidget" name="tableWidget">
+        <property name="styleSheet">
+         <string notr="true">QTableWidget QFrame
+{
+    border: none;
+    border-radius: 0px;
+    background-color: transparent;
+	padding: 0px;
+}
+
+QTableWidget
+{
+    background-color: rgb(20, 42, 69);
+    border: 5px solid rgb(70, 109, 163);
+    border-radius: 10px;
+    color: rgb(226, 194, 155);
+    font: 600 14px &quot;JetBrains Mono&quot;;
+    gridline-color: rgb(70, 109, 163);
+	padding: 0px;
+    margin: 0px;
+}
+
+QTableWidget QHeaderView::section
+{
+    background-color: rgb(29, 61, 100);
+    color: rgb(226, 194, 155);
+    font: 600 14px &quot;JetBrains Mono&quot;;
+    border: none;
+    border-bottom: 5px solid rgb(70, 109, 163);
+    border-right: 5px solid rgb(70, 109, 163);
+    padding: 6px;
+    margin: 0px;
+}
+
+QTableWidget QHeaderView::section:last
+{
+    border-right: none;
+}
+
+QTableWidget::item
+{
+    border-bottom: 5px solid rgb(70, 109, 163);
+    border-right: 5px solid rgb(70, 109, 163);
+    padding: 4px;
+}
+
+QTableWidget::item:selected
+{
+    background-color: rgb(70, 109, 163);
+    color: rgb(255, 255, 255);
+}
+
+QTableWidget::item:hover
+{
+    background-color: rgba(70, 109, 163, 120);
+}</string>
+        </property>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>id</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>имя</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>центр</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>тип</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QFrame" name="frame">
+      <property name="styleSheet">
+       <string notr="true">QFrame &gt; QFrame
+{
+	background-color: rgb(20, 42, 69);
+	border: none;
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="styleSheet">
+          <string notr="true">QGroupBox
+{
+    border: 2px solid rgb(70, 109, 163);
+    border-radius: 8px;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
+    padding: 10px;
+    background-color: rgb(20, 42, 69);
+}
+
+QGroupBox::title
+{
+    color: rgb(226, 194, 155);
+    font: 600 15px &quot;JetBrains Mono&quot;;
+    border: 2px solid rgb(70, 109, 163);
+    border-radius: 5px;
+    background-color: rgb(20, 42, 69);
+    padding: 2px 8px;
+    subcontrol-origin: margin;
+    left: 15px;
+}
+
+
+QDoubleSpinBox, QSpinBox, QLineEdit
+{
+	color: rgb(226, 194, 155);
+	background-color: rgb(20, 42, 69);
+    border-radius: 7px;
+	border: 2px solid rgb(70, 109, 163);
+    padding: 3px 7px;
+}
+
+QDoubleSpinBox::up-button, QDoubleSpinBox::down-button, 
+QSpinBox::up-button, QSpinBox::down-button {
+    width: 18px;
+    border: none;
+    background-color: transparent;
+}</string>
+         </property>
+         <property name="title">
+          <string>Задать центр</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="setCenterButton">
+            <property name="text">
+             <string>✓</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="2" rowspan="2">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="styleSheet">
+          <string notr="true">QGroupBox
+{
+    border: 2px solid rgb(70, 109, 163);
+    border-radius: 8px;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
+    padding: 10px;
+    background-color: rgb(20, 42, 69);
+}
+
+QGroupBox::title
+{
+    color: rgb(226, 194, 155);
+    font: 600 15px &quot;JetBrains Mono&quot;;
+    border: 2px solid rgb(70, 109, 163);
+    border-radius: 5px;
+    background-color: rgb(20, 42, 69);
+    padding: 2px 8px;
+    subcontrol-origin: margin;
+    left: 15px;
+}
+
+
+QDoubleSpinBox, QSpinBox, QLineEdit
+{
+	color: rgb(226, 194, 155);
+	background-color: rgb(20, 42, 69);
+    border-radius: 7px;
+	border: 2px solid rgb(70, 109, 163);
+    padding: 3px 7px;
+}
+
+QDoubleSpinBox::up-button, QDoubleSpinBox::down-button, 
+QSpinBox::up-button, QSpinBox::down-button {
+    width: 18px;
+    border: none;
+    background-color: transparent;
+}</string>
+         </property>
+         <property name="title">
+          <string>Масштабирование</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_5"/>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="scaleFigureButton">
+            <property name="text">
+             <string>✓</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0" rowspan="2">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="styleSheet">
+          <string notr="true">QGroupBox
+{
+    border: 2px solid rgb(70, 109, 163);
+    border-radius: 8px;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
+    padding: 10px;
+    background-color: rgb(20, 42, 69);
+}
+
+QGroupBox::title
+{
+    color: rgb(226, 194, 155);
+    font: 600 15px &quot;JetBrains Mono&quot;;
+    border: 2px solid rgb(70, 109, 163);
+    border-radius: 5px;
+    background-color: rgb(20, 42, 69);
+    padding: 2px 8px;
+    subcontrol-origin: margin;
+    left: 15px;
+}
+
+
+QDoubleSpinBox, QSpinBox, QLineEdit
+{
+	color: rgb(226, 194, 155);
+	background-color: rgb(20, 42, 69);
+    border-radius: 7px;
+	border: 2px solid rgb(70, 109, 163);
+    padding: 3px 7px;
+}
+
+QDoubleSpinBox::up-button, QDoubleSpinBox::down-button, 
+QSpinBox::up-button, QSpinBox::down-button {
+    width: 18px;
+    border: none;
+    background-color: transparent;
+}</string>
+         </property>
+         <property name="title">
+          <string>Перенос</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="moveFigureButton">
+            <property name="text">
+             <string>✓</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="styleSheet">
+          <string notr="true">QGroupBox
+{
+    border: 2px solid rgb(70, 109, 163);
+    border-radius: 8px;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
+    padding: 10px;
+    background-color: rgb(20, 42, 69);
+}
+
+QGroupBox::title
+{
+    color: rgb(226, 194, 155);
+    font: 600 15px &quot;JetBrains Mono&quot;;
+    border: 2px solid rgb(70, 109, 163);
+    border-radius: 5px;
+    background-color: rgb(20, 42, 69);
+    padding: 2px 8px;
+    subcontrol-origin: margin;
+    left: 15px;
+}
+
+
+QDoubleSpinBox, QSpinBox, QLineEdit
+{
+	color: rgb(226, 194, 155);
+	background-color: rgb(20, 42, 69);
+    border-radius: 7px;
+	border: 2px solid rgb(70, 109, 163);
+    padding: 3px 7px;
+}
+
+QDoubleSpinBox::up-button, QDoubleSpinBox::down-button, 
+QSpinBox::up-button, QSpinBox::down-button {
+    width: 18px;
+    border: none;
+    background-color: transparent;
+}</string>
+         </property>
+         <property name="title">
+          <string>Вращение</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="rotateFigureButton">
+            <property name="text">
+             <string>✓</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1459</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
