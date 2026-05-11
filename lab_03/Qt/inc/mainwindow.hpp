@@ -1,0 +1,42 @@
+#ifndef __MAINWINDOW_HPP__
+#define __MAINWINDOW_HPP__
+
+#include <QMainWindow>
+#include <QApplication>
+#include <QGraphicsScene>
+
+// #include "Facade.hpp"
+#include "ui_mainwindow.h"
+
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
+
+class MainWindow : public QMainWindow 
+{
+    Q_OBJECT
+
+    public:
+        explicit MainWindow(QWidget *parent = nullptr);
+        ~MainWindow() override;
+
+    private slots:
+        void on_setCenterButton_clicked();
+        void on_moveFigureButton_clicked();
+        void on_scaleFigureButton_clicked();
+        void on_rotateFigureButton_clicked();
+        void on_loadFigureButton_clicked();
+        void on_loadCameraButton_clicked();
+        void on_removeButton_clicked();
+
+    private:
+        Ui::MainWindow *ui;
+        // std::shared_ptr<QGraphicsScene> m_scene;
+        // std::shared_ptr<Facade> m_facade;
+
+        size_t m_objects;
+        size_t m_activeCameraId;
+};
+
+#endif

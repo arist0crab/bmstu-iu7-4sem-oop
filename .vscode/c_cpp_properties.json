@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/lab_03/**/",
+                "${workspaceFolder}/**/**/",
                 "/usr/include/qt6/QtWidgets",
                 "/usr/include/qt6"
             ],
