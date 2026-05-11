@@ -1,14 +1,14 @@
 #pragma once
 
+#include <memory>
+#include <BaseManager.hpp>
+
 class ManagerSolution
 {
     public:
-        ManagerSolution() = delete;
-        ~ManagerSolution() = delete;
+        ManagerSolution() = default;
+        ~ManagerSolution() = default;
 
-        static std::shared_ptr<> getLoadManager();
-        static std::shared_ptr<> getDrawManager();
-        static std::shared_ptr<> getCameraManager();
-        static std::shared_ptr<> getTransformManager();
-        static std::shared_ptr<> getSceneManager();
+        template<typename TManager>
+        static std::shared_ptr<TManager> getManager();
 };
