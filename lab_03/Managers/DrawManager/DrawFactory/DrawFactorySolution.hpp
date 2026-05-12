@@ -7,5 +7,5 @@ class DrawFactorySolution
 {
     public:
         template <typename TFactory, typename TScene>
-        static std::unique_ptr<BaseDrawerCreator> createDrawer(std::shared_ptr<TScene> scene);
+        static std::unique_ptr<BaseDrawer> createDrawer(std::shared_ptr<TScene> scene);
 };

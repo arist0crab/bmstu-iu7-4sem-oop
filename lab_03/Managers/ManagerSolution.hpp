@@ -6,7 +6,8 @@
 class ManagerSolution
 {
     public:
-        ManagerSolution() = delete;
+        ManagerSolution() = default;
+        virtual ~ManagerSolution() = default;
 
         template<typename TManager>
         static std::shared_ptr<TManager> getManager()

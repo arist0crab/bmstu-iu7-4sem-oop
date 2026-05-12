@@ -217,7 +217,7 @@ QTabWidget QPushButton:pressed
          <string notr="true"/>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -264,14 +264,14 @@ QTabWidget QPushButton:pressed
            </spacer>
           </item>
           <item row="1" column="0" colspan="3">
-           <widget class="QRadioButton" name="radioButton_2">
+           <widget class="QRadioButton" name="MatrixModelMode">
             <property name="text">
              <string>Матрица смежности</string>
             </property>
            </widget>
           </item>
           <item row="0" column="0" colspan="3">
-           <widget class="QRadioButton" name="radioButton">
+           <widget class="QRadioButton" name="listModelMode">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -291,7 +291,7 @@ QTabWidget QPushButton:pressed
          </attribute>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0" colspan="3">
-           <widget class="QRadioButton" name="radioButton_3">
+           <widget class="QRadioButton" name="DefaultCameraMode">
             <property name="text">
              <string>Обычная</string>
             </property>
@@ -301,7 +301,7 @@ QTabWidget QPushButton:pressed
            </widget>
           </item>
           <item row="1" column="0" colspan="3">
-           <widget class="QRadioButton" name="radioButton_4">
+           <widget class="QRadioButton" name="UnordinaryCameraMode">
             <property name="text">
              <string>Необычная</string>
             </property>
@@ -341,14 +341,14 @@ QTabWidget QPushButton:pressed
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QPushButton" name="pushButton_7">
+          <widget class="QPushButton" name="deleteObjectButton">
            <property name="text">
             <string>Удалить</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QPushButton" name="pushButton_8">
+          <widget class="QPushButton" name="smthElseButton">
            <property name="text">
             <string>Еще что-нибудь</string>
            </property>
@@ -358,7 +358,7 @@ QTabWidget QPushButton:pressed
        </widget>
       </item>
       <item row="1" column="0" colspan="2">
-       <widget class="QTableWidget" name="tableWidget">
+       <widget class="QTableWidget" name="objectTable">
         <property name="styleSheet">
          <string notr="true">QTableWidget QFrame
 {
@@ -458,7 +458,7 @@ QTableWidget::item:hover
        <enum>QFrame::Shadow::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0" colspan="2">
+       <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox_3">
          <property name="styleSheet">
           <string notr="true">QGroupBox
@@ -505,15 +505,15 @@ QSpinBox::up-button, QSpinBox::down-button {
          <property name="title">
           <string>Задать центр</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <widget class="QDoubleSpinBox" name="setCenterXInput"/>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+           <widget class="QDoubleSpinBox" name="setCenterYInput"/>
           </item>
-          <item row="0" column="0">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="setCenterZInput"/>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="setCenterButton">
@@ -525,7 +525,7 @@ QSpinBox::up-button, QSpinBox::down-button {
          </layout>
         </widget>
        </item>
-       <item row="0" column="2" rowspan="2">
+       <item row="0" column="1">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="styleSheet">
           <string notr="true">QGroupBox
@@ -574,13 +574,13 @@ QSpinBox::up-button, QSpinBox::down-button {
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+           <widget class="QDoubleSpinBox" name="scaleFigureXInput"/>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
+           <widget class="QDoubleSpinBox" name="scaleFigureYInput"/>
           </item>
           <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_5"/>
+           <widget class="QDoubleSpinBox" name="scaleFigureZInput"/>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="scaleFigureButton">
@@ -592,7 +592,7 @@ QSpinBox::up-button, QSpinBox::down-button {
          </layout>
         </widget>
        </item>
-       <item row="1" column="0" rowspan="2">
+       <item row="1" column="0">
         <widget class="QGroupBox" name="groupBox">
          <property name="styleSheet">
           <string notr="true">QGroupBox
@@ -641,13 +641,7 @@ QSpinBox::up-button, QSpinBox::down-button {
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-          </item>
-          <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+           <widget class="QDoubleSpinBox" name="moveFigureXInput"/>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="moveFigureButton">
@@ -656,10 +650,16 @@ QSpinBox::up-button, QSpinBox::down-button {
             </property>
            </widget>
           </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="moveFigureYInput"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="moveFigureZInput"/>
+          </item>
          </layout>
         </widget>
        </item>
-       <item row="2" column="1" colspan="2">
+       <item row="1" column="1">
         <widget class="QGroupBox" name="groupBox_4">
          <property name="styleSheet">
           <string notr="true">QGroupBox
@@ -706,15 +706,15 @@ QSpinBox::up-button, QSpinBox::down-button {
          <property name="title">
           <string>Вращение</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_6">
+         <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+           <widget class="QDoubleSpinBox" name="rotateFigureXInput"/>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
+           <widget class="QDoubleSpinBox" name="rotateFigureYInput"/>
           </item>
           <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
+           <widget class="QDoubleSpinBox" name="rotateFigureZInput"/>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="rotateFigureButton">

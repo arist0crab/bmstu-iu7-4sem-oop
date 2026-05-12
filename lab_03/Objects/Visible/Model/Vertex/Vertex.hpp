@@ -30,7 +30,7 @@ class Vertex
         void setW(const double w) noexcept;
 
         double calculateDistance(const Vertex &other) const;
-        void Vertex::transform(const Transform &transform);
+        void transform(const Transform &transform);
 
         Vertex normalize() const;
         Vertex cross(const Vertex &other) const;

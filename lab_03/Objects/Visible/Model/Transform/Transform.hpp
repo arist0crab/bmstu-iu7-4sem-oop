@@ -2,9 +2,11 @@
 
 #include <array>
 #include <cmath>
-#include "Vertex.hpp"
 
 #define TRANSFORM_MATRIX_SIZE 4
+
+class Vertex;
+
 
 class Transform
 {

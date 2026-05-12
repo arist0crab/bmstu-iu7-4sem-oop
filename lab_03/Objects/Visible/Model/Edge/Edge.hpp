@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstddef> 
 
 using vertex_index_t = size_t;

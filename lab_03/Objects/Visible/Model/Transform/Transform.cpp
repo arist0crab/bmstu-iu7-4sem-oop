@@ -1,4 +1,5 @@
 #include "Transform.hpp"
+#include "Vertex.hpp"
 #include <cmath>
 
 Transform Transform::translation(double dx, double dy, double dz)

@@ -145,6 +145,7 @@ Vertex& Vertex::operator-=(const Vertex &other) noexcept
 std::ostream &operator<<(std::ostream &os, const Vertex &vertex)
 {
     os << "(" << vertex.X() << ", " << vertex.Y() << ", " << vertex.Z() << ", " <<  vertex.W() << ")";
+    return os;
 }
 
 Vertex operator+(const Vertex &lhs, const Vertex &rhs)

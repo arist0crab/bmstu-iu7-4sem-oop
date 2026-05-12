@@ -4,8 +4,11 @@
 #include <QMainWindow>
 #include <QApplication>
 #include <QGraphicsScene>
+#include <memory>
+#include <vector>
+#include <QFileDialog>
 
-// TODO #include "Facade.hpp"
+#include "Facade.hpp"
 #include "ui_mainwindow.h"
 
 
@@ -28,15 +31,17 @@ class MainWindow : public QMainWindow
         void on_rotateFigureButton_clicked();
         void on_loadFigureButton_clicked();
         void on_loadCameraButton_clicked();
-        void on_removeButton_clicked();
+        void on_deleteObjectButton_clicked();
 
     private:
         Ui::MainWindow *ui;
-        // TODO std::shared_ptr<QGraphicsScene> m_scene;
-        // TODO std::shared_ptr<Facade> m_facade;
+        Facade m_facade;
 
-        size_t m_objects;
-        size_t m_activeCameraId;
+        std::vector<size_t> m_selected;
+        size_t m_activeCamId;
+
+        void drawScene();
+        void getSelectedObjects();
 };
 
 #endif
