@@ -11,6 +11,6 @@ class BaseVisitor
         BaseVisitor() = default;
         virtual ~BaseVisitor() = default;
 
-        virtual void visit(BaseModel &model) const = 0;
         virtual void visit(BaseCamera &camera) const = 0;
+        virtual void visit(BaseModel &structure) const = 0;
 };
