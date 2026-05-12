@@ -3,6 +3,8 @@
 #include <iostream>
 #include "Transform.hpp"
 
+#define EPS 1e-9
+
 class Vertex
 {
     public:
@@ -29,6 +31,10 @@ class Vertex
 
         double calculateDistance(const Vertex &other) const;
         void Vertex::transform(const Transform &transform);
+
+        Vertex normalize() const;
+        Vertex cross(const Vertex &other) const;
+        double dot(const Vertex &other) const;
 
         bool equal(const Vertex &other) const noexcept;
         auto operator<=>(const Vertex &other) const = default;

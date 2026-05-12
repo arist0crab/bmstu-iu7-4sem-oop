@@ -62,6 +62,30 @@ void Vertex::transform(const Transform &transform)
     m_z = x * transform(2, 0) + y * transform(2, 1) + z * transform(2, 2) + transform(2, 3);
 }
 
+Vertex Vertex::normalize() const
+{
+    double len = std::sqrt(m_x * m_x + m_y * m_y + m_z * m_z);
+
+    if (len < EPS)
+        return Vertex(0, 0, 0);
+
+    return Vertex(m_x / len, m_y / len, m_z / len);
+}
+
+Vertex Vertex::cross(const Vertex &other) const
+{
+    return Vertex(
+        m_y * other.m_z - m_z * other.m_y,
+        m_z * other.m_x - m_x * other.m_z,
+        m_x * other.m_y - m_y * other.m_x
+    );
+}
+
+double Vertex::dot(const Vertex &other) const
+{
+    return m_x * other.m_x + m_y * other.m_y + m_z * other.m_z;
+}
+
 bool Vertex::equal(const Vertex &other) const noexcept
 {
     const bool x_equal = other.m_x == m_x;
