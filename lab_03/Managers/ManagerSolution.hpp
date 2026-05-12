@@ -1,14 +1,17 @@
 #pragma once
 
 #include <memory>
-#include <BaseManager.hpp>
+
 
 class ManagerSolution
 {
     public:
-        ManagerSolution() = default;
-        ~ManagerSolution() = default;
+        ManagerSolution() = delete;
 
         template<typename TManager>
-        static std::shared_ptr<TManager> getManager();
+        static std::shared_ptr<TManager> getManager()
+        {
+            static auto instance = std::make_shared<TManager>();
+            return instance;
+        }
 };
