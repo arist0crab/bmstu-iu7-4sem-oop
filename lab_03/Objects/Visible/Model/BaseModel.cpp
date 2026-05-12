@@ -7,6 +7,16 @@ Vertex BaseModel::getCenter() const noexcept
     return m_structure->getCenter();
 }
 
+std::vector<Vertex> BaseModel::getVertices() const
+{
+    return m_structure->getVertices();
+}
+
+std::vector<Edge> BaseModel::getEdges() const
+{
+    return m_structure->getEdges();
+}
+
 void BaseModel::setCenter(const Vertex &point)
 {
     m_structure->setCenter(point);

@@ -12,6 +12,9 @@ class BaseModel : public VisibleObject
         virtual ~BaseModel() override = default;
 
         Vertex getCenter() const noexcept;
+        std::vector<Vertex> getVertices() const;
+        std::vector<Edge> getEdges() const;
+
         void setCenter(const Vertex &point);
         void transform(const Transform &transform);
 
