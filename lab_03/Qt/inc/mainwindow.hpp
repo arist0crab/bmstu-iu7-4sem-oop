@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QGraphicsScene>
 
-// #include "Facade.hpp"
+// TODO #include "Facade.hpp"
 #include "ui_mainwindow.h"
 
 
@@ -32,8 +32,8 @@ class MainWindow : public QMainWindow
 
     private:
         Ui::MainWindow *ui;
-        // std::shared_ptr<QGraphicsScene> m_scene;
-        // std::shared_ptr<Facade> m_facade;
+        // TODO std::shared_ptr<QGraphicsScene> m_scene;
+        // TODO std::shared_ptr<Facade> m_facade;
 
         size_t m_objects;
         size_t m_activeCameraId;
