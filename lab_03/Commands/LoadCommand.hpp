@@ -1,17 +1,19 @@
 #pragma once
 
-#include <iostream>
+#include <string>
 #include "BaseCommand.hpp"
 #include "ManagerSolution.hpp"
+#include "LoadManager.hpp"
+#include "MatrixBuilder.hpp"
+#include "ListBuilder.hpp"
 
 
 class LoadCommand : public BaseCommand
 {
     public:
         LoadCommand() = default;
-        virtual ~LoadCommand() = default;
+        virtual ~LoadCommand() override = default;
 };
-
 
 class LoadMatrixModelCommand : public LoadCommand
 {
@@ -21,15 +23,13 @@ class LoadMatrixModelCommand : public LoadCommand
 
         void execute() override
         {
-            // TODO write managers
-            // auto loadManager = ManagerSolution::getManager<LoadManager>();
-            // loadManager->
+            auto loadManager = ManagerSolution::getManager<LoadManager>();
+            loadManager->load<MatrixBuilder>(m_filename);
         }
 
     private:
         std::string m_filename;
 };
-
 
 class LoadListModelCommand : public LoadCommand
 {
@@ -39,9 +39,8 @@ class LoadListModelCommand : public LoadCommand
 
         void execute() override
         {
-            // TODO write managers
-            // auto loadManager = ManagerSolution::getManager<LoadManager>();
-            // loadManager->
+            auto loadManager = ManagerSolution::getManager<LoadManager>();
+            loadManager->load<ListBuilder>(m_filename);
         }
 
     private:

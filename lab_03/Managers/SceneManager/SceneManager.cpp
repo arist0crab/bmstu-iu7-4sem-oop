@@ -50,3 +50,8 @@ void SceneManager::accept(std::shared_ptr<BaseVisitor> visitor)
 {
     m_scene->accept(visitor);
 }
+
+void SceneManager::clear()
+{
+	m_scene->clear();
+}

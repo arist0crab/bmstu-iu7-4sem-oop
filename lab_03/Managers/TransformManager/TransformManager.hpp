@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
+#include <iostream>
 #include "BaseManager.hpp"
-#include "BaseObject.hpp"
-#include "Vertex.hpp"
+#include "SceneManager.hpp"
+#include "ManagerSolution.hpp"
 #include "Transform.hpp"
 
 
@@ -13,7 +13,7 @@ class TransformManager : public BaseManager
         TransformManager() = default;
         virtual ~TransformManager() override = default;
 
-        void moveObject(std::shared_ptr<BaseObject> object, double dx, double dy, double dz);
-        void scaleObject(std::shared_ptr<BaseObject> object, double kx, double ky, double kz);
-        void rotateObject(std::shared_ptr<BaseObject> object, double ax, double ay, double az);
+        void moveObject(size_t id, double dx, double dy, double dz);
+        void scaleObject(size_t id, double kx, double ky, double kz);
+        void rotateObject(size_t id, double ax, double ay, double az);
 };

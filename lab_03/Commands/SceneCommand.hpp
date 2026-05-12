@@ -1,16 +1,17 @@
 #pragma once
 
 #include "BaseCommand.hpp"
-#include "DrawManager.hpp"
 #include "ManagerSolution.hpp"
+#include "DrawManager.hpp"
+#include "DrawCarcassVisitor.hpp"
 
 
 class SceneCommand : public BaseCommand
 {
-    SceneCommand() = default;
-    virtual ~SceneCommand() override = default;
+    public:
+        SceneCommand() = default;
+        virtual ~SceneCommand() override = default;
 };
-
 
 class DrawSceneCommand : public SceneCommand
 {
@@ -21,10 +22,10 @@ class DrawSceneCommand : public SceneCommand
         void execute() override
         {
             auto drawManager = ManagerSolution::getManager<DrawManager>();
-            drawManager->draw();
+            auto visitor = std::make_shared<DrawCarcassVisitor>();
+            drawManager->draw(visitor);
         }
 };
-
 
 class ClearSceneCommand : public SceneCommand
 {
@@ -34,7 +35,7 @@ class ClearSceneCommand : public SceneCommand
 
         void execute() override
         {
-            // TODO auto sceneManager = ManagerSolution::getManager<SceneManager>();
-            // TODO sceneManager->clear();
+            auto sceneManager = ManagerSolution::getManager<SceneManager>();
+            sceneManager->clear();
         }
 };

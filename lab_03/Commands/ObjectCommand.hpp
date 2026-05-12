@@ -3,6 +3,8 @@
 #include "BaseCommand.hpp"
 #include "BaseObject.hpp"
 #include "ManagerSolution.hpp"
+#include "SceneManager.hpp"
+#include "TransformManager.hpp"
 
 
 class ObjectCommand : public BaseCommand
@@ -12,7 +14,6 @@ class ObjectCommand : public BaseCommand
         virtual ~ObjectCommand() override = default;
 };
 
-
 class AddObjectCommand : public ObjectCommand
 {
     public:
@@ -21,14 +22,13 @@ class AddObjectCommand : public ObjectCommand
 
         void execute() override
         {
-            // TODO auto sceneManager = ManagerSolution::getManager<SceneManager>();
-            // TODO sceneManager->addObject(m_object);
+            auto sceneManager = ManagerSolution::getManager<SceneManager>();
+            sceneManager->addObject(m_object);
         }
-    
+
     private:
         std::shared_ptr<BaseObject> m_object;
 };
-
 
 class RemoveObjectCommand : public ObjectCommand 
 {
@@ -38,14 +38,13 @@ class RemoveObjectCommand : public ObjectCommand
 
         void execute() override
         {
-            // TODO auto sceneManager = ManagerSolution::getManager<SceneManager>();
-            // TODO sceneManager->removeObject(m_id);
+            auto sceneManager = ManagerSolution::getManager<SceneManager>();
+            sceneManager->removeObject(m_id);
         }
 
     private:
         size_t m_id;
 };
-
 
 class MoveObjectCommand : public ObjectCommand 
 {
@@ -55,15 +54,14 @@ class MoveObjectCommand : public ObjectCommand
 
         void execute() override
         {
-            // TODO auto transformManager = ManagerSolution::getManager<TransformManager>();
-            // TODO transformManager->moveObject(m_id, m_dx, m_dy, m_dz);
+            auto transformManager = ManagerSolution::getManager<TransformManager>();
+            transformManager->moveObject(m_id, m_dx, m_dy, m_dz);
         }
 
     private:
         size_t m_id;
         double m_dx, m_dy, m_dz;
 };
-
 
 class RotateObjectCommand : public ObjectCommand 
 {
@@ -73,15 +71,14 @@ class RotateObjectCommand : public ObjectCommand
 
         void execute() override
         {
-            // TODO auto transformManager = ManagerSolution::getManager<TransformManager>();
-            // TODO transformManager->rotateObject(m_id, m_angleX, m_angleY, m_angleZ);
+            auto transformManager = ManagerSolution::getManager<TransformManager>();
+            transformManager->rotateObject(m_id, m_angleX, m_angleY, m_angleZ);
         }
 
     private:
         size_t m_id;
         double m_angleX, m_angleY, m_angleZ;
 };
-
 
 class ScaleObjectCommand : public ObjectCommand 
 {
@@ -91,15 +88,14 @@ class ScaleObjectCommand : public ObjectCommand
 
         void execute() override
         {
-            // TODO auto transformManager = ManagerSolution::getManager<TransformManager>();
-            // TODO transformManager->scaleObject(m_id, m_kx, m_ky, m_kz);
+            auto transformManager = ManagerSolution::getManager<TransformManager>();
+            transformManager->scaleObject(m_id, m_kx, m_ky, m_kz);
         }
 
     private:
         size_t m_id;
         double m_kx, m_ky, m_kz;
 };
-
 
 class SurfaceObjectCommand : public ObjectCommand 
 {
@@ -109,7 +105,8 @@ class SurfaceObjectCommand : public ObjectCommand
 
         void execute() override
         {
-            // TODO auto sceneManager = ManagerSolution::getManager<SceneManager>();
-            // TODO sceneManager->toSurface();
+            // TODO
+            // auto sceneManager = ManagerSolution::getManager<SceneManager>();
+            // sceneManager->toSurface();
         }
 };
