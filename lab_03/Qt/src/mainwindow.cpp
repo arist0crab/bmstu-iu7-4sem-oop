@@ -128,6 +128,23 @@ void MainWindow::on_loadFigureButton_clicked()
 		m_facade.execute(cmd);
 	}
 
+	// TODO вынести эту порнографию
+	auto sceneManager = ManagerSolution::getManager<SceneManager>();
+	auto objects = sceneManager->getObjects();
+	size_t lastId = objects.size() - 1;
+	auto model = sceneManager->getObject(lastId);
+	Vertex center = model->getCenter();
+
+	ui->objectTable->insertRow(ui->objectTable->rowCount());
+	ui->objectTable->setItem(ui->objectTable->rowCount() - 1, 0, 
+		new QTableWidgetItem(QString::number(lastId)));
+	ui->objectTable->setItem(ui->objectTable->rowCount() - 1, 1, 
+		new QTableWidgetItem(QFileInfo(filename).fileName()));
+	ui->objectTable->setItem(ui->objectTable->rowCount() - 1, 2, 
+		new QTableWidgetItem(QString("(%1, %2, %3)").arg(center.X()).arg(center.Y()).arg(center.Z())));
+	ui->objectTable->setItem(ui->objectTable->rowCount() - 1, 3, 
+		new QTableWidgetItem("Модель"));
+
 	drawScene();
 }
 

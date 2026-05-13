@@ -57,9 +57,9 @@ void Vertex::transform(const Transform &transform)
     double y = m_y;
     double z = m_z;
     
-    m_x = x * transform(0, 0) + y * transform(0, 1) + z * transform(0, 2) + transform(0, 3);
-    m_y = x * transform(1, 0) + y * transform(1, 1) + z * transform(1, 2) + transform(1, 3);
-    m_z = x * transform(2, 0) + y * transform(2, 1) + z * transform(2, 2) + transform(2, 3);
+    m_x = x * transform(0,0) + y * transform(1,0) + z * transform(2,0) + transform(3,0);
+    m_y = x * transform(0,1) + y * transform(1,1) + z * transform(2,1) + transform(3,1);
+    m_z = x * transform(0,2) + y * transform(1,2) + z * transform(2,2) + transform(3,2);
 }
 
 Vertex Vertex::normalize() const

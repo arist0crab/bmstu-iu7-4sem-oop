@@ -6,9 +6,14 @@ SceneManager::SceneManager()
     m_scene = Scene::getInstance();
 }
 
-std::shared_ptr<BaseObject> SceneManager::getObject(size_t id)
+std::shared_ptr<BaseObject> SceneManager::getObject(size_t id) const
 {
     return m_scene->getObject(id);
+}
+
+std::vector<std::shared_ptr<BaseObject>> SceneManager::getObjects() const
+{
+    return m_scene->getObjects();
 }
 
 void SceneManager::addObject(std::shared_ptr<BaseObject> object)

@@ -170,10 +170,9 @@ Transform Transform::operator*(const Transform &other) const
     for (size_t i = 0; i < SIZE; i++)
         for (size_t j = 0; j < SIZE; j++)
             for (size_t k = 0; k < SIZE; k++)
-                t.m_data[i][j] += m_data[k][i] * other.m_data[j][k];
+                t.m_data[i][j] += m_data[i][k] * other.m_data[k][j];
 
     return t;
-
 }
 
 Transform Transform::operator*=(const Transform &other)

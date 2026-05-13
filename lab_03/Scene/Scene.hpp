@@ -14,12 +14,12 @@ class Scene
         Scene(Scene &&other) = delete;
         ~Scene() = default;
 
-        size_t addObject(std::shared_ptr<BaseObject> object);
         std::shared_ptr<BaseObject> getObject(size_t id);
+        std::vector<std::shared_ptr<BaseObject>> getObjects() const;
+
+        size_t addObject(std::shared_ptr<BaseObject> object);
         void removeObject(size_t id);
         void clear();
-
-        std::vector<std::shared_ptr<BaseObject>> getObjects() const;
         
         void accept(std::shared_ptr<BaseVisitor> visitor);
 

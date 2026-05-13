@@ -14,7 +14,8 @@ class SceneManager : public BaseManager
         SceneManager();
         virtual ~SceneManager() override = default;
 
-        std::shared_ptr<BaseObject> getObject(size_t id);
+        std::shared_ptr<BaseObject> getObject(size_t id) const;
+        std::vector<std::shared_ptr<BaseObject>> getObjects() const;
         Vertex getCenter(size_t id) const;
 
         void addObject(std::shared_ptr<BaseObject> object);

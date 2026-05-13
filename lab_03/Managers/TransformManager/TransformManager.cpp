@@ -5,6 +5,7 @@ void TransformManager::moveObject(size_t id, double dx, double dy, double dz)
 {
 	auto sceneManager = ManagerSolution::getManager<SceneManager>();
 	auto object = sceneManager->getObject(id);
+
 	if (object)
 	{
 		auto transform = Transform::translation(dx, dy, dz);
