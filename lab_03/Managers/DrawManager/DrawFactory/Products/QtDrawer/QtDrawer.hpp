@@ -4,6 +4,8 @@
 #include <QGraphicsScene>
 #include "BaseDrawer.hpp"
 
+#define SAND_COLOR QColor(226, 194, 155)
+
 
 class QtDrawer : public BaseDrawer
 {
@@ -21,6 +23,6 @@ class QtDrawer : public BaseDrawer
         void drawLine(const double x1, const double y1, const double x2, const double y2) override;
 
     private:
-        QColor m_color;
+        QColor m_color = SAND_COLOR;
         std::shared_ptr<QGraphicsScene> m_scene;
 };

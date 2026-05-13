@@ -7,14 +7,22 @@
 #include "DefaultCamera.hpp"
 #include "ManagerSolution.hpp"
 #include "CameraManager.hpp"
+#include "QtDrawer.hpp"
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-	ui->setupUi(this);
-
-	auto initCmd = std::make_shared<InitSceneCommand>();
-	m_facade.execute(initCmd);
+    ui->setupUi(this);
+    
+    auto scene = std::make_shared<QGraphicsScene>();
+    ui->graphicsView->setScene(scene.get());
+    
+    auto drawer = std::make_shared<QtDrawer>(scene);
+    auto drawManager = ManagerSolution::getManager<DrawManager>();
+    drawManager->setDrawer(drawer);
+    
+    auto initCmd = std::make_shared<InitSceneCommand>();
+    m_facade.execute(initCmd);
 }
 
 MainWindow::~MainWindow() 

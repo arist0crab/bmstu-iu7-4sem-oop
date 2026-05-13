@@ -1,6 +1,6 @@
 #include "QtDrawer.hpp"
 
-QtDrawer::QtDrawer(std::shared_ptr<QGraphicsScene> scene) : m_scene(scene), m_color(Qt::white)
+QtDrawer::QtDrawer(std::shared_ptr<QGraphicsScene> scene) : m_scene(scene)
 {
     m_sceneWidth = m_scene->width();
     m_sceneHeight = m_scene->height();

@@ -3,6 +3,7 @@
 #include <string>
 #include "BaseCommand.hpp"
 #include "ManagerSolution.hpp"
+#include "SceneManager.hpp"
 #include "LoadManager.hpp"
 #include "MatrixBuilder.hpp"
 #include "ListBuilder.hpp"
@@ -37,10 +38,15 @@ class LoadListModelCommand : public LoadCommand
         LoadListModelCommand(const std::string &filename) : m_filename(filename) {}
         virtual ~LoadListModelCommand() override = default;
 
+        // TODO мне не нравится что тут вызываются оба менеджера: LoadManager и SceneManager
+
         void execute() override
         {
             auto loadManager = ManagerSolution::getManager<LoadManager>();
-            loadManager->load<ListBuilder>(m_filename);
+            auto sceneManager = ManagerSolution::getManager<SceneManager>();
+
+            auto model = loadManager->load<ListBuilder>(m_filename);
+            sceneManager->addObject(model);
         }
 
     private:

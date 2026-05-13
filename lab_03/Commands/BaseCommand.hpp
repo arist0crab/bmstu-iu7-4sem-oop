@@ -8,3 +8,5 @@ class BaseCommand
 
         virtual void execute() = 0;
 };
+
+// TODO переделать нахер команды они ужасно выглядят
