@@ -67,6 +67,7 @@ target_include_directories(gui_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/TransformManager
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Model
+    ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Camera
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible/Camera

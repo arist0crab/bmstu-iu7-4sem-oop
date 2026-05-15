@@ -1,12 +1,12 @@
 #include "ObjReader.hpp"
+#include "ObjReaderException.hpp"
 
 
 void ObjReader::open(const std::string &filename)
 {
     m_file.open(filename);
     if (!m_file.is_open())
-        // TODO add custom errors
-        throw std::runtime_error("Cannot open file: " + filename);
+        throw ObjReaderFileNotFoundException();
 }
 
 void ObjReader::close()
@@ -28,8 +28,10 @@ std::vector<Vertex> ObjReader::readVertices()
         std::istringstream iss(line.substr(2));
         double x, y, z;
         
-        if (iss >> x >> y >> z)
-            vertices.emplace_back(x, y, z);
+        if (!(iss >> x >> y >> z))
+            throw ObjReaderParseException("Failed to parse vertex");
+        
+        vertices.emplace_back(x, y, z);
     }
     
     return vertices;

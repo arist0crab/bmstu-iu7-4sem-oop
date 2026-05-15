@@ -1,4 +1,5 @@
 #include "SceneManager.hpp"
+#include "Exceptions/Scene/SceneException.hpp"
 
 
 SceneManager::SceneManager()
@@ -8,7 +9,10 @@ SceneManager::SceneManager()
 
 std::shared_ptr<BaseObject> SceneManager::getObject(size_t id) const
 {
-    return m_scene->getObject(id);
+    auto obj = m_scene->getObject(id);
+    if (!obj)
+        throw SceneObjectNotFoundException();
+    return obj;
 }
 
 std::vector<std::shared_ptr<BaseObject>> SceneManager::getObjects() const
@@ -18,22 +22,32 @@ std::vector<std::shared_ptr<BaseObject>> SceneManager::getObjects() const
 
 void SceneManager::addObject(std::shared_ptr<BaseObject> object)
 {
+    if (!object)
+        throw SceneInvalidOperationException("Cannot add null object");
     m_scene->addObject(object);
 }
 
 void SceneManager::removeObject(size_t id)
 {
+    auto obj = m_scene->getObject(id);
+    if (!obj)
+        throw SceneObjectNotFoundException();
     m_scene->removeObject(id);
 }
 
 Vertex SceneManager::getCenter(size_t id) const
 {
     auto obj = m_scene->getObject(id);
-    return obj ? obj->getCenter() : Vertex(0, 0, 0);
+    if (!obj)
+        throw SceneObjectNotFoundException();
+    return obj->getCenter();
 }
 
 void SceneManager::compose(std::vector<size_t> ids)
 {
+    if (ids.empty())
+        throw SceneInvalidOperationException("Cannot compose empty list of objects");
+
     auto composite = std::make_shared<Composite>();
     
     std::sort(ids.begin(), ids.end(), std::greater<size_t>());
@@ -41,8 +55,9 @@ void SceneManager::compose(std::vector<size_t> ids)
     for (auto id : ids)
     {
         auto obj = m_scene->getObject(id);
-        if (obj)
-            composite->add(obj);
+        if (!obj)
+            throw SceneObjectNotFoundException();
+        composite->add(obj);
     }
     
     for (auto id : ids)
@@ -53,11 +68,10 @@ void SceneManager::compose(std::vector<size_t> ids)
 
 void SceneManager::setCenter(size_t id, const Vertex &center)
 {
-    auto obj = getObject(id);
-    if (obj)
-        obj->setCenter(center);
-
-    // TODO добавить соответствующую ошибку
+    auto obj = m_scene->getObject(id);
+    if (!obj)
+        throw SceneObjectNotFoundException();
+    obj->setCenter(center);
 }
 
 void SceneManager::toSurface(size_t id)
@@ -67,6 +81,8 @@ void SceneManager::toSurface(size_t id)
 
 void SceneManager::accept(std::shared_ptr<BaseVisitor> visitor)
 {
+    if (!visitor)
+        throw SceneInvalidOperationException("Cannot accept null visitor");
     m_scene->accept(visitor);
 }
 
