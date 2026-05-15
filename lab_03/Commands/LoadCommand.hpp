@@ -25,7 +25,10 @@ class LoadMatrixModelCommand : public LoadCommand
         void execute() override
         {
             auto loadManager = ManagerSolution::getManager<LoadManager>();
-            loadManager->load<MatrixBuilder>(m_filename);
+            auto sceneManager = ManagerSolution::getManager<SceneManager>();
+
+            auto model = loadManager->load<MatrixBuilder>(m_filename);
+            sceneManager->addObject(model);
         }
 
     private:

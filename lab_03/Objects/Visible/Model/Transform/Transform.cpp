@@ -32,13 +32,12 @@ Transform Transform::rotateX(double angle)
 {
     double c = std::cos(angle);
     double s = std::sin(angle);
-
     Transform t;
     t.m_data = {{
-        {1, 0, 0, 0},
-        {0, c, s, 0},
-        {0, -s, c, 0},
-        {0, 0, 0, 1}
+        {1, 0,  0, 0},
+        {0, c, -s, 0},
+        {0, s,  c, 0},
+        {0, 0,  0, 1}
     }};
     return t;
 }
@@ -47,13 +46,12 @@ Transform Transform::rotateY(double angle)
 {
     double c = std::cos(angle);
     double s = std::sin(angle);
-
     Transform t;
     t.m_data = {{
-        {c, 0, -s, 0},
-        {0, 1, 0, 0},
-        {s, 0, c, 0},
-        {0, 0, 0, 1}
+        { c, 0, s, 0},
+        { 0, 1, 0, 0},
+        {-s, 0, c, 0},
+        { 0, 0, 0, 1}
     }};
     return t;
 }
@@ -62,13 +60,12 @@ Transform Transform::rotateZ(double angle)
 {
     double c = std::cos(angle);
     double s = std::sin(angle);
-
     Transform t;
     t.m_data = {{
-        {c, s, 0, 0},
+        { c, s, 0, 0},
         {-s, c, 0, 0},
-        {0, 0, 1, 0},
-        {0, 0, 0, 1}
+        { 0, 0, 1, 0},
+        { 0, 0, 0, 1}
     }};
     return t;
 }
@@ -114,43 +111,43 @@ Transform Transform::zero()
 
 void Transform::setTranslation(double dx, double dy, double dz) noexcept
 {
-    m_data[0][3] = dx;
-    m_data[1][3] = dy;
-    m_data[2][3] = dz;
+    m_data[3][0] = dx;
+    m_data[3][1] = dy;
+    m_data[3][2] = dz;
 }
 
 void Transform::setRotation(double angleX, double angleY, double angleZ) noexcept
 {
     Transform rot = rotate(angleX, angleY, angleZ);
     
-    double dx = m_data[0][3];
-    double dy = m_data[1][3];
-    double dz = m_data[2][3];
+    double dx = m_data[3][0];
+    double dy = m_data[3][1];
+    double dz = m_data[3][2];
     
     for (size_t i = 0; i < 3; i++)
         for (size_t j = 0; j < 3; j++)
             m_data[i][j] = rot(i, j);
     
-    m_data[0][3] = dx;
-    m_data[1][3] = dy;
-    m_data[2][3] = dz;
+    m_data[3][0] = dx;
+    m_data[3][1] = dy;
+    m_data[3][2] = dz;
 }
 
 void Transform::setScale(double sx, double sy, double sz) noexcept
 {
     Transform scl = scale(sx, sy, sz);
     
-    double dx = m_data[0][3];
-    double dy = m_data[1][3];
-    double dz = m_data[2][3];
+    double dx = m_data[3][0];
+    double dy = m_data[3][1];
+    double dz = m_data[3][2];
     
     for (size_t i = 0; i < 3; i++)
         for (size_t j = 0; j < 3; j++)
             m_data[i][j] = scl(i, j);
     
-    m_data[0][3] = dx;
-    m_data[1][3] = dy;
-    m_data[2][3] = dz;
+    m_data[3][0] = dx;
+    m_data[3][1] = dy;
+    m_data[3][2] = dz;
 }
 
 double Transform::operator()(size_t row, size_t col) const

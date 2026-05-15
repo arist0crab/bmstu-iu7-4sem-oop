@@ -110,3 +110,23 @@ class SurfaceObjectCommand : public ObjectCommand
             // sceneManager->toSurface();
         }
 };
+
+
+class SetCenterCommand : public ObjectCommand 
+{
+    public:
+        SetCenterCommand(size_t id, const Vertex &center) : m_id(id), m_center(center) {}
+        virtual ~SetCenterCommand() override = default;
+
+        void execute() override
+        {
+            auto sceneManager = ManagerSolution::getManager<SceneManager>();
+            auto object = sceneManager->getObject(m_id);
+            if (object)
+                object->setCenter(m_center);
+        }
+
+    private:
+        size_t m_id;
+        Vertex m_center;
+};

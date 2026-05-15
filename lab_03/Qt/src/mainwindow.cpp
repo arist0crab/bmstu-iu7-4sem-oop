@@ -40,13 +40,12 @@ void MainWindow::on_setCenterButton_clicked()
 	double cz = ui->setCenterZInput->text().toDouble(&ok);
 	if (!ok) return;
 
-    // TODO
-	// getSelectedObjects();
-	// for (auto id : m_selected)
-	// {
-	// 	auto cmd = std::make_shared<SetCenterCommand>(id, Vertex(cx, cy, cz));
-	// 	m_facade.execute(cmd);
-	// }
+	getSelectedObjects();
+	for (auto id : m_selected)
+	{
+		auto cmd = std::make_shared<SetCenterCommand>(id, Vertex(cx, cy, cz));
+		m_facade.execute(cmd);
+	}
 
 	drawScene();
 }
@@ -157,15 +156,24 @@ void MainWindow::on_loadCameraButton_clicked()
 void MainWindow::on_deleteObjectButton_clicked()
 {
 	getSelectedObjects();
+	
 	for (auto id : m_selected)
 	{
 		auto cmd = std::make_shared<RemoveObjectCommand>(id);
 		m_facade.execute(cmd);
 	}
 
+	std::sort(m_selected.begin(), m_selected.end(), std::greater<size_t>());
+	for (auto id : m_selected)
+		ui->objectTable->removeRow(id);
+
+	for (int i = 0; i < ui->objectTable->rowCount(); ++i)
+		ui->objectTable->item(i, 0)->setText(QString::number(i));
+
+	m_selected.clear();
+
 	drawScene();
 }
-
 void MainWindow::drawScene()
 {
 	auto cmd = std::make_shared<DrawSceneCommand>();
