@@ -1,6 +1,14 @@
 #include "Transform.hpp"
 #include "Vertex.hpp"
+#include "TransformException.hpp"
 #include <cmath>
+#include <limits>
+
+
+static bool is_nearly_zero(double value) 
+{
+    return std::abs(value) < std::numeric_limits<double>::epsilon();
+}
 
 Transform Transform::translation(double dx, double dy, double dz)
 {
@@ -16,11 +24,7 @@ Transform Transform::translation(double dx, double dy, double dz)
 
 Transform Transform::translation(const Vertex &point)
 {
-    const double dx = point.X();
-    const double dy = point.Y();
-    const double dz = point.Z();
-
-    return Transform::translation(dx, dy, dz);
+    return Transform::translation(point.X(), point.Y(), point.Z());
 }
 
 Transform Transform::rotate(double angleX, double angleY, double angleZ)
@@ -72,6 +76,9 @@ Transform Transform::rotateZ(double angle)
 
 Transform Transform::scale(double sx, double sy, double sz)
 {
+    if (is_nearly_zero(sx) || is_nearly_zero(sy) || is_nearly_zero(sz))
+        throw InvalidScaleException("Scale factor cannot be zero - this would collapse the object.");
+
     Transform t;
     t.m_data = {{
         {sx, 0, 0, 0},
@@ -102,10 +109,9 @@ Transform Transform::identity()
 Transform Transform::zero()
 {
     Transform t;
-    
     for (auto &row : t.m_data)
         row.fill(0);
-
+    
     return t;
 }
 
@@ -133,8 +139,11 @@ void Transform::setRotation(double angleX, double angleY, double angleZ) noexcep
     m_data[3][2] = dz;
 }
 
-void Transform::setScale(double sx, double sy, double sz) noexcept
+void Transform::setScale(double sx, double sy, double sz)
 {
+    if (is_nearly_zero(sx) || is_nearly_zero(sy) || is_nearly_zero(sz))
+        throw InvalidScaleException("Cannot set scale to zero.");
+
     Transform scl = scale(sx, sy, sz);
     
     double dx = m_data[3][0];

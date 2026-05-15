@@ -9,6 +9,7 @@
 #include <QFileDialog>
 
 #include "Facade.hpp"
+#include "Vertex.hpp"
 #include "ui_mainwindow.h"
 
 
@@ -42,7 +43,9 @@ class MainWindow : public QMainWindow
 
         void drawScene();
         void getSelectedObjects();
+        void createScene(QWidget *parent);
         void addModelToTable(const QString &filename);
+        void insertRow(size_t id, const std::string &name, const Vertex &center, const std::string &type);
 
 };
 

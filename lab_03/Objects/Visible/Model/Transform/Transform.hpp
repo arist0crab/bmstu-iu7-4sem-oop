@@ -26,7 +26,7 @@ class Transform
 
         void setTranslation(double dx, double dy, double dz) noexcept;
         void setRotation(double angleX, double angleY, double angleZ) noexcept;
-        void setScale(double sx, double sy, double sz) noexcept;
+        void setScale(double sx, double sy, double sz);
 
         double operator()(size_t row, size_t col) const;
         double& operator()(size_t row, size_t col);

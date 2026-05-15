@@ -86,6 +86,7 @@ target_include_directories(gui_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Reader/ObjReaderException
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Reader/TxtReaderException
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Scene
+    ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Transform
     
     # objects
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects
