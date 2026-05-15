@@ -1,5 +1,4 @@
 #include "mainwindow.hpp"
-
 #include "LoadCommand.hpp"
 #include "ObjectCommand.hpp"
 #include "SceneCommand.hpp"
@@ -127,7 +126,54 @@ void MainWindow::on_loadFigureButton_clicked()
 		m_facade.execute(cmd);
 	}
 
-	// TODO вынести эту порнографию
+	addModelToTable(filename);
+	drawScene();
+}
+
+void MainWindow::on_loadCameraButton_clicked()
+{
+	auto cmd = std::make_shared<AddDefaultCameraCommand>();
+	m_facade.execute(cmd);
+}
+
+void MainWindow::on_deleteObjectButton_clicked()
+{
+	getSelectedObjects();
+
+	for (auto id : m_selected)
+	{
+		auto cmd = std::make_shared<RemoveObjectCommand>(id);
+		m_facade.execute(cmd);
+	}
+
+	std::sort(m_selected.begin(), m_selected.end(), std::greater<size_t>());
+	for (auto id : m_selected)
+		ui->objectTable->removeRow(id);
+
+	for (int i = 0; i < ui->objectTable->rowCount(); ++i)
+		ui->objectTable->item(i, 0)->setText(QString::number(i));
+
+	m_selected.clear();
+	drawScene();
+}
+
+void MainWindow::drawScene()
+{
+	auto cmd = std::make_shared<DrawSceneCommand>();
+	m_facade.execute(cmd);
+}
+
+void MainWindow::getSelectedObjects()
+{
+	m_selected.clear();
+	auto selected = ui->objectTable->selectedItems();
+	for (auto item : selected)
+		if (item->column() == 0)
+			m_selected.push_back(item->row());
+}
+
+void MainWindow::addModelToTable(const QString &filename)
+{
 	auto sceneManager = ManagerSolution::getManager<SceneManager>();
 	auto objects = sceneManager->getObjects();
 	size_t lastId = objects.size() - 1;
@@ -143,48 +189,4 @@ void MainWindow::on_loadFigureButton_clicked()
 		new QTableWidgetItem(QString("(%1, %2, %3)").arg(center.X()).arg(center.Y()).arg(center.Z())));
 	ui->objectTable->setItem(ui->objectTable->rowCount() - 1, 3, 
 		new QTableWidgetItem("Модель"));
-
-	drawScene();
-}
-
-void MainWindow::on_loadCameraButton_clicked()
-{
-	auto cmd = std::make_shared<AddCameraCommand>();
-	m_facade.execute(cmd);
-}
-
-void MainWindow::on_deleteObjectButton_clicked()
-{
-	getSelectedObjects();
-	
-	for (auto id : m_selected)
-	{
-		auto cmd = std::make_shared<RemoveObjectCommand>(id);
-		m_facade.execute(cmd);
-	}
-
-	std::sort(m_selected.begin(), m_selected.end(), std::greater<size_t>());
-	for (auto id : m_selected)
-		ui->objectTable->removeRow(id);
-
-	for (int i = 0; i < ui->objectTable->rowCount(); ++i)
-		ui->objectTable->item(i, 0)->setText(QString::number(i));
-
-	m_selected.clear();
-
-	drawScene();
-}
-void MainWindow::drawScene()
-{
-	auto cmd = std::make_shared<DrawSceneCommand>();
-	m_facade.execute(cmd);
-}
-
-void MainWindow::getSelectedObjects()
-{
-	m_selected.clear();
-	auto selected = ui->objectTable->selectedItems();
-	for (auto item : selected)
-		if (item->column() == 0)
-			m_selected.push_back(item->row());
 }

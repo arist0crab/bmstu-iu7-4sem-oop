@@ -42,6 +42,8 @@ class MainWindow : public QMainWindow
 
         void drawScene();
         void getSelectedObjects();
+        void addModelToTable(const QString &filename);
+
 };
 
 #endif

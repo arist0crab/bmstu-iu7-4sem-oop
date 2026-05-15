@@ -20,6 +20,8 @@ class SceneManager : public BaseManager
 
         void addObject(std::shared_ptr<BaseObject> object);
         void removeObject(size_t id);
+        void setCenter(size_t id, const Vertex &center);
+        void toSurface(size_t id);
 
         void compose(std::vector<size_t> ids);
         void accept(std::shared_ptr<BaseVisitor> visitor);

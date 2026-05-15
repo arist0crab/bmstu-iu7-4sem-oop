@@ -2,9 +2,7 @@
 
 #include "BaseCommand.hpp"
 #include "BaseObject.hpp"
-#include "ManagerSolution.hpp"
-#include "SceneManager.hpp"
-#include "TransformManager.hpp"
+#include "Vertex.hpp"
 
 
 class ObjectCommand : public BaseCommand
@@ -17,116 +15,101 @@ class ObjectCommand : public BaseCommand
 class AddObjectCommand : public ObjectCommand
 {
     public:
-        AddObjectCommand(std::shared_ptr<BaseObject> object) : m_object(object) { }
+        AddObjectCommand(std::shared_ptr<BaseObject> object);
         virtual ~AddObjectCommand() override = default;
 
-        void execute() override
-        {
-            auto sceneManager = ManagerSolution::getManager<SceneManager>();
-            sceneManager->addObject(m_object);
-        }
+        void execute() override;
 
     private:
+        using Action = void (SceneManager::*)(std::shared_ptr<BaseObject>);
+        Action m_action;
         std::shared_ptr<BaseObject> m_object;
 };
 
-class RemoveObjectCommand : public ObjectCommand 
+class RemoveObjectCommand : public ObjectCommand
 {
     public:
-        RemoveObjectCommand(size_t id) : m_id(id) {}
+        RemoveObjectCommand(size_t id);
         virtual ~RemoveObjectCommand() override = default;
 
-        void execute() override
-        {
-            auto sceneManager = ManagerSolution::getManager<SceneManager>();
-            sceneManager->removeObject(m_id);
-        }
+        void execute() override;
 
     private:
+        using Action = void (SceneManager::*)(size_t);
+        Action m_action;
         size_t m_id;
 };
 
-class MoveObjectCommand : public ObjectCommand 
+class MoveObjectCommand : public ObjectCommand
 {
     public:
-        MoveObjectCommand(size_t id, double dx, double dy, double dz) : m_id(id), m_dx(dx), m_dy(dy), m_dz(dz) {}
+        MoveObjectCommand(size_t id, double dx, double dy, double dz);
         virtual ~MoveObjectCommand() override = default;
 
-        void execute() override
-        {
-            auto transformManager = ManagerSolution::getManager<TransformManager>();
-            transformManager->moveObject(m_id, m_dx, m_dy, m_dz);
-        }
+        void execute() override;
 
     private:
+        using Action = void (TransformManager::*)(size_t, double, double, double);
+        Action m_action;
         size_t m_id;
         double m_dx, m_dy, m_dz;
 };
 
-class RotateObjectCommand : public ObjectCommand 
+class RotateObjectCommand : public ObjectCommand
 {
     public:
-        RotateObjectCommand(size_t id, double ax, double ay, double az) : m_id(id), m_angleX(ax), m_angleY(ay), m_angleZ(az) {}
+        RotateObjectCommand(size_t id, double ax, double ay, double az);
         virtual ~RotateObjectCommand() override = default;
 
-        void execute() override
-        {
-            auto transformManager = ManagerSolution::getManager<TransformManager>();
-            transformManager->rotateObject(m_id, m_angleX, m_angleY, m_angleZ);
-        }
+        void execute() override;
 
     private:
+        using Action = void (TransformManager::*)(size_t, double, double, double);
+        Action m_action;
         size_t m_id;
-        double m_angleX, m_angleY, m_angleZ;
+        double m_ax, m_ay, m_az;
 };
 
-class ScaleObjectCommand : public ObjectCommand 
+class ScaleObjectCommand : public ObjectCommand
 {
     public:
-        ScaleObjectCommand(size_t id, double kx, double ky, double kz) : m_id(id), m_kx(kx), m_ky(ky), m_kz(kz) {}
+        ScaleObjectCommand(size_t id, double kx, double ky, double kz);
         virtual ~ScaleObjectCommand() override = default;
 
-        void execute() override
-        {
-            auto transformManager = ManagerSolution::getManager<TransformManager>();
-            transformManager->scaleObject(m_id, m_kx, m_ky, m_kz);
-        }
+        void execute() override;
 
     private:
+        using Action = void (TransformManager::*)(size_t, double, double, double);
+        Action m_action;
         size_t m_id;
         double m_kx, m_ky, m_kz;
 };
 
-class SurfaceObjectCommand : public ObjectCommand 
+class SetCenterCommand : public ObjectCommand
 {
     public:
-        SurfaceObjectCommand() = default;
-        virtual ~SurfaceObjectCommand() override = default;
-
-        void execute() override
-        {
-            // TODO
-            // auto sceneManager = ManagerSolution::getManager<SceneManager>();
-            // sceneManager->toSurface();
-        }
-};
-
-
-class SetCenterCommand : public ObjectCommand 
-{
-    public:
-        SetCenterCommand(size_t id, const Vertex &center) : m_id(id), m_center(center) {}
+        SetCenterCommand(size_t id, const Vertex &center);
         virtual ~SetCenterCommand() override = default;
 
-        void execute() override
-        {
-            auto sceneManager = ManagerSolution::getManager<SceneManager>();
-            auto object = sceneManager->getObject(m_id);
-            if (object)
-                object->setCenter(m_center);
-        }
+        void execute() override;
 
     private:
+        using Action = void (SceneManager::*)(size_t, const Vertex &);
+        Action m_action;
         size_t m_id;
         Vertex m_center;
+};
+
+class SurfaceObjectCommand : public ObjectCommand
+{
+    public:
+        SurfaceObjectCommand(size_t id);
+        virtual ~SurfaceObjectCommand() override = default;
+
+        void execute() override;
+
+    private:
+        using Action = void (SceneManager::*)(size_t);
+        Action m_action;
+        size_t m_id;
 };

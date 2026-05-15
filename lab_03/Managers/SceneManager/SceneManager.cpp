@@ -51,6 +51,20 @@ void SceneManager::compose(std::vector<size_t> ids)
     m_scene->addObject(composite);
 }
 
+void SceneManager::setCenter(size_t id, const Vertex &center)
+{
+    auto obj = getObject(id);
+    if (obj)
+        obj->setCenter(center);
+
+    // TODO добавить соответствующую ошибку
+}
+
+void SceneManager::toSurface(size_t id)
+{
+    // TODO
+}
+
 void SceneManager::accept(std::shared_ptr<BaseVisitor> visitor)
 {
     m_scene->accept(visitor);

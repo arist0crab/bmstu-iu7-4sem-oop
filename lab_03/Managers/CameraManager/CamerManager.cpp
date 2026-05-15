@@ -18,11 +18,13 @@ std::shared_ptr<BaseCamera> CameraManager::getActiveCamera() const noexcept
     return m_cameras[m_activeCamId];
 }
 
-size_t CameraManager::addCamera(std::shared_ptr<BaseCamera> camera)
+size_t CameraManager::addDefaultCamera()
 {
+    auto camera = std::make_shared<DefaultCamera>(Vertex(0, 0, 100), Vertex(0, 0, 0));
     m_cameras.push_back(camera);
-    
-    return m_cameras.size() - 1;
+    m_activeCamId = m_cameras.size() - 1;
+
+    return m_activeCamId;
 }
 
 void CameraManager::removeCamera(size_t id)

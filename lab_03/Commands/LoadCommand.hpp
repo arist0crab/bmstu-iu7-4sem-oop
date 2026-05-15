@@ -2,11 +2,7 @@
 
 #include <string>
 #include "BaseCommand.hpp"
-#include "ManagerSolution.hpp"
-#include "SceneManager.hpp"
-#include "LoadManager.hpp"
-#include "MatrixBuilder.hpp"
-#include "ListBuilder.hpp"
+#include "BaseObject.hpp"
 
 
 class LoadCommand : public BaseCommand
@@ -19,39 +15,33 @@ class LoadCommand : public BaseCommand
 class LoadMatrixModelCommand : public LoadCommand
 {
     public:
-        LoadMatrixModelCommand(const std::string &filename) : m_filename(filename) {}
+        LoadMatrixModelCommand(const std::string &filename);
         virtual ~LoadMatrixModelCommand() override = default;
 
-        void execute() override
-        {
-            auto loadManager = ManagerSolution::getManager<LoadManager>();
-            auto sceneManager = ManagerSolution::getManager<SceneManager>();
-
-            auto model = loadManager->load<MatrixBuilder>(m_filename);
-            sceneManager->addObject(model);
-        }
+        void execute() override;
 
     private:
+        using Action = std::shared_ptr<BaseObject> (LoadManager::*)(const std::string &);
+        using SceneAction = void (SceneManager::*)(std::shared_ptr<BaseObject>);
+
+        Action m_loadAction;
+        SceneAction m_sceneAction;
         std::string m_filename;
 };
 
 class LoadListModelCommand : public LoadCommand
 {
     public:
-        LoadListModelCommand(const std::string &filename) : m_filename(filename) {}
+        LoadListModelCommand(const std::string &filename);
         virtual ~LoadListModelCommand() override = default;
 
-        // TODO мне не нравится что тут вызываются оба менеджера: LoadManager и SceneManager
-
-        void execute() override
-        {
-            auto loadManager = ManagerSolution::getManager<LoadManager>();
-            auto sceneManager = ManagerSolution::getManager<SceneManager>();
-
-            auto model = loadManager->load<ListBuilder>(m_filename);
-            sceneManager->addObject(model);
-        }
+        void execute() override;
 
     private:
+        using Action = std::shared_ptr<BaseObject> (LoadManager::*)(const std::string &);
+        using SceneAction = void (SceneManager::*)(std::shared_ptr<BaseObject>);
+        
+        Action m_loadAction;
+        SceneAction m_sceneAction;
         std::string m_filename;
 };

@@ -1,11 +1,8 @@
 #pragma once
 
 #include "BaseCommand.hpp"
-#include "ManagerSolution.hpp"
-#include "CameraManager.hpp"
-#include "SceneManager.hpp"
-#include "TransformManager.hpp"
 #include "DefaultCamera.hpp"
+
 
 class CameraCommand : public BaseCommand
 {
@@ -14,75 +11,57 @@ class CameraCommand : public BaseCommand
 		virtual ~CameraCommand() override = default;
 };
 
-class AddCameraCommand : public CameraCommand
+class AddDefaultCameraCommand : public CameraCommand
 {
 	public:
-		AddCameraCommand() = default;
-		virtual ~AddCameraCommand() override = default;
+		AddDefaultCameraCommand();
 
-		void execute() override
-		{
-			auto cameraManager = ManagerSolution::getManager<CameraManager>();
-			auto camera = std::make_shared<DefaultCamera>(
-				Vertex(0, 0, 100),
-				Vertex(0, 0, 0)
-			);
-			size_t id = cameraManager->addCamera(camera);
-			cameraManager->setActiveCamera(id);
-		}
+		void execute() override;
+
+	private:
+		using Action = size_t (CameraManager::*)();
+		Action m_action;
 };
 
 class RemoveCameraCommand : public CameraCommand
 {
 	public:
-		RemoveCameraCommand(size_t id) : m_id(id) {}
+		RemoveCameraCommand(size_t id);
 		virtual ~RemoveCameraCommand() override = default;
 
-		void execute() override
-		{
-			auto cameraManager = ManagerSolution::getManager<CameraManager>();
-			cameraManager->removeCamera(m_id);
-		}
+		void execute() override;
 
 	private:
+		using Action = void (CameraManager::*)(size_t);
+		Action m_action;
 		size_t m_id;
 };
 
 class SetActiveCameraCommand : public CameraCommand
 {
 	public:
-		SetActiveCameraCommand(size_t id) : m_id(id) {}
+		SetActiveCameraCommand(size_t id);
 		virtual ~SetActiveCameraCommand() override = default;
 
-		void execute() override
-		{
-			auto cameraManager = ManagerSolution::getManager<CameraManager>();
-			cameraManager->setActiveCamera(m_id);
-		}
+		void execute() override;
 
 	private:
+		using Action = void (CameraManager::*)(size_t);
+		Action m_action;
 		size_t m_id;
 };
 
 class MoveCameraCommand : public CameraCommand
 {
 	public:
-		MoveCameraCommand(size_t id, double dx, double dy, double dz)
-			: m_id(id), m_dx(dx), m_dy(dy), m_dz(dz) {}
+		MoveCameraCommand(size_t id, double dx, double dy, double dz);
 		virtual ~MoveCameraCommand() override = default;
 
-		void execute() override
-		{
-			auto cameraManager = ManagerSolution::getManager<CameraManager>();
-			auto camera = cameraManager->getActiveCamera();
-			if (camera)
-			{
-				auto transform = Transform::translation(m_dx, m_dy, m_dz);
-				camera->transform(transform);
-			}
-		}
+		void execute() override;
 
 	private:
+		using Action = void (TransformManager::*)(size_t, double, double, double);
+		Action m_action;
 		size_t m_id;
 		double m_dx, m_dy, m_dz;
 };
@@ -90,22 +69,14 @@ class MoveCameraCommand : public CameraCommand
 class RotateCameraCommand : public CameraCommand
 {
 	public:
-		RotateCameraCommand(size_t id, double ax, double ay, double az)
-			: m_id(id), m_ax(ax), m_ay(ay), m_az(az) {}
+		RotateCameraCommand(size_t id, double ax, double ay, double az);
 		virtual ~RotateCameraCommand() override = default;
 
-		void execute() override
-		{
-			auto cameraManager = ManagerSolution::getManager<CameraManager>();
-			auto camera = cameraManager->getActiveCamera();
-			if (camera)
-			{
-				auto transform = Transform::rotate(m_ax, m_ay, m_az);
-				camera->transform(transform);
-			}
-		}
+		void execute() override;
 
 	private:
+		using Action = void (TransformManager::*)(size_t, double, double, double);
+		Action m_action;
 		size_t m_id;
 		double m_ax, m_ay, m_az;
 };

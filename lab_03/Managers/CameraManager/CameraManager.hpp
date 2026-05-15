@@ -15,7 +15,7 @@ class CameraManager : public BaseManager
         void setActiveCamera(size_t id);
         std::shared_ptr<BaseCamera> getActiveCamera() const noexcept;
 
-        size_t addCamera(std::shared_ptr<BaseCamera> camera);
+        size_t addDefaultCamera();
         void removeCamera(size_t id);
 
     private:

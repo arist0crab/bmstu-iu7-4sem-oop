@@ -22,11 +22,7 @@ class InitSceneCommand : public SceneCommand
 		void execute() override
 		{
 			auto cameraManager = ManagerSolution::getManager<CameraManager>();
-			auto defaultCamera = std::make_shared<DefaultCamera>(
-				Vertex(0, 0, 100),
-				Vertex(0, 0, 0)
-			);
-			size_t camId = cameraManager->addCamera(defaultCamera);
+			size_t camId = cameraManager->addDefaultCamera();
 			cameraManager->setActiveCamera(camId);
 		}
 };
