@@ -37,6 +37,10 @@ target_include_directories(gui_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/UI
     ${CMAKE_CURRENT_SOURCE_DIR}/Facade
     ${CMAKE_CURRENT_SOURCE_DIR}/Commands
+    ${CMAKE_CURRENT_SOURCE_DIR}/Commands/CameraCommand
+    ${CMAKE_CURRENT_SOURCE_DIR}/Commands/LoadCommand
+    ${CMAKE_CURRENT_SOURCE_DIR}/Commands/ObjectCommand
+    ${CMAKE_CURRENT_SOURCE_DIR}/Commands/SceneCommand
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/Creators
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/CameraManager

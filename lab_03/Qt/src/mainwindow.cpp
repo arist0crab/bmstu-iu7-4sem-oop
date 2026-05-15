@@ -7,6 +7,8 @@
 #include "ManagerSolution.hpp"
 #include "CameraManager.hpp"
 #include "QtDrawer.hpp"
+#include "DrawManager.hpp"
+#include "SceneManager.hpp"
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
