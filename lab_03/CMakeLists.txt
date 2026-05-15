@@ -33,17 +33,31 @@ set_target_properties(gui_app PROPERTIES
 )
 
 target_include_directories(gui_app PRIVATE 
+    # core
     ${CMAKE_CURRENT_SOURCE_DIR}
+    
+    # ui
     ${CMAKE_CURRENT_SOURCE_DIR}/UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/Qt
+    ${CMAKE_CURRENT_SOURCE_DIR}/Qt/inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Qt/src
+    
+    # facade
     ${CMAKE_CURRENT_SOURCE_DIR}/Facade
+    
+    # commands
     ${CMAKE_CURRENT_SOURCE_DIR}/Commands
     ${CMAKE_CURRENT_SOURCE_DIR}/Commands/CameraCommand
     ${CMAKE_CURRENT_SOURCE_DIR}/Commands/LoadCommand
     ${CMAKE_CURRENT_SOURCE_DIR}/Commands/ObjectCommand
     ${CMAKE_CURRENT_SOURCE_DIR}/Commands/SceneCommand
+    
+    # managers
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/Creators
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/CameraManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/Managers/SceneManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/Managers/TransformManager
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/DrawManager
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/DrawManager/DrawFactory
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/DrawManager/DrawFactory/Creators
@@ -63,12 +77,19 @@ target_include_directories(gui_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/LoadManager/LoadFactory/ReaderFactory/Products
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/LoadManager/LoadFactory/ReaderFactory/Products/ObjReader
     ${CMAKE_CURRENT_SOURCE_DIR}/Managers/LoadManager/LoadFactory/ReaderFactory/Products/TxtReader
-    ${CMAKE_CURRENT_SOURCE_DIR}/Managers/SceneManager
-    ${CMAKE_CURRENT_SOURCE_DIR}/Managers/TransformManager
+    
+    # exceptions
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Model
     ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Camera
+    ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Reader
+    ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Reader/ObjReaderException
+    ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Reader/TxtReaderException
+    ${CMAKE_CURRENT_SOURCE_DIR}/Exceptions/Scene
+    
+    # objects
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects
+    ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Composite
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible/Camera
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible/Camera/DefaultCamera
@@ -81,17 +102,17 @@ target_include_directories(gui_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Visible/Model/Structure/List
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Visible/Model/Structure/Matrix
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Visible/Model/Transform
-    ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Composite
+    
+    # visitors
     ${CMAKE_CURRENT_SOURCE_DIR}/Visitors
     ${CMAKE_CURRENT_SOURCE_DIR}/Visitors/Creators
     ${CMAKE_CURRENT_SOURCE_DIR}/Visitors/DrawVisitor
     ${CMAKE_CURRENT_SOURCE_DIR}/Visitors/DrawVisitor/DrawCarcassVisitor
     ${CMAKE_CURRENT_SOURCE_DIR}/Visitors/DrawVisitor/DrawSurfaceVisitor
     ${CMAKE_CURRENT_SOURCE_DIR}/Visitors/TransformVisitor
+    
+    # scene
     ${CMAKE_CURRENT_SOURCE_DIR}/Scene
-    ${CMAKE_CURRENT_SOURCE_DIR}/Qt
-    ${CMAKE_CURRENT_SOURCE_DIR}/Qt/inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Qt/src
 )
 
 target_link_libraries(gui_app PRIVATE Qt6::Widgets)

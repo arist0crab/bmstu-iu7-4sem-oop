@@ -34,9 +34,3 @@ size_t CameraManager::addDefaultCamera()
 
     return m_activeCamId;
 }
-
-void CameraManager::removeCamera(size_t id)
-{
-    if (id < m_cameras.size())
-        m_cameras.erase(m_cameras.begin() + id);
-}
