@@ -262,8 +262,23 @@ void MainWindow::on_loadCameraButton_clicked()
 {
     try
     {
+        auto sceneManager = ManagerSolution::getManager<SceneManager>();
+        size_t objectsBefore = sceneManager->getObjects().size();
+
         std::shared_ptr<BaseCommand> cmd = std::make_shared<AddDefaultCameraCommand>();
         m_facade.execute(cmd);
+
+        auto objectsAfter = sceneManager->getObjects();
+        size_t lastId = objectsAfter.size() - 1;
+        auto camera = sceneManager->getObject(lastId);
+        
+        if (camera)
+        {
+            Vertex center = camera->getCenter();
+            insertRow(lastId, "Камера " + std::to_string(lastId), center, "Камера");
+        }
+
+        drawScene();
     }
     catch (const BaseException &ex)
     {
@@ -296,6 +311,37 @@ void MainWindow::on_deleteObjectButton_clicked()
 
         m_selected.clear();
         drawScene();
+    }
+    catch (const BaseException &ex)
+    {
+        QMessageBox::critical(this, "Error!", ex.what());
+    }
+    catch (const std::exception &ex)
+    {
+        QMessageBox::critical(this, "Unknown error!", ex.what());
+    }
+}
+
+void MainWindow::on_setActiveCameraButton_clicked()
+{
+    getSelectedObjects();
+
+    if (m_selected.empty())
+        return;
+
+    size_t id = m_selected[0];
+
+    auto type = ui->objectTable->item(id, 3)->text();
+    if (type != "Камера")
+    {
+        QMessageBox::warning(this, "Предупреждение", "Выбранный объект не является камерой.");
+        return;
+    }
+
+    try
+    {
+        std::shared_ptr<BaseCommand> cmd = std::make_shared<SetActiveCameraCommand>(id);
+        m_facade.execute(cmd);
     }
     catch (const BaseException &ex)
     {

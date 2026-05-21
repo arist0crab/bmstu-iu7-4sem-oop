@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1459</width>
+    <width>1473</width>
     <height>711</height>
    </rect>
   </property>
@@ -217,7 +217,7 @@ QTabWidget QPushButton:pressed
          <string notr="true"/>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -310,7 +310,7 @@ QTabWidget QPushButton:pressed
           <item row="2" column="1">
            <widget class="QPushButton" name="loadCameraButton">
             <property name="text">
-             <string>Подгрузить</string>
+             <string>Добавить</string>
             </property>
            </widget>
           </item>
@@ -348,9 +348,9 @@ QTabWidget QPushButton:pressed
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QPushButton" name="smthElseButton">
+          <widget class="QPushButton" name="setActiveCameraButton">
            <property name="text">
-            <string>Еще что-нибудь</string>
+            <string>Установить камеру</string>
            </property>
           </widget>
          </item>
@@ -507,13 +507,34 @@ QSpinBox::up-button, QSpinBox::down-button {
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="0" column="0">
-           <widget class="QDoubleSpinBox" name="setCenterXInput"/>
+           <widget class="QDoubleSpinBox" name="setCenterXInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="setCenterYInput"/>
+           <widget class="QDoubleSpinBox" name="setCenterYInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="setCenterZInput"/>
+           <widget class="QDoubleSpinBox" name="setCenterZInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="setCenterButton">
@@ -574,13 +595,49 @@ QSpinBox::up-button, QSpinBox::down-button {
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
-           <widget class="QDoubleSpinBox" name="scaleFigureXInput"/>
+           <widget class="QDoubleSpinBox" name="scaleFigureXInput">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="scaleFigureYInput"/>
+           <widget class="QDoubleSpinBox" name="scaleFigureYInput">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimum">
+             <double>0.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="scaleFigureZInput"/>
+           <widget class="QDoubleSpinBox" name="scaleFigureZInput">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimum">
+             <double>0.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="scaleFigureButton">
@@ -641,7 +698,14 @@ QSpinBox::up-button, QSpinBox::down-button {
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
-           <widget class="QDoubleSpinBox" name="moveFigureXInput"/>
+           <widget class="QDoubleSpinBox" name="moveFigureXInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="moveFigureButton">
@@ -651,10 +715,24 @@ QSpinBox::up-button, QSpinBox::down-button {
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="moveFigureYInput"/>
+           <widget class="QDoubleSpinBox" name="moveFigureYInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="moveFigureZInput"/>
+           <widget class="QDoubleSpinBox" name="moveFigureZInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -708,13 +786,34 @@ QSpinBox::up-button, QSpinBox::down-button {
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
-           <widget class="QDoubleSpinBox" name="rotateFigureXInput"/>
+           <widget class="QDoubleSpinBox" name="rotateFigureXInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="rotateFigureYInput"/>
+           <widget class="QDoubleSpinBox" name="rotateFigureYInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="rotateFigureZInput"/>
+           <widget class="QDoubleSpinBox" name="rotateFigureZInput">
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="rotateFigureButton">
@@ -736,7 +835,7 @@ QSpinBox::up-button, QSpinBox::down-button {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1459</width>
+     <width>1473</width>
      <height>24</height>
     </rect>
    </property>
