@@ -1,37 +1,23 @@
 #include "SceneCommand.hpp"
 #include "CameraManager.hpp"
 #include "DrawManager.hpp"
-#include "DrawCarcassVisitor.hpp"
 #include "SceneManager.hpp"
 
-
-InitSceneCommand::InitSceneCommand()
-    : m_addAction(&CameraManager::addDefaultCamera)
-    , m_setAction(&CameraManager::setActiveCamera) {}
+InitSceneCommand::InitSceneCommand() : m_action(&SceneManager::initScene) {}
 
 void InitSceneCommand::execute()
 {
-    auto cameraManager = ManagerSolution::getManager<CameraManager>();
-    auto sceneManager = ManagerSolution::getManager<SceneManager>();
-
-    size_t localCamId = cameraManager->addDefaultCamera();
-    std::shared_ptr<BaseCamera> camera = cameraManager->getCamera(localCamId);
-
-    sceneManager->addObject(camera);
-    cameraManager->setActiveCamera(localCamId);
+    ((*m_sceneManager).*m_action)();
 }
 
-DrawSceneCommand::DrawSceneCommand()
-    : m_action(&DrawManager::draw) {}
+DrawSceneCommand::DrawSceneCommand() : m_action(&DrawManager::drawScene) {}
 
 void DrawSceneCommand::execute()
 {
-    auto visitor = std::make_shared<DrawCarcassVisitor>();
-    ((*m_drawManager).*m_action)(visitor);
+    ((*m_drawManager).*m_action)(); 
 }
 
-ClearSceneCommand::ClearSceneCommand()
-    : m_action(&SceneManager::clear) {}
+ClearSceneCommand::ClearSceneCommand() : m_action(&SceneManager::clear) {}
 
 void ClearSceneCommand::execute()
 {

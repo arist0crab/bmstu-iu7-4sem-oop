@@ -26,6 +26,7 @@ class SceneManager : public BaseManager
         void compose(std::vector<size_t> ids);
         void accept(std::shared_ptr<BaseVisitor> visitor);
 
+        void initScene();
         void clear();
 
     private:

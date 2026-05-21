@@ -19,7 +19,7 @@ class AddDefaultCameraCommand : public CameraCommand
 		void execute() override;
 
 	private:
-		using Action = size_t (CameraManager::*)();
+		using Action = void (CameraManager::*)();
 		Action m_action;
 };
 

@@ -1,8 +1,10 @@
 #pragma once
 
+#include <memory>
 #include "BaseCommand.hpp"
-#include "DrawVisitor.hpp"
 
+class SceneManager;
+class DrawManager;
 
 class SceneCommand : public BaseCommand
 {
@@ -20,10 +22,8 @@ class InitSceneCommand : public SceneCommand
         void execute() override;
 
     private:
-        using AddAction = size_t (CameraManager::*)();
-        using SetAction = void (CameraManager::*)(size_t);
-        AddAction m_addAction;
-        SetAction m_setAction;
+        using Action = void (SceneManager::*)();
+        Action m_action;
 };
 
 class DrawSceneCommand : public SceneCommand
@@ -35,9 +35,9 @@ class DrawSceneCommand : public SceneCommand
         void execute() override;
 
     private:
-        using Action = void (DrawManager::*)(std::shared_ptr<DrawVisitor>);
+        using Action = void (DrawManager::*)();
         Action m_action;
-};
+}; 
 
 class ClearSceneCommand : public SceneCommand
 {

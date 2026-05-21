@@ -1,5 +1,7 @@
 #include "SceneManager.hpp"
-#include "Exceptions/Scene/SceneException.hpp"
+#include "SceneException.hpp"
+#include "ManagerSolution.hpp"
+#include "CameraManager.hpp"
 
 
 SceneManager::SceneManager()
@@ -84,6 +86,12 @@ void SceneManager::accept(std::shared_ptr<BaseVisitor> visitor)
     if (!visitor)
         throw SceneInvalidOperationException("Cannot accept null visitor");
     m_scene->accept(visitor);
+}
+
+void SceneManager::initScene()
+{
+    auto cameraManager = ManagerSolution::getManager<CameraManager>();
+    cameraManager->addDefaultCamera();
 }
 
 void SceneManager::clear()

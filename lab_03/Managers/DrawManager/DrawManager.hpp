@@ -17,6 +17,7 @@ class DrawManager : public BaseManager
 
         void setDrawer(std::shared_ptr<BaseDrawer> drawer);
         void draw(std::shared_ptr<DrawVisitor> visitor);
+        void drawScene();
 
     private:
         std::shared_ptr<BaseDrawer> m_drawer;

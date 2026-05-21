@@ -1,5 +1,7 @@
 #include "CameraManager.hpp"
 #include "CameraException.hpp"
+#include "ManagerSolution.hpp"
+#include "SceneManager.hpp"
 
 
 void CameraManager::setActiveCamera(size_t id)
@@ -41,11 +43,12 @@ void CameraManager::removeCamera(size_t id)
         m_activeCamId = m_cameras.empty() ? 0 : 0; 
 }
 
-size_t CameraManager::addDefaultCamera()
+void CameraManager::addDefaultCamera()
 {
     auto camera = std::make_shared<DefaultCamera>(Vertex(0, 0, 100), Vertex(0, 0, 0));
     m_cameras.push_back(camera);
     m_activeCamId = m_cameras.size() - 1;
 
-    return m_activeCamId;
+    auto sceneManager = ManagerSolution::getManager<SceneManager>();
+    sceneManager->addObject(camera);
 }

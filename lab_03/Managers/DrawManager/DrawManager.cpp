@@ -17,3 +17,9 @@ void DrawManager::draw(std::shared_ptr<DrawVisitor> visitor)
     auto sceneManager = ManagerSolution::getManager<SceneManager>();
     sceneManager->accept(visitor);
 }
+
+void DrawManager::drawScene()
+{
+    auto visitor = std::make_shared<DrawCarcassVisitor>();    
+    this->draw(visitor); 
+}

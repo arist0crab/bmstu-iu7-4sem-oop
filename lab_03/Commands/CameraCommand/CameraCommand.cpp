@@ -7,12 +7,7 @@ AddDefaultCameraCommand::AddDefaultCameraCommand() : m_action(&CameraManager::ad
 
 void AddDefaultCameraCommand::execute()
 {
-    size_t newCameraId = ((*m_cameraManager).*m_action)();
-
-    std::shared_ptr<BaseCamera> newCamera = m_cameraManager->getCamera(newCameraId);
-    
-    auto sceneManager = ManagerSolution::getManager<SceneManager>();
-    sceneManager->addObject(newCamera); 
+    ((*m_cameraManager).*m_action)();
 }
 
 RemoveCameraCommand::RemoveCameraCommand(size_t id) : m_action(&CameraManager::removeCamera), m_id(id) {}
