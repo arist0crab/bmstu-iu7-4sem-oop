@@ -9,6 +9,14 @@ void DefaultCamera::transform(const Transform &transform)
 {
     m_position.transform(transform);
     m_target.transform(transform);
+
+    Vertex zero(0, 0, 0);
+    Vertex upPoint(m_up.X(), m_up.Y(), m_up.Z());
+
+    zero.transform(transform);
+    upPoint.transform(transform);
+
+    m_up = (upPoint - zero).normalize();
 }
 
 Vertex DefaultCamera::getCenter() const noexcept 

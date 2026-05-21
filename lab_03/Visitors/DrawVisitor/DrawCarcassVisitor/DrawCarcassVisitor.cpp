@@ -4,14 +4,26 @@ void DrawCarcassVisitor::visit(BaseCamera &camera) const { }
 
 void DrawCarcassVisitor::visit(BaseModel &model) const
 {
+    if (!m_camera || !m_drawer) return;
+
     auto vertices = model.getVertices();
     auto edges = model.getEdges();
 
+    Transform viewMatrix = m_camera->getViewMatrix();
+
+    double aspect = 1.0; 
+    Transform projMatrix = m_camera->getProjectionMatrix(aspect);
+
+    Transform viewProjection = viewMatrix * projMatrix;
+
     for (auto &edge : edges)
     {
-        auto v1 = vertices[edge.getStart()];
-        auto v2 = vertices[edge.getEnd()];
+        Vertex v1 = vertices[edge.getStart()];
+        Vertex v2 = vertices[edge.getEnd()];
 
-        m_drawer->drawLine(v1, v2);
+        v1.transform(viewProjection);
+        v2.transform(viewProjection);
+
+        m_drawer->drawLine(v1, v2); 
     }
 }

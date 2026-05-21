@@ -297,6 +297,7 @@ void MainWindow::on_loadCameraButton_clicked()
             insertRow(lastId, "Камера " + std::to_string(lastId), center, "Камера");
         }
 
+        updateActiveCameraHighlight(lastId);
         drawScene();
     }
     catch (const BaseException &ex)

@@ -1,6 +1,6 @@
 #include "Vertex.hpp"
 
-Vertex::Vertex(double x, double y, double z) : m_x(x), m_y(y), m_z(z) { }
+Vertex::Vertex(double x, double y, double z) : m_x(x), m_y(y), m_z(z), m_w(1.0) { }
 
 double Vertex::X() const noexcept
 {
