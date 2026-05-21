@@ -47,7 +47,7 @@ class MainWindow : public QMainWindow
         void createScene(QWidget *parent);
         void addModelToTable(const QString &filename);
         void insertRow(size_t id, const std::string &name, const Vertex &center, const std::string &type);
-
+        void updateActiveCameraHighlight(size_t activeId);
 };
 
 #endif

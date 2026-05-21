@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             }
         }
 
+        updateActiveCameraHighlight(0);
         drawScene();
     }
     catch (const BaseException &ex)
@@ -308,26 +309,60 @@ void MainWindow::on_loadCameraButton_clicked()
     }
 }
 
+// TODO декомпозировать
 void MainWindow::on_deleteObjectButton_clicked()
 {
     getSelectedObjects();
+    if (m_selected.empty()) return;
 
     try
     {
-        for (const auto id : m_selected)
+        std::sort(m_selected.begin(), m_selected.end(), std::greater<size_t>());
+        
+        auto cameraManager = ManagerSolution::getManager<CameraManager>();
+
+        int totalCamerasInTable = 0;
+        for (int row = 0; row < ui->objectTable->rowCount(); ++row)
         {
-            std::shared_ptr<BaseCommand> cmd = std::make_shared<RemoveObjectCommand>(id);
-            m_facade.execute(cmd);
+            auto typeItem = ui->objectTable->item(row, 3);
+            if (typeItem && typeItem->text() == "Камера")
+                totalCamerasInTable++;
         }
 
-        std::sort(m_selected.begin(), m_selected.end(), std::greater<size_t>());
-        for (auto id : m_selected)
+        int camerasToDelete = 0;
+        for (const auto id : m_selected)
+        {
+            auto typeItem = ui->objectTable->item(id, 3);
+            if (typeItem && typeItem->text() == "Камера")
+                camerasToDelete++;
+        }
+
+        if (camerasToDelete > 0 && camerasToDelete >= totalCamerasInTable)
+        {
+            QMessageBox::warning(this, "Предупреждение", "Невозможно удалить последнюю камеру. На сцене должен оставаться как минимум один источник обзора.");
+            return;
+        }
+
+        for (const auto id : m_selected)
+        {
+            auto typeItem = ui->objectTable->item(id, 3);
+            if (typeItem && typeItem->text() == "Камера")
+                cameraManager->removeCamera(id);
+
+            std::shared_ptr<BaseCommand> cmd = std::make_shared<RemoveObjectCommand>(id);
+            m_facade.execute(cmd);
+
             ui->objectTable->removeRow(id);
+        }
 
         for (int i = 0; i < ui->objectTable->rowCount(); ++i)
             ui->objectTable->item(i, 0)->setText(QString::number(i));
 
         m_selected.clear();
+
+        size_t activeCamId = cameraManager->getActiveCameraId();
+        updateActiveCameraHighlight(activeCamId);
+
         drawScene();
     }
     catch (const BaseException &ex)
@@ -343,12 +378,9 @@ void MainWindow::on_deleteObjectButton_clicked()
 void MainWindow::on_setActiveCameraButton_clicked()
 {
     getSelectedObjects();
-
-    if (m_selected.empty())
-        return;
+    if (m_selected.empty()) return;
 
     size_t id = m_selected[0];
-
     auto type = ui->objectTable->item(id, 3)->text();
     if (type != "Камера")
     {
@@ -360,6 +392,9 @@ void MainWindow::on_setActiveCameraButton_clicked()
     {
         std::shared_ptr<BaseCommand> cmd = std::make_shared<SetActiveCameraCommand>(id);
         m_facade.execute(cmd);
+
+        updateActiveCameraHighlight(id);
+        drawScene(); 
     }
     catch (const BaseException &ex)
     {
@@ -415,4 +450,35 @@ void MainWindow::insertRow(size_t id, const std::string &name, const Vertex &cen
                                                        + QString::number(center.Y()) + "; "
                                                        + QString::number(center.Z()) + ")"});
     ui->objectTable->setItem(ui->objectTable->rowCount() - 1, 3, new QTableWidgetItem{QString(type.c_str())});
+}
+
+void MainWindow::updateActiveCameraHighlight(size_t activeId)
+{
+    QColor defaultTextColor = QColor(226, 194, 155); 
+    QColor activeCameraColor = QColor(255, 130, 45); 
+
+    for (int row = 0; row < ui->objectTable->rowCount(); ++row)
+    {
+        auto typeItem = ui->objectTable->item(row, 3);
+        if (typeItem && typeItem->text() == "Камера")
+        {
+            bool ok;
+            size_t currentId = ui->objectTable->item(row, 0)->text().toULongLong(&ok);
+            
+            if (ok)
+            {
+                bool isActive = (currentId == activeId);
+                
+                std::string displayName = "Камера " + std::to_string(currentId);
+                QColor targetColor = isActive ? activeCameraColor : defaultTextColor;
+
+                if (auto nameItem = ui->objectTable->item(row, 1))
+                    nameItem->setText(QString::fromStdString(displayName));
+
+                for (int col = 0; col < ui->objectTable->columnCount(); ++col)
+                    if (auto item = ui->objectTable->item(row, col))
+                        item->setForeground(targetColor);
+            }
+        }
+    }
 }

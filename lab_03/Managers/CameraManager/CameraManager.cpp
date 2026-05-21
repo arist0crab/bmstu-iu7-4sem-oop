@@ -10,6 +10,11 @@ void CameraManager::setActiveCamera(size_t id)
     m_activeCamId = id;
 }
 
+size_t CameraManager::getActiveCameraId() const noexcept
+{
+    return m_activeCamId;
+}
+
 std::shared_ptr<BaseCamera> CameraManager::getCamera(size_t id) const
 {
     if (id >= m_cameras.size())
@@ -25,13 +30,15 @@ std::shared_ptr<BaseCamera> CameraManager::getActiveCamera() const noexcept
 
 void CameraManager::removeCamera(size_t id)
 {
-    if (id >= m_cameras.size())
+    if (id >= m_cameras.size()) 
         throw CameraNotFoundException("Camera id out of range");
 
     m_cameras.erase(m_cameras.begin() + id);
 
-    if (m_activeCamId >= m_cameras.size())
-        m_activeCamId = m_cameras.empty() ? 0 : m_cameras.size() - 1;
+    if (id < m_activeCamId)
+        m_activeCamId--;
+    else if (id == m_activeCamId)
+        m_activeCamId = m_cameras.empty() ? 0 : 0; 
 }
 
 size_t CameraManager::addDefaultCamera()
