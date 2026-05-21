@@ -48,6 +48,10 @@ class MainWindow : public QMainWindow
         void addModelToTable(const QString &filename);
         void insertRow(size_t id, const std::string &name, const Vertex &center, const std::string &type);
         void updateActiveCameraHighlight(size_t activeId);
+        size_t countTotalCameras() const;
+        size_t countSelectedCameras() const;
+        void removeSelectedObjects();
+        void processObjectsTransformation(const std::function<std::shared_ptr<BaseCommand>(size_t)>& commandFactory);
 };
 
 #endif
