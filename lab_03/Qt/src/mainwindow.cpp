@@ -16,28 +16,46 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
 
-	ui->objectTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	ui->objectTable->setFocusPolicy(Qt::NoFocus);
-	ui->objectTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-	ui->objectTable->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->objectTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->objectTable->setFocusPolicy(Qt::NoFocus);
+    ui->objectTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->objectTable->setContextMenuPolicy(Qt::CustomContextMenu);
 
-	createScene(ui->graphicsView);
+    createScene(ui->graphicsView);
 
-	try
-	{
-		std::shared_ptr<BaseCommand> initCmd = std::make_shared<InitSceneCommand>();
-		m_facade.execute(initCmd);
-	}
-	catch (const BaseException &ex)
-	{
-		QMessageBox::critical(this, "Error!", ex.what());
-	}
-	catch (const std::exception &ex)
-	{
-		QMessageBox::critical(this, "Unknown error!", ex.what());
-	}
+    try
+    {
+        std::shared_ptr<BaseCommand> initCmd = std::make_shared<InitSceneCommand>();
+        m_facade.execute(initCmd);
+
+        auto sceneManager = ManagerSolution::getManager<SceneManager>();
+        auto objects = sceneManager->getObjects();
+        
+        // TODO декомпозировать
+        if (!objects.empty())
+        {
+            size_t firstId = 0;
+            auto camera = sceneManager->getObject(firstId);
+            
+            if (camera)
+            {
+                Vertex center = camera->getCenter();
+                insertRow(firstId, "Камера " + std::to_string(firstId), center, "Камера");
+            }
+        }
+
+        drawScene();
+    }
+    catch (const BaseException &ex)
+    {
+        QMessageBox::critical(this, "Error!", ex.what());
+    }
+    catch (const std::exception &ex)
+    {
+        QMessageBox::critical(this, "Unknown error!", ex.what());
+    }
 }
 
 MainWindow::~MainWindow()

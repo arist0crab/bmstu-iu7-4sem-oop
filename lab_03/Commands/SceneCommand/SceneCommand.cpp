@@ -11,8 +11,14 @@ InitSceneCommand::InitSceneCommand()
 
 void InitSceneCommand::execute()
 {
-    size_t camId = ((*m_cameraManager).*m_addAction)();
-    ((*m_cameraManager).*m_setAction)(camId);
+    auto cameraManager = ManagerSolution::getManager<CameraManager>();
+    auto sceneManager = ManagerSolution::getManager<SceneManager>();
+
+    size_t localCamId = cameraManager->addDefaultCamera();
+    std::shared_ptr<BaseCamera> camera = cameraManager->getCamera(localCamId);
+
+    sceneManager->addObject(camera);
+    cameraManager->setActiveCamera(localCamId);
 }
 
 DrawSceneCommand::DrawSceneCommand()

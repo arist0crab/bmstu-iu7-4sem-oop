@@ -13,6 +13,7 @@ class CameraManager : public BaseManager
         virtual ~CameraManager() override = default;
 
         void setActiveCamera(size_t id);
+        std::shared_ptr<BaseCamera> getCamera(size_t id) const;
         std::shared_ptr<BaseCamera> getActiveCamera() const noexcept;
 
         size_t addDefaultCamera();
