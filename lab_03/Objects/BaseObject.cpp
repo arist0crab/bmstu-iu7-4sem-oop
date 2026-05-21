@@ -1,9 +1,14 @@
 #include "BaseObject.hpp"
 
-std::shared_ptr<BaseObject> BaseObject::getObject(const size_t id) const
-{
-    (void)id;
-    return nullptr;
+
+Vertex BaseObject::getCenter() const noexcept 
+{ 
+    return m_center; 
+}
+
+void BaseObject::setCenter(const Vertex &center) noexcept 
+{ 
+    m_center = center; 
 }
 
 void BaseObject::add(std::shared_ptr<BaseObject> object) { }

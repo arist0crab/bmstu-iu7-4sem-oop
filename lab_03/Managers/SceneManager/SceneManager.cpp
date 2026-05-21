@@ -40,8 +40,10 @@ void SceneManager::removeObject(size_t id)
 Vertex SceneManager::getCenter(size_t id) const
 {
     auto obj = m_scene->getObject(id);
+    
     if (!obj)
         throw SceneObjectNotFoundException();
+
     return obj->getCenter();
 }
 
@@ -71,8 +73,10 @@ void SceneManager::compose(std::vector<size_t> ids)
 void SceneManager::setCenter(size_t id, const Vertex &center)
 {
     auto obj = m_scene->getObject(id);
+
     if (!obj)
         throw SceneObjectNotFoundException();
+
     obj->setCenter(center);
 }
 

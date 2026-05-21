@@ -1,4 +1,5 @@
 #include "DefaultCamera.hpp"
+#include "BaseVisitor.hpp"
 
 
 DefaultCamera::DefaultCamera() : m_position(0, 0, 10), m_target(0, 0, 0), m_up(0, 1, 0) {}
@@ -19,19 +20,9 @@ void DefaultCamera::transform(const Transform &transform)
     m_up = (upPoint - zero).normalize();
 }
 
-Vertex DefaultCamera::getCenter() const noexcept 
-{ 
-    return m_position; 
-}
-
 Vertex DefaultCamera::getPosition() const noexcept 
 { 
     return m_position; 
-}
-
-void DefaultCamera::setCenter(const Vertex &point) 
-{ 
-    m_position = point; 
 }
 
 void DefaultCamera::setPosition(const Vertex &position) 

@@ -13,10 +13,8 @@ class DefaultCamera : public BaseCamera
 
         void transform(const Transform &transform) override;
         
-        Vertex getCenter() const noexcept override;
         Vertex getPosition() const noexcept override;
 
-        void setCenter(const Vertex &point) override;
         void setPosition(const Vertex &position);
         void setTarget(const Vertex &target);
         

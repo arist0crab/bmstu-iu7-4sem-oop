@@ -1,4 +1,5 @@
 #include "CarcassModel.hpp"
+#include "BaseVisitor.hpp"
 
 CarcassModel::CarcassModel(std::shared_ptr<BaseStructure> structure) : BaseModel(structure) { }
 

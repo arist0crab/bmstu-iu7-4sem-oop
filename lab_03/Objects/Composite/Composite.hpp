@@ -12,14 +12,10 @@ class Composite : public BaseObject
         Composite() = default;
         virtual ~Composite() override = default;
 
-        std::shared_ptr<BaseObject> getObject(const size_t id) const override;
+        std::shared_ptr<BaseObject> getObject(const size_t id) const;
         void add(std::shared_ptr<BaseObject> object) override;
         void remove(const size_t id) noexcept override;
         void accept(std::shared_ptr<BaseVisitor> visitor) override;
-
-        Vertex getCenter() const noexcept override;
-        void setCenter(const Vertex &point) override;
-        void transform(const Transform &transform) override;
         
         bool isComposite() const noexcept override { return true; }
         bool isVisible() const noexcept override { return true; }

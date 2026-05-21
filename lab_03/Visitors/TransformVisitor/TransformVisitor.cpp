@@ -12,5 +12,11 @@ void TransformVisitor::visit(BaseCamera &camera) const
 
 void TransformVisitor::visit(BaseModel &model) const
 {
-    model.transform(m_transform);
+    Vertex center = model.getCenter();
+    center.transform(m_transform); 
+    model.setCenter(center);
+
+    auto structure = model.getStructure();
+    if (structure)
+        structure->transform(m_transform);
 }
