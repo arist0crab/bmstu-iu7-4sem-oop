@@ -21,11 +21,9 @@ class LoadMatrixModelCommand : public LoadCommand
         void execute() override;
 
     private:
-        using Action = std::shared_ptr<BaseObject> (LoadManager::*)(const std::string &);
-        using SceneAction = void (SceneManager::*)(std::shared_ptr<BaseObject>);
+        using Action = void (LoadManager::*)(const std::string &);
 
-        Action m_loadAction;
-        SceneAction m_sceneAction;
+        Action m_Action;
         std::string m_filename;
 };
 
@@ -38,10 +36,8 @@ class LoadListModelCommand : public LoadCommand
         void execute() override;
 
     private:
-        using Action = std::shared_ptr<BaseObject> (LoadManager::*)(const std::string &);
-        using SceneAction = void (SceneManager::*)(std::shared_ptr<BaseObject>);
+        using Action = void (LoadManager::*)(const std::string &);
         
-        Action m_loadAction;
-        SceneAction m_sceneAction;
+        Action m_Action;
         std::string m_filename;
 };

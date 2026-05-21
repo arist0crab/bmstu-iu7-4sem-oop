@@ -2,13 +2,15 @@
 
 #include <memory>
 #include <string>
-#include "BaseObject.hpp"
-#include "BaseManager.hpp"
 #include "BuilderSolution.hpp"
+#include "BaseManager.hpp"
 #include "DirectorSolution.hpp"
 #include "ReaderSolution.hpp"
 #include "ListBuilder.hpp"
 #include "MatrixBuilder.hpp"
+#include "SceneManager.hpp"
+#include "ManagerSolution.hpp"
+
 
 class LoadManager : public BaseManager
 {
@@ -16,8 +18,18 @@ class LoadManager : public BaseManager
         LoadManager() = default;
         virtual ~LoadManager() override = default;
 
+        void loadMatrixModel(const std::string &filename)
+        {
+            load<MatrixBuilder>(filename);
+        }
+
+        void loadListModel(const std::string &filename)
+        {
+            load<ListBuilder>(filename);
+        }
+
         template <typename TBuilder>
-        std::shared_ptr<BaseObject> load(const std::string &filename)
+        void load(const std::string &filename)
         {
             auto reader = ReaderSolution::create(filename);
             auto builder = BuilderSolution::create<TBuilder>();
@@ -25,9 +37,10 @@ class LoadManager : public BaseManager
 
             director->setReader(reader);
             director->setBuilder(builder);
-            director->build(filename);
 
             auto model = director->build(filename);
-            return model;
+            
+            auto sceneManager = ManagerSolution::getManager<SceneManager>();
+            sceneManager->addObject(model);
         }
 };
