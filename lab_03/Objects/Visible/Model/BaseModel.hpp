@@ -11,9 +11,6 @@ class BaseModel : public VisibleObject
         explicit BaseModel(std::shared_ptr<BaseStructure> structure);
         virtual ~BaseModel() override = default;
 
-        std::vector<Edge> getEdges() const;
-        std::vector<Vertex> getVertices() const;
-
         std::shared_ptr<BaseStructure> getStructure() const;
 
     protected:

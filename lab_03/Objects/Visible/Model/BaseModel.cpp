@@ -7,16 +7,6 @@ BaseModel::BaseModel(std::shared_ptr<BaseStructure> structure) : m_structure(str
         m_center = m_structure->getCenter();
 }
 
-std::vector<Vertex> BaseModel::getVertices() const
-{
-    return m_structure->getVertices();
-}
-
-std::vector<Edge> BaseModel::getEdges() const
-{
-    return m_structure->getEdges();
-}
-
 std::shared_ptr<BaseStructure> BaseModel::getStructure() const
 {
     return m_structure;

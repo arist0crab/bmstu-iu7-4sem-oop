@@ -6,8 +6,9 @@ void DrawCarcassVisitor::visit(BaseModel &model) const
 {
     if (!m_camera || !m_drawer) return;
 
-    auto vertices = model.getVertices();
-    auto edges = model.getEdges();
+    auto model_structure = model.getStructure();
+    auto vertices = model_structure->getVertices();
+    auto edges = model_structure->getEdges();
 
     Transform viewMatrix = m_camera->getViewMatrix();
 
