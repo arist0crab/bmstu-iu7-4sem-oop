@@ -33,6 +33,7 @@ class MainWindow : public QMainWindow
         void on_loadFigureButton_clicked();
         void on_loadCameraButton_clicked();
         void on_deleteObjectButton_clicked();
+        void on_setActiveCameraButton_clicked();
 
     private:
         Ui::MainWindow *ui;
