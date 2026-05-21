@@ -28,13 +28,7 @@ void Scene::clear()
     m_objects.clear();
 }
 
-std::vector<std::shared_ptr<BaseObject>> Scene::getObjects() const
+const std::vector<std::shared_ptr<BaseObject>>& Scene::getObjects() const
 {
     return m_objects;
-}
-
-void Scene::accept(std::shared_ptr<BaseVisitor> visitor)
-{
-    for (auto &obj : m_objects)
-        obj->accept(visitor);
 }

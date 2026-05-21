@@ -85,7 +85,9 @@ void SceneManager::accept(std::shared_ptr<BaseVisitor> visitor)
 {
     if (!visitor)
         throw SceneInvalidOperationException("Cannot accept null visitor");
-    m_scene->accept(visitor);
+
+    for (auto &obj : m_scene->getObjects())
+        obj->accept(visitor);
 }
 
 void SceneManager::initScene()
