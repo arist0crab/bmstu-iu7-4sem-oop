@@ -4,7 +4,6 @@
 #include "BaseCommand.hpp"
 #include "BaseObject.hpp"
 
-
 class LoadCommand : public BaseCommand
 {
     public:
@@ -21,9 +20,6 @@ class LoadMatrixModelCommand : public LoadCommand
         void execute() override;
 
     private:
-        using Action = void (LoadManager::*)(const std::string &);
-
-        Action m_Action;
         std::string m_filename;
 };
 
@@ -36,8 +32,5 @@ class LoadListModelCommand : public LoadCommand
         void execute() override;
 
     private:
-        using Action = void (LoadManager::*)(const std::string &);
-        
-        Action m_Action;
         std::string m_filename;
 };

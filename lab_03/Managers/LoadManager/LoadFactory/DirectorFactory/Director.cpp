@@ -1,30 +1,33 @@
 #include "Director.hpp"
+#include "ReaderSolution.hpp"
+#include "BuilderSolution.hpp"
 
-
-void Director::setBuilder(std::shared_ptr<BaseBuilder> builder)
+std::shared_ptr<BaseObject> Director::build(const std::string &filename, const std::string &builderType)
 {
-    m_builder = builder;
-}
+    auto readerCreator = ReaderSolution::getCreator(filename);
+    if (!readerCreator)
+        return nullptr;
 
-void Director::setReader(std::shared_ptr<BaseReader> reader)
-{
-    m_reader = reader;
-}
+    auto reader = readerCreator->createReader();
+    if (!reader)
+        return nullptr;
 
-std::shared_ptr<BaseObject> Director::build(const std::string &filename)
-{
-    m_reader->open(filename);
+    auto builder = BuilderSolution::create(builderType);
+    if (!builder)
+        return nullptr;
 
-    auto vertices = m_reader->readVertices();
-    auto edges = m_reader->readEdges();
+    reader->open(filename);
+
+    auto vertices = reader->readVertices();
+    auto edges = reader->readEdges();
 
     for (auto &v : vertices)
-        m_builder->buildVertex(v);
+        builder->buildVertex(v);
 
     for (auto &e : edges)
-        m_builder->buildEdge(e.getStart(), e.getEnd());
+        builder->buildEdge(e.getStart(), e.getEnd());
 
-    m_reader->close();
+    reader->close();
 
-    return m_builder->getResult();
+    return builder->getResult();
 }

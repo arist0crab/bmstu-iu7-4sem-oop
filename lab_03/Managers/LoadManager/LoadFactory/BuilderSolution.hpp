@@ -1,14 +1,23 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include "BaseBuilder.hpp"
+#include "ListBuilder.hpp"
+#include "MatrixBuilder.hpp"
 
 class BuilderSolution
 {
     public:
-        template <typename TBuilder>
-        static std::shared_ptr<BaseBuilder> create()
+        static std::shared_ptr<BaseBuilder> create(const std::string &type)
         {
-            return std::make_shared<TBuilder>();
+            static const std::unordered_map<std::string, std::shared_ptr<BaseBuilder>> builders = {
+                {"list", std::make_shared<ListBuilder>()},
+                {"matrix", std::make_shared<MatrixBuilder>()}
+            };
+
+            auto it = builders.find(type);
+            return (it != builders.end()) ? it->second : nullptr;
         }
 };
