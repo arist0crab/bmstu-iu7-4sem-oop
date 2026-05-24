@@ -2,17 +2,17 @@
 
 #include <memory>
 #include "InvisibleObject.hpp"
-#include "Transform.hpp"
-#include "Vertex.hpp"
+#include "BaseCameraImplementation.hpp"
 
 class BaseCamera : public InvisibleObject
 {
     public:
         BaseCamera() = default;
-        virtual ~BaseCamera() override = default;
+        explicit BaseCamera(std::shared_ptr<BaseCameraImplementation> impl);
+        ~BaseCamera() override = default;
 
-        virtual void transform(const Transform &transform) = 0;
-        virtual Vertex getPosition() const noexcept = 0;
-        virtual Transform getViewMatrix() const noexcept = 0;
-        virtual Transform getProjectionMatrix(double aspectRatio) const = 0;
+        std::shared_ptr<BaseCameraImplementation> getImplementation() const;
+
+    protected:
+        std::shared_ptr<BaseCameraImplementation> m_impl;
 };

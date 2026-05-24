@@ -1,7 +1,7 @@
 #include "DrawSurfaceVisitor.hpp"
 
 
-void DrawSurfaceVisitor::visit(BaseCamera &camera) const { }
+void DrawSurfaceVisitor::visit(BaseCameraImplementation &camera) const  { }
 
 void DrawSurfaceVisitor::visit(BaseStructure &structure) const
 {

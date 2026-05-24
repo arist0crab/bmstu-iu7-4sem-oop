@@ -94,6 +94,8 @@ target_include_directories(gui_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible/Camera
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible/Camera/DefaultCamera
+    ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible/Camera/CameraImplementation
+    ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Invisible/Camera/CameraImplementation/DefaultCameraImplementation
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Visible
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Visible/Model
     ${CMAKE_CURRENT_SOURCE_DIR}/Objects/Visible/Model/CarcassModel

@@ -11,7 +11,10 @@ void DrawManager::draw(std::shared_ptr<DrawVisitor> visitor)
     m_drawer->clear();
 
     auto cameraManager = ManagerSolution::getManager<CameraManager>();
-    visitor->setCamera(cameraManager->getActiveCamera());
+    auto activeCamera = cameraManager->getActiveCamera();
+    
+    if (activeCamera)
+        visitor->setCamera(activeCamera->getImplementation());
     visitor->setDrawer(m_drawer);
 
     auto sceneManager = ManagerSolution::getManager<SceneManager>();

@@ -9,6 +9,6 @@ class DrawCarcassVisitor : public DrawVisitor
         DrawCarcassVisitor() = default;
         virtual ~DrawCarcassVisitor() override = default;
 
-        void visit(BaseCamera &camera) const override;
+        void visit(BaseCameraImplementation &camera) const override;
         void visit(BaseStructure &structure) const override;
 };

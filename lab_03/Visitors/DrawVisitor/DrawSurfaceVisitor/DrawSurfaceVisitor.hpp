@@ -2,6 +2,7 @@
 
 #include "DrawVisitor.hpp"
 #include "BaseModel.hpp"
+#include "BaseCameraImplementation.hpp"
 
 
 class DrawSurfaceVisitor : public DrawVisitor
@@ -10,6 +11,6 @@ class DrawSurfaceVisitor : public DrawVisitor
         DrawSurfaceVisitor() = default;
         virtual ~DrawSurfaceVisitor() override = default;
 
-        void visit(BaseCamera &camera) const override;
+        void visit(BaseCameraImplementation &camera) const override;
         void visit(BaseStructure &structure) const override;
 };

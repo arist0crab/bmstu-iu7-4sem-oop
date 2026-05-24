@@ -1,33 +1,14 @@
 #pragma once
 
-#include <cmath>
+#include <memory>
 #include "BaseCamera.hpp"
 
-
-class DefaultCamera : public BaseCamera
+class DefaultCamera final : public BaseCamera
 {
     public:
-        DefaultCamera();
-        DefaultCamera(const Vertex &position, const Vertex &target);
-        virtual ~DefaultCamera() override = default;
-
-        void transform(const Transform &transform) override;
-        
-        Vertex getPosition() const noexcept override;
-
-        void setPosition(const Vertex &position);
-        void setTarget(const Vertex &target);
-        
-        Transform getViewMatrix() const noexcept override;
-        Transform getProjectionMatrix(double aspectRatio) const override;
+        DefaultCamera() = default;
+        explicit DefaultCamera(std::shared_ptr<BaseCameraImplementation> impl);
+        ~DefaultCamera() override = default;
 
         void accept(std::shared_ptr<BaseVisitor> visitor) override;
-
-    private:
-        Vertex m_position;
-        Vertex m_target;
-        Vertex m_up;
-
-        Transform lookAt() const noexcept;
-        Transform perspective(double fov, double aspect, double near, double far) const;
 };

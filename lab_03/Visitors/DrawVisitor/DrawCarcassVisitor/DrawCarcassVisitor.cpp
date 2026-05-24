@@ -1,6 +1,6 @@
 #include "DrawCarcassVisitor.hpp"
 
-void DrawCarcassVisitor::visit(BaseCamera &camera) const { }
+void DrawCarcassVisitor::visit(BaseCameraImplementation &camera) const { }
 
 void DrawCarcassVisitor::visit(BaseStructure &structure) const
 {

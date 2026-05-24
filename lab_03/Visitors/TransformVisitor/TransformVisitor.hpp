@@ -3,6 +3,7 @@
 #include <memory>
 #include "BaseVisitor.hpp"
 #include "Transform.hpp"
+#include "BaseCameraImplementation.hpp"
 
 class TransformVisitor : public BaseVisitor
 {
@@ -11,7 +12,7 @@ class TransformVisitor : public BaseVisitor
         TransformVisitor(const Transform &transform);
         virtual ~TransformVisitor() override = default;
 
-        void visit(BaseCamera &camera) const override;
+        void visit(BaseCameraImplementation &camera) const override;
         void visit(BaseStructure &structure) const override;
 
     protected:

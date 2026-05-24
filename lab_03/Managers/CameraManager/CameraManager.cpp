@@ -2,6 +2,7 @@
 #include "CameraException.hpp"
 #include "ManagerSolution.hpp"
 #include "SceneManager.hpp"
+#include "DefaultCameraImplementation.hpp"
 
 
 void CameraManager::setActiveCamera(size_t id)
@@ -45,7 +46,9 @@ void CameraManager::removeCamera(size_t id)
 
 void CameraManager::addDefaultCamera()
 {
-    auto camera = std::make_shared<DefaultCamera>(Vertex(0, 0, 100), Vertex(0, 0, 0));
+    auto impl = std::make_shared<DefaultCameraImplementation>(Vertex(0, 0, 100), Vertex(0, 0, 0));
+    auto camera = std::make_shared<DefaultCamera>(impl);
+
     m_cameras.push_back(camera);
     m_activeCamId = m_cameras.size() - 1;
 

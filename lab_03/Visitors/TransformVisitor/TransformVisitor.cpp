@@ -4,7 +4,7 @@
 
 TransformVisitor::TransformVisitor(const Transform &transform) : m_transform(transform) { }
 
-void TransformVisitor::visit(BaseCamera &camera) const
+void TransformVisitor::visit(BaseCameraImplementation &camera) const
 {
     camera.transform(m_transform);
 }
