@@ -5,5 +5,6 @@ CarcassModel::CarcassModel(std::shared_ptr<BaseStructure> structure) : BaseModel
 
 void CarcassModel::accept(std::shared_ptr<BaseVisitor> visitor)
 {
-    visitor->visit(*this);
+    if (m_structure)
+        visitor->visit(*m_structure); 
 }

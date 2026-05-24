@@ -3,7 +3,7 @@
 
 void DrawSurfaceVisitor::visit(BaseCamera &camera) const { }
 
-void DrawSurfaceVisitor::visit(BaseModel &model) const
+void DrawSurfaceVisitor::visit(BaseStructure &structure) const
 {
     // TODO
     // auto vertices = model.getVertices();

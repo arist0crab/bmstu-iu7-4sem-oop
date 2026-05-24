@@ -2,19 +2,17 @@
 
 void DrawCarcassVisitor::visit(BaseCamera &camera) const { }
 
-void DrawCarcassVisitor::visit(BaseModel &model) const
+void DrawCarcassVisitor::visit(BaseStructure &structure) const
 {
-    if (!m_camera || !m_drawer) return;
+    if (!m_camera || !m_drawer) 
+        return;
 
-    auto model_structure = model.getStructure();
-    auto vertices = model_structure->getVertices();
-    auto edges = model_structure->getEdges();
-
-    Transform viewMatrix = m_camera->getViewMatrix();
+    auto vertices = structure.getVertices();
+    auto edges = structure.getEdges();
 
     double aspect = 1.0; 
+    Transform viewMatrix = m_camera->getViewMatrix();
     Transform projMatrix = m_camera->getProjectionMatrix(aspect);
-
     Transform viewProjection = viewMatrix * projMatrix;
 
     for (auto &edge : edges)

@@ -3,7 +3,7 @@
 #include <memory>
 
 class BaseCamera;
-class BaseModel;
+class BaseStructure;
 
 class BaseVisitor
 {
@@ -12,5 +12,5 @@ class BaseVisitor
         virtual ~BaseVisitor() = default;
 
         virtual void visit(BaseCamera &camera) const = 0;
-        virtual void visit(BaseModel &structure) const = 0;
+        virtual void visit(BaseStructure &structure) const = 0;
 };

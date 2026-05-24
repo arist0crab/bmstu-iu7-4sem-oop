@@ -11,5 +11,5 @@ class DrawSurfaceVisitor : public DrawVisitor
         virtual ~DrawSurfaceVisitor() override = default;
 
         void visit(BaseCamera &camera) const override;
-        void visit(BaseModel &model) const override;
+        void visit(BaseStructure &structure) const override;
 };
