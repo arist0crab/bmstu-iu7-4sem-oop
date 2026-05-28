@@ -1,19 +1,17 @@
 #include "LoadCommand.hpp"
 #include "LoadManager.hpp"
-#include "ManagerSolution.hpp"
 
-LoadMatrixModelCommand::LoadMatrixModelCommand(const std::string &filename) : m_filename(filename) {}
+
+LoadMatrixModelCommand::LoadMatrixModelCommand(const std::string &filename) : m_filename(filename), m_action(&LoadManager::load) {}
 
 void LoadMatrixModelCommand::execute()
 {
-    auto loadManager = ManagerSolution::getManager<LoadManager>();
-    loadManager->load(m_filename, "matrix");
+    ((*m_loadManager).*m_action)(m_filename, "matrix");
 }
 
-LoadListModelCommand::LoadListModelCommand(const std::string &filename) : m_filename(filename) {}
+LoadListModelCommand::LoadListModelCommand(const std::string &filename) : m_filename(filename), m_action(&LoadManager::load) {}
 
 void LoadListModelCommand::execute()
 {
-    auto loadManager = ManagerSolution::getManager<LoadManager>();
-    loadManager->load(m_filename, "list");
+    ((*m_loadManager).*m_action)(m_filename, "list");
 }
