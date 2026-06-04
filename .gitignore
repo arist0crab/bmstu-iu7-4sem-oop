@@ -1,3 +1,5 @@
 *.qmake.stash
 build/
 Makefile
+moc_*
+ui_*
