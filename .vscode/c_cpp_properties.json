@@ -4,9 +4,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/lab_01/Frame3DViewer/headers/*.h",
-                "${workspaceFolder}/lab_01/Frame3DViewer/sources/*.cpp",
+                "${workspaceFolder}/lab_04/inc/**",
+                "${workspaceFolder}/lab_04/src/**",
                 "/usr/include/qt6/QtWidgets",
+                "/usr/include/qt6/QtCore",
                 "/usr/include/qt6"
             ],
             "defines": [],
