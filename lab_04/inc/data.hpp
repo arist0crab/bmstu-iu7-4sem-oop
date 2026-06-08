@@ -1,9 +1,9 @@
 #pragma once
 
-enum direction_t
+enum class Direction
 {
     DOWN = -1,
-    STOP = 0,
+    NONE = 0,
     UP = 1
 };
 
