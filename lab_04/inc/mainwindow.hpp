@@ -1,14 +1,12 @@
 #pragma once 
 
 #include <QMainWindow>
-
-#include "ui_mainwindow.h"
+#include <QList>
+#include <QLineEdit>
+#include "Elevator.hpp"
 
 QT_BEGIN_NAMESPACE
-namespace Ui 
-{
-    class MainWindow;
-}
+namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow 
@@ -19,6 +17,23 @@ class MainWindow : public QMainWindow
         explicit MainWindow(QWidget *parent = nullptr);
         ~MainWindow() override;
 
+    private slots:
+        void onFloorCallRequested(int floor);
+
+        void onFloorChangedA(int floor);
+        void onStateChangedA(ElevatorState state);
+
+        void onFloorChangedB(int floor);
+        void onStateChangedB(ElevatorState state);
+
     private:
         Ui::MainWindow *ui;
+
+        Elevator _elevatorA;
+        Elevator _elevatorB;
+
+        QList<QLineEdit*> _shaftA;
+        QList<QLineEdit*> _shaftB;
+
+        void setupConnections();
 };

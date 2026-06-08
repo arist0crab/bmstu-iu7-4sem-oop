@@ -11,6 +11,10 @@ ElevatorState Elevator::getState() const noexcept
     return _state;
 }
 
+void Elevator::sendCallToController(int floor)
+{
+    _controller.callReceivedSlot(floor); 
+}
 
 // =========================
 //           Слоты
