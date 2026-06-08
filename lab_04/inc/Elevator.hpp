@@ -25,6 +25,7 @@ class Elevator : public QObject
 
     signals:
         void elevatorStateChanged(ElevatorState state);
+        void doorsStateChangedSignal(DoorsState state);
         void floorChanged(int floor);
 
     public slots:
