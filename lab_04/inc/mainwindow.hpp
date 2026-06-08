@@ -26,11 +26,17 @@ class MainWindow : public QMainWindow
         void onFloorChangedB(int floor);
         void onStateChangedB(ElevatorState state);
 
+        void onDoorsStateChangedA(DoorsState state);
+        void onDoorsStateChangedB(DoorsState state);
+
     private:
         Ui::MainWindow *ui;
 
         Elevator _elevatorA;
         Elevator _elevatorB;
+
+        int _currentFloorA = START_FLOOR;
+        int _currentFloorB = START_FLOOR;
 
         QList<QLineEdit*> _shaftA;
         QList<QLineEdit*> _shaftB;

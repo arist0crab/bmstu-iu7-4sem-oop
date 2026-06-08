@@ -42,7 +42,7 @@ void Cabin::moveSlot()
 
 void Cabin::stopSlot()
 {
-    if (_state != CabinState::MOVE)
+    if (_state != CabinState::MOVE && _state != CabinState::IDLE)
         return;
 
     _timer.stop();

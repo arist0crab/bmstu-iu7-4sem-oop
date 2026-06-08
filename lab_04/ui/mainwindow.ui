@@ -145,228 +145,154 @@ QLabel[class=&quot;output&quot;] {
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QGroupBox" name="groupBox_5">
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="groupBox_3">
       <property name="title">
-       <string>Панель лифта А</string>
+       <string>Лифт Б</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_3">
+      <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QPushButton" name="cabinAButton_1_floor">
-           <property name="text">
-            <string>1</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinAButton_2_floor">
-           <property name="text">
-            <string>2</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinAButton_3_floor">
-           <property name="text">
-            <string>3</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="spacing">
-          <number>3</number>
+        <widget class="QLineEdit" name="liftB_5floor">
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>-1</pointsize>
+           <bold>false</bold>
+          </font>
          </property>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinAButton_4_floor">
-           <property name="text">
-            <string>4</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinAButton_5_floor">
-           <property name="text">
-            <string>5</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinAButton_open">
-           <property name="text">
-            <string>&lt; &gt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinAButton_close">
-           <property name="text">
-            <string>&gt; &lt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLineEdit" name="liftALog"/>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string>Кнопки на этажах</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
          <property name="text">
-          <string>Этаж 5:</string>
+          <string>===========================</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Этаж 4:</string>
+        <widget class="QLineEdit" name="liftB_4floor">
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>-1</pointsize>
+           <bold>false</bold>
+          </font>
          </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="floorButton_4_up">
          <property name="text">
-          <string>▲</string>
+          <string>===========================</string>
          </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="floorButton_4_down">
-         <property name="text">
-          <string>▼</string>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Этаж 3:</string>
+        <widget class="QLineEdit" name="liftB_3floor">
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>-1</pointsize>
+           <bold>false</bold>
+          </font>
          </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="floorButton_3_up">
          <property name="text">
-          <string>▲</string>
+          <string>===========================</string>
          </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QPushButton" name="floorButton_3_down">
-         <property name="text">
-          <string>▼</string>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Этаж 2:</string>
+        <widget class="QLineEdit" name="liftB_2floor">
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>-1</pointsize>
+           <bold>false</bold>
+          </font>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QPushButton" name="floorButton_2_up">
          <property name="text">
-          <string>▲</string>
+          <string>===========================</string>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QPushButton" name="floorButton_2_down">
-         <property name="text">
-          <string>▼</string>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="label_5">
+        <widget class="QLineEdit" name="liftB_1floor">
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>-1</pointsize>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="text">
-          <string>Этаж 1:</string>
+          <string>===========================</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="4" column="1" colspan="2">
-        <widget class="QPushButton" name="floorButton_1_up">
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="title">
+       <string>Статус системы</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>▲</string>
+          <string>Лифт А:</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QPushButton" name="floorButton_5_down">
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="liftAStatusBar"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>▼</string>
+          <string>Лифт Б:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="liftBStatusBar"/>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QTextEdit" name="processField">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>20</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -482,45 +408,176 @@ QLabel[class=&quot;output&quot;] {
       </layout>
      </widget>
     </item>
-    <item row="1" column="2">
-     <widget class="QGroupBox" name="groupBox_6">
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="groupBox_5">
       <property name="title">
-       <string>Статус системы</string>
+       <string>Панель лифта А</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_5">
+      <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Лифт А:</string>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
-        </widget>
+         <property name="sizeType">
+          <enum>QSizePolicy::Policy::Maximum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="liftAStatusBar"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_7">
+       <item row="3" column="1">
+        <widget class="QPushButton" name="cabinAButton_4_floor">
          <property name="text">
-          <string>Лифт Б:</string>
+          <string>4</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="liftBStatusBar"/>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QTextEdit" name="processField">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QPushButton" name="cabinAButton_2_floor">
+         <property name="text">
+          <string>2</string>
          </property>
-         <property name="minimumSize">
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="cabinAButton_3_floor">
+         <property name="text">
+          <string>3</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="cabinAButton_5_floor">
+         <property name="text">
+          <string>5</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="cabinAButton_1_floor">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Policy::Maximum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
           <size>
-           <width>30</width>
+           <width>80</width>
            <height>20</height>
           </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Кнопки на этажах</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Этаж 5:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Этаж 4:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="floorButton_4_up">
+         <property name="text">
+          <string>▲</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="floorButton_4_down">
+         <property name="text">
+          <string>▼</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Этаж 3:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="floorButton_3_up">
+         <property name="text">
+          <string>▲</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="floorButton_3_down">
+         <property name="text">
+          <string>▼</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Этаж 2:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="floorButton_2_up">
+         <property name="text">
+          <string>▲</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="floorButton_2_down">
+         <property name="text">
+          <string>▼</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Этаж 1:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1" colspan="2">
+        <widget class="QPushButton" name="floorButton_1_up">
+         <property name="text">
+          <string>▲</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QPushButton" name="floorButton_5_down">
+         <property name="text">
+          <string>▼</string>
          </property>
         </widget>
        </item>
@@ -533,233 +590,72 @@ QLabel[class=&quot;output&quot;] {
        <string>Панель лифта Б</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
+       <item row="1" column="1">
+        <widget class="QPushButton" name="cabinBButton_2_floor">
+         <property name="text">
+          <string>2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="cabinBButton_5_floor">
+         <property name="text">
+          <string>5</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="cabinBButton_3_floor">
+         <property name="text">
+          <string>3</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="cabinBButton_4_floor">
+         <property name="text">
+          <string>4</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QPushButton" name="cabinBButton_1_floor">
-           <property name="text">
-            <string>1</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinBButton_2_floor">
-           <property name="text">
-            <string>2</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinBButton_3_floor">
-           <property name="text">
-            <string>3</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <property name="spacing">
-          <number>3</number>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <item>
-          <spacer name="horizontalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinBButton_4_floor">
-           <property name="text">
-            <string>4</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinBButton_5_floor">
-           <property name="text">
-            <string>5</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <spacer name="horizontalSpacer_7">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinBButton_open">
-           <property name="text">
-            <string>&lt; &gt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cabinBButton_close">
-           <property name="text">
-            <string>&gt; &lt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_8">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLineEdit" name="liftBLog"/>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="title">
-       <string>Лифт Б</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="0" column="0">
-        <widget class="QLineEdit" name="liftB_5floor">
-         <property name="font">
-          <font>
-           <family>Courier New</family>
-           <pointsize>-1</pointsize>
-           <bold>false</bold>
-          </font>
+         <property name="sizeType">
+          <enum>QSizePolicy::Policy::Maximum</enum>
          </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="cabinBButton_1_floor">
          <property name="text">
-          <string>===========================</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
+          <string>1</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLineEdit" name="liftB_4floor">
-         <property name="font">
-          <font>
-           <family>Courier New</family>
-           <pointsize>-1</pointsize>
-           <bold>false</bold>
-          </font>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <property name="text">
-          <string>===========================</string>
+         <property name="sizeType">
+          <enum>QSizePolicy::Policy::Maximum</enum>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
          </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLineEdit" name="liftB_3floor">
-         <property name="font">
-          <font>
-           <family>Courier New</family>
-           <pointsize>-1</pointsize>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>===========================</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLineEdit" name="liftB_2floor">
-         <property name="font">
-          <font>
-           <family>Courier New</family>
-           <pointsize>-1</pointsize>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>===========================</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLineEdit" name="liftB_1floor">
-         <property name="font">
-          <font>
-           <family>Courier New</family>
-           <pointsize>-1</pointsize>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>===========================</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </widget>

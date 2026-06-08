@@ -15,7 +15,6 @@ ControllerState Controller::getState() const noexcept
 }
 
 
-
 // =========================
 //           Слоты
 // =========================
@@ -23,7 +22,14 @@ ControllerState Controller::getState() const noexcept
 
 void Controller::callReceivedSlot(int floor)
 {
-    if (!_queue.contains(floor) && _curfloor != floor)
+    if (_curfloor == floor && _state == ControllerState::IDLE)
+    {
+        _state = ControllerState::WAITING_DOORS;
+        _cabin.stopSlot();
+        return; 
+    }
+
+    if (!_queue.contains(floor))
         _queue.append(floor);
 
     if (_state == ControllerState::IDLE)
@@ -81,10 +87,7 @@ void Controller::floorReachedSlot()
     if (_state != ControllerState::WAITING_CABIN) 
         return;
 
-    if (_targetFloor > _curfloor)
-        _curfloor++;
-    else if (_targetFloor < _curfloor)
-        _curfloor--;
+    _curfloor += _direction;
 
     emit floorChanged(_curfloor); 
 
