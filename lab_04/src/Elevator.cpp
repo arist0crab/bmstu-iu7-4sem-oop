@@ -1,7 +1,7 @@
 #include "Elevator.hpp"
 
 
-explicit Elevator::Elevator(QObject* parent = nullptr) : QObject(parent), _state(ElevatorState::IDLE)
+Elevator::Elevator(QObject* parent) : QObject(parent), _state(ElevatorState::IDLE)
 {
     // TODO кабину прикрутить
     // TODO контроллер прикрутить

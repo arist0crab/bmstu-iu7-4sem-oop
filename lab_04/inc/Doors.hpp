@@ -16,6 +16,8 @@ enum class DoorsState
 
 class Doors : public QObject
 {
+    Q_OBJECT 
+    
     public:
         explicit Doors(QObject* parent = nullptr);
         ~Doors() override = default;

@@ -1,10 +1,10 @@
 #include "Button.hpp"
 
 
-Button::Button(int floor, Direction direction, QWidget *parent = nullptr) : _floor(floor), _direction(direction), _state(ButtonState::INACTIVE) 
+Button::Button(int floor, Direction direction, QWidget *parent) : _floor(floor), _direction(direction), _state(ButtonState::INACTIVE) 
 { 
-    QObject::connect(this, SIGNAL(clicked()), this, SLOT(pressSlot()));
-    QObject::connect(this, SIGNAL(unpressSignal()), this, SLOT(unpressSlot()));
+    connect(this, &QPushButton::clicked, this, &Button::pressSlot);
+    connect(this, &Button::unpressSignal, this, &Button::unpressSlot);
 }
 
 

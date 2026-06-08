@@ -1,7 +1,7 @@
 #include "Doors.hpp"
 
 
-Doors::Doors(QObject* parent = nullptr) : _state(DoorsState::CLOSE), _timer(this) 
+Doors::Doors(QObject* parent) : _state(DoorsState::CLOSE), _timer(this) 
 { 
     _timer.setSingleShot(true);
 
@@ -12,6 +12,9 @@ Doors::Doors(QObject* parent = nullptr) : _state(DoorsState::CLOSE), _timer(this
         else if (_state == DoorsState::CLOSING)
             emit closedSignal();
     });
+
+    connect(this, &Doors::openedSignal, this, &Doors::openSlot);
+    connect(this, &Doors::closedSignal, this, &Doors::closeSlot);
 }
 
 
@@ -45,8 +48,6 @@ void Doors::openSlot()
 
     _state = DoorsState::OPEN;
     emit doorsStateChanged(_state);
-
-    _timer.start(DOOR_TIME);
 }
 
 
@@ -69,7 +70,5 @@ void Doors::closeSlot()
 
     _state = DoorsState::CLOSE;
     emit doorsStateChanged(_state);
-
-    _timer.start(DOOR_TIME);
 }
 

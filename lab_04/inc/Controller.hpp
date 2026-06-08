@@ -24,8 +24,12 @@ class Controller : public QObject
 
         ControllerState getState() const noexcept;
 
+    signals:
+        void floorServicedSignal(int floor);
+        void routeNextTargetSignal();
+
     public slots:
-        void callRecievedSlot(int floor);
+        void callReceivedSlot(int floor);
         void doorsStateChangedSlot(DoorsState state);
         void routeNextTargetSlot();
         void floorReachedSlot();

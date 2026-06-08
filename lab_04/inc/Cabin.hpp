@@ -26,6 +26,7 @@ class Cabin : public QObject
 
     signals:
         void cabinStateChanged(CabinState state);
+        void doorsStateChanged(DoorsState state);
         void floorReached();
 
     public slots:

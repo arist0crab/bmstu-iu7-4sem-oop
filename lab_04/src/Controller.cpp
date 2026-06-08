@@ -1,9 +1,11 @@
 #include "Controller.hpp"
 
 
-Controller::Controller(Cabin &cabin, QObject* parent = nullptr) : QObject(parent), _cabin(cabin), _state(ControllerState::IDLE), _direction(Direction::NONE), _curfloor(START_FLOOR), _targetFloor(START_FLOOR)
+Controller::Controller(Cabin &cabin, QObject* parent) : QObject(parent), _cabin(cabin), _state(ControllerState::IDLE), _direction(Direction::NONE), _curfloor(START_FLOOR), _targetFloor(START_FLOOR)
 {
-    // TODO соединить сигналы
+    connect(&_cabin, &Cabin::floorReached, this, &Controller::floorReachedSlot);
+    connect(&_cabin, &Cabin::doorsStateChanged, this, &Controller::doorsStateChangedSlot);
+    connect(this, &Controller::routeNextTargetSignal, this, &Controller::routeNextTargetSlot, Qt::QueuedConnection);
 }
 
 
@@ -19,7 +21,7 @@ ControllerState Controller::getState() const noexcept
 // =========================
 
 
-void Controller::callRecievedSlot(int floor)
+void Controller::callReceivedSlot(int floor)
 {
     if (!_queue.contains(floor) && _curfloor != floor)
         _queue.append(floor);
@@ -27,7 +29,7 @@ void Controller::callRecievedSlot(int floor)
     if (_state == ControllerState::IDLE)
     {
         _state = ControllerState::ROUTING;
-        // TODO вызвать нужный метод
+        emit routeNextTargetSignal();
     }
 }
 
@@ -37,16 +39,19 @@ void Controller::doorsStateChangedSlot(DoorsState state)
     if (_state != ControllerState::WAITING_DOORS) 
         return;
 
-    if (state == DoorsState::OPEN) {}
-        // _cabin.getDoors().startOpeningSlot(); TODO начать открывать двери
-    else if (state == DoorsState::CLOSE) 
+    if (state == DoorsState::CLOSE) 
     {
-        _queue.removeFirst();
-        _cabin.freeSlot();
+        if (!_queue.isEmpty()) 
+        {
+            int currentFloor = _queue.first();
+            _queue.removeFirst();
+            emit floorServicedSignal(currentFloor);
+        }
+            
+        _cabin.freeSlot(); 
 
         _state = ControllerState::ROUTING;
-        // TODO
-        // QMetaObject::invokeMethod(this, "routeNextTargetSlot", Qt::QueuedConnection);
+        emit routeNextTargetSignal();
     }
 }
 
@@ -80,5 +85,4 @@ void Controller::floorReachedSlot()
     _state = ControllerState::WAITING_DOORS;
 
     _cabin.stopSlot();
-    // TODO открыть двери
 }
