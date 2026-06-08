@@ -6,6 +6,9 @@ Controller::Controller(Cabin &cabin, QObject* parent) : QObject(parent), _cabin(
     connect(&_cabin, &Cabin::floorReached, this, &Controller::floorReachedSlot);
     connect(&_cabin, &Cabin::doorsStateChanged, this, &Controller::doorsStateChangedSlot);
     connect(this, &Controller::routeNextTargetSignal, this, &Controller::routeNextTargetSlot, Qt::QueuedConnection);
+    connect(this, &Controller::moveCabinSignal, &_cabin, &Cabin::moveSlot);
+    connect(this, &Controller::stopCabinSignal, &_cabin, &Cabin::stopSlot);
+    connect(this, &Controller::freeCabinSignal, &_cabin, &Cabin::freeSlot);
 }
 
 
@@ -30,7 +33,7 @@ void Controller::callReceivedSlot(int floor)
     if (_curfloor == floor && _state == ControllerState::IDLE)
     {
         _state = ControllerState::WAITING_DOORS;
-        _cabin.stopSlot();
+        emit stopCabinSignal();
         return; 
     }
 
@@ -39,28 +42,6 @@ void Controller::callReceivedSlot(int floor)
 
     if (_state == ControllerState::IDLE)
     {
-        _state = ControllerState::ROUTING;
-        emit routeNextTargetSignal();
-    }
-}
-
-
-void Controller::doorsStateChangedSlot(DoorsState state)
-{
-    if (_state != ControllerState::WAITING_DOORS) 
-        return;
-
-    if (state == DoorsState::CLOSE) 
-    {
-        if (!_queue.isEmpty()) 
-        {
-            int currentFloor = _queue.first();
-            _queue.removeFirst();
-            emit floorServicedSignal(currentFloor);
-        }
-            
-        _cabin.freeSlot(); 
-
         _state = ControllerState::ROUTING;
         emit routeNextTargetSignal();
     }
@@ -83,7 +64,29 @@ void Controller::routeNextTargetSlot()
     _direction = (_targetFloor > _curfloor) ? Direction::UP : Direction::DOWN;
 
     _state = ControllerState::WAITING_CABIN;
-    _cabin.moveSlot();
+    emit moveCabinSignal();
+}
+
+
+void Controller::doorsStateChangedSlot(DoorsState state)
+{
+    if (_state != ControllerState::WAITING_DOORS) 
+        return;
+
+    if (state == DoorsState::CLOSE) 
+    {
+        if (!_queue.isEmpty()) 
+        {
+            int currentFloor = _queue.first();
+            _queue.removeFirst();
+            emit floorServicedSignal(currentFloor);
+        }
+            
+        emit freeCabinSignal();
+
+        _state = ControllerState::ROUTING;
+        emit routeNextTargetSignal();
+    }
 }
 
 
@@ -96,13 +99,11 @@ void Controller::floorReachedSlot()
 
     emit floorChanged(_curfloor); 
 
-    if (_curfloor == _targetFloor)
-    {
-        _state = ControllerState::WAITING_DOORS;
-        _cabin.stopSlot(); 
-    }
+    if (_curfloor != _targetFloor)
+        emit moveCabinSignal();
     else
     {
-        _cabin.moveSlot(); 
+        _state = ControllerState::WAITING_DOORS;
+        emit stopCabinSignal();
     }
 }

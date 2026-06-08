@@ -1,15 +1,18 @@
 #include "Cabin.hpp"
 
-
-Cabin::Cabin(QObject* parent) : QObject(parent), _state(CabinState::IDLE), _timer(this)
+Cabin::Cabin(QObject* parent) 
+    : QObject(parent), _state(CabinState::IDLE), _timer(this)
 {
     _timer.setSingleShot(true);
+
+    connect(this, &Cabin::openDoorsSignal, &_doors, &Doors::startOpeningSlot);
+    connect(this, &Cabin::closeDoorsSignal, &_doors, &Doors::startClosingSlot);
 
     connect(&_timer, &QTimer::timeout, this, [this]() {
         if (_state == CabinState::MOVE) 
             emit floorReached(); 
         else if (_state == CabinState::WAIT)
-            _doors.startClosingSlot();
+            emit closeDoorsSignal();
     });
 
     connect(&_doors, &Doors::doorsStateChanged, this, [this](DoorsState doorState) {
@@ -19,17 +22,10 @@ Cabin::Cabin(QObject* parent) : QObject(parent), _state(CabinState::IDLE), _time
     });
 }
 
-
 CabinState Cabin::getState() const noexcept
 {
     return _state;
 }
-
-
-// =========================
-//           Слоты
-// =========================
-
 
 void Cabin::moveSlot()
 {
@@ -39,7 +35,6 @@ void Cabin::moveSlot()
     _timer.start(MOVE_TIME);
 }
 
-
 void Cabin::stopSlot()
 {
     if (_state != CabinState::MOVE && _state != CabinState::IDLE)
@@ -48,10 +43,9 @@ void Cabin::stopSlot()
     _timer.stop();
     _state = CabinState::WAIT;
     emit cabinStateChanged(_state);
-
-    _doors.startOpeningSlot();
+    
+    emit openDoorsSignal();
 }
-
 
 void Cabin::freeSlot()
 {

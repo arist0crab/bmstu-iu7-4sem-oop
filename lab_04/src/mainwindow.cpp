@@ -45,12 +45,9 @@ void MainWindow::setupConnections()
     // Кнопки этажей
     connect(ui->floorButton_1_up,   &QPushButton::clicked, this, [this]() { onFloorCallRequested(1); });
     connect(ui->floorButton_2_up,   &QPushButton::clicked, this, [this]() { onFloorCallRequested(2); });
-    connect(ui->floorButton_2_down, &QPushButton::clicked, this, [this]() { onFloorCallRequested(2); });
     connect(ui->floorButton_3_up,   &QPushButton::clicked, this, [this]() { onFloorCallRequested(3); });
-    connect(ui->floorButton_3_down, &QPushButton::clicked, this, [this]() { onFloorCallRequested(3); });
     connect(ui->floorButton_4_up,   &QPushButton::clicked, this, [this]() { onFloorCallRequested(4); });
-    connect(ui->floorButton_4_down, &QPushButton::clicked, this, [this]() { onFloorCallRequested(4); });
-    connect(ui->floorButton_5_down, &QPushButton::clicked, this, [this]() { onFloorCallRequested(5); });
+    connect(ui->floorButton_5_up,   &QPushButton::clicked, this, [this]() { onFloorCallRequested(5); });
 }
 
 void MainWindow::onFloorCallRequested(int floor)

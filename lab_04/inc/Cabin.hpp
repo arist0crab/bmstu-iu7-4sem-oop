@@ -29,6 +29,9 @@ class Cabin : public QObject
         void doorsStateChanged(DoorsState state);
         void floorReached();
 
+        void openDoorsSignal();
+        void closeDoorsSignal();
+
     public slots:
         void moveSlot();  // MOVE
         void stopSlot();  // WAIT
