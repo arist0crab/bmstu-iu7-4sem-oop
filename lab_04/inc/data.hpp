@@ -10,3 +10,4 @@ enum class Direction
 #define WAIT_TIME 1000
 #define DOOR_TIME 1000
 #define MOVE_TIME 1000
+#define START_FLOOR 1
