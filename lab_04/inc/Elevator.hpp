@@ -1,9 +1,8 @@
 #pragma once
 
 #include "Cabin.hpp"
+#include "Controller.hpp"
 #include <QObject>
-
-class Controller;
 
 
 enum class ElevatorState
@@ -25,6 +24,7 @@ class Elevator : public QObject
 
     signals:
         void elevatorStateChanged(ElevatorState state);
+        void floorChanged(int floor);
 
     public slots:
         void busySlot();
@@ -33,4 +33,5 @@ class Elevator : public QObject
     private:
         Cabin _cabin;
         ElevatorState _state;
+        Controller _controller;
 };

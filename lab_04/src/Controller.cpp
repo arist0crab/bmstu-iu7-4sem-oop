@@ -82,7 +82,8 @@ void Controller::floorReachedSlot()
         return;
 
     _curfloor = _targetFloor;
-    _state = ControllerState::WAITING_DOORS;
+    emit floorChanged(_curfloor);
 
+    _state = ControllerState::WAITING_DOORS;
     _cabin.stopSlot();
 }

@@ -1,10 +1,8 @@
 #include "Elevator.hpp"
 
-
-Elevator::Elevator(QObject* parent) : QObject(parent), _state(ElevatorState::IDLE)
+Elevator::Elevator(QObject* parent) : QObject(parent), _cabin(this), _controller(_cabin, this) , _state(ElevatorState::IDLE)
 {
-    // TODO кабину прикрутить
-    // TODO контроллер прикрутить
+    connect(&_controller, &Controller::floorChanged, this, &Elevator::floorChanged);
 }
 
 
@@ -37,4 +35,3 @@ void Elevator::idleSlot()
     _state = ElevatorState::IDLE;
     emit elevatorStateChanged(_state);
 }
-

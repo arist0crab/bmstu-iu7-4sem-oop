@@ -27,6 +27,7 @@ class Controller : public QObject
     signals:
         void floorServicedSignal(int floor);
         void routeNextTargetSignal();
+        void floorChanged(int floor);
 
     public slots:
         void callReceivedSlot(int floor);
