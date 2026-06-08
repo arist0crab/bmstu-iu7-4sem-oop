@@ -12,6 +12,11 @@ ElevatorState Elevator::getState() const noexcept
     return _state;
 }
 
+size_t Elevator::queueSize() const noexcept
+{
+    return _controller.queueSize();
+}
+
 void Elevator::sendCallToController(int floor)
 {
     _controller.callReceivedSlot(floor); 

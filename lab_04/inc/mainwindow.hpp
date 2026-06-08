@@ -1,8 +1,9 @@
-#pragma once 
+#pragma once
 
 #include <QMainWindow>
 #include <QList>
 #include <QLineEdit>
+#include <QPushButton>
 #include "Elevator.hpp"
 
 QT_BEGIN_NAMESPACE
@@ -19,14 +20,9 @@ class MainWindow : public QMainWindow
 
     private slots:
         void onFloorCallRequested(int floor);
-
         void onFloorChangedA(int floor);
-        void onStateChangedA(ElevatorState state);
-
-        void onFloorChangedB(int floor);
-        void onStateChangedB(ElevatorState state);
-
         void onDoorsStateChangedA(DoorsState state);
+        void onFloorChangedB(int floor);
         void onDoorsStateChangedB(DoorsState state);
 
     private:
@@ -42,4 +38,6 @@ class MainWindow : public QMainWindow
         QList<QLineEdit*> _shaftB;
 
         void setupConnections();
+        
+        Elevator& getBestElevator(int targetFloor);
 };

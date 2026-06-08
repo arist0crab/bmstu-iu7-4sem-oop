@@ -21,6 +21,7 @@ class Elevator : public QObject
         ~Elevator() override = default;
 
         ElevatorState getState() const noexcept;
+        size_t queueSize() const noexcept;
         void sendCallToController(int floor);
 
     signals:

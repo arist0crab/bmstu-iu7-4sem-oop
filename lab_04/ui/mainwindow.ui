@@ -260,27 +260,7 @@ QLabel[class=&quot;output&quot;] {
        <string>Статус системы</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Лифт А:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="liftAStatusBar"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Лифт Б:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="liftBStatusBar"/>
-       </item>
-       <item row="2" column="0" colspan="2">
+       <item row="0" column="0" colspan="2">
         <widget class="QTextEdit" name="processField">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -414,8 +394,43 @@ QLabel[class=&quot;output&quot;] {
        <string>Панель лифта А</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <spacer name="horizontalSpacer_2">
+       <item row="1" column="1">
+        <widget class="QPushButton" name="cabinAButton_3_floor">
+         <property name="text">
+          <string>3</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="cabinAButton_1_floor">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="cabinAButton_2_floor">
+         <property name="text">
+          <string>2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="cabinAButton_4_floor">
+         <property name="text">
+          <string>4</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="cabinAButton_5_floor">
+         <property name="text">
+          <string>5</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
@@ -430,43 +445,8 @@ QLabel[class=&quot;output&quot;] {
          </property>
         </spacer>
        </item>
-       <item row="3" column="1">
-        <widget class="QPushButton" name="cabinAButton_4_floor">
-         <property name="text">
-          <string>4</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="cabinAButton_2_floor">
-         <property name="text">
-          <string>2</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="cabinAButton_3_floor">
-         <property name="text">
-          <string>3</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QPushButton" name="cabinAButton_5_floor">
-         <property name="text">
-          <string>5</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="cabinAButton_1_floor">
-         <property name="text">
-          <string>1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <spacer name="horizontalSpacer">
+       <item row="4" column="0">
+        <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
@@ -590,12 +570,28 @@ QLabel[class=&quot;output&quot;] {
        <string>Панель лифта Б</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="1" column="1">
-        <widget class="QPushButton" name="cabinBButton_2_floor">
+       <item row="8" column="1">
+        <widget class="QPushButton" name="cabinBButton_1_floor">
          <property name="text">
-          <string>2</string>
+          <string>1</string>
          </property>
         </widget>
+       </item>
+       <item row="8" column="2">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Policy::Maximum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
        <item row="4" column="1">
         <widget class="QPushButton" name="cabinBButton_5_floor">
@@ -604,21 +600,21 @@ QLabel[class=&quot;output&quot;] {
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="7" column="1">
+        <widget class="QPushButton" name="cabinBButton_2_floor">
+         <property name="text">
+          <string>2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
         <widget class="QPushButton" name="cabinBButton_3_floor">
          <property name="text">
           <string>3</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QPushButton" name="cabinBButton_4_floor">
-         <property name="text">
-          <string>4</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
+       <item row="8" column="0">
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
@@ -634,28 +630,12 @@ QLabel[class=&quot;output&quot;] {
          </property>
         </spacer>
        </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="cabinBButton_1_floor">
+       <item row="5" column="1">
+        <widget class="QPushButton" name="cabinBButton_4_floor">
          <property name="text">
-          <string>1</string>
+          <string>4</string>
          </property>
         </widget>
-       </item>
-       <item row="0" column="2">
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Policy::Maximum</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>80</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>

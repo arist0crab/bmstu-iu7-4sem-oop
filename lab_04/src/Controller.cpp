@@ -14,6 +14,11 @@ ControllerState Controller::getState() const noexcept
     return _state;
 }
 
+size_t Controller::queueSize() const noexcept
+{   
+    return _queue.size();
+}
+
 
 // =========================
 //           Слоты

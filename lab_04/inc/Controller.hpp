@@ -23,6 +23,7 @@ class Controller : public QObject
         ~Controller() override = default;
 
         ControllerState getState() const noexcept;
+        size_t queueSize() const noexcept;
 
     signals:
         void floorServicedSignal(int floor);
