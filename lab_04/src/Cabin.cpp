@@ -15,6 +15,7 @@ Cabin::Cabin(QObject* parent) : QObject(parent), _state(CabinState::IDLE), _time
     connect(&_doors, &Doors::doorsStateChanged, this, [this](DoorsState doorState) {
         if (_state == CabinState::WAIT && doorState == DoorsState::OPEN)
             _timer.start(WAIT_TIME);
+        emit doorsStateChanged(doorState);
     });
 }
 
@@ -32,9 +33,6 @@ CabinState Cabin::getState() const noexcept
 
 void Cabin::moveSlot()
 {
-    if (_state == CabinState::MOVE)
-        return;
-
     _state = CabinState::MOVE;
     emit cabinStateChanged(_state);
 

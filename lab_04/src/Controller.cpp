@@ -81,9 +81,20 @@ void Controller::floorReachedSlot()
     if (_state != ControllerState::WAITING_CABIN) 
         return;
 
-    _curfloor = _targetFloor;
-    emit floorChanged(_curfloor);
+    if (_targetFloor > _curfloor)
+        _curfloor++;
+    else if (_targetFloor < _curfloor)
+        _curfloor--;
 
-    _state = ControllerState::WAITING_DOORS;
-    _cabin.stopSlot();
+    emit floorChanged(_curfloor); 
+
+    if (_curfloor == _targetFloor)
+    {
+        _state = ControllerState::WAITING_DOORS;
+        _cabin.stopSlot(); 
+    }
+    else
+    {
+        _cabin.moveSlot(); 
+    }
 }
