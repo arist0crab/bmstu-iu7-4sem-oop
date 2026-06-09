@@ -6,7 +6,6 @@ Elevator::Elevator(QObject* parent) : QObject(parent), _cabin(this), _controller
     connect(&_cabin, &Cabin::doorsStateChanged, this, &Elevator::doorsStateChangedSignal);
 }
 
-
 ElevatorState Elevator::getState() const noexcept
 {
     return _state;
@@ -19,13 +18,8 @@ size_t Elevator::queueSize() const noexcept
 
 void Elevator::sendCallToController(int floor)
 {
-    _controller.callReceivedSlot(floor); 
+    _controller.callReceived(floor); 
 }
-
-// =========================
-//           Слоты
-// =========================
-
 
 void Elevator::busySlot()
 {
@@ -35,7 +29,6 @@ void Elevator::busySlot()
     _state = ElevatorState::BUSY;
     emit elevatorStateChanged(_state);
 }
-
 
 void Elevator::idleSlot()
 {

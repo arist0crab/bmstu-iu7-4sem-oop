@@ -13,7 +13,6 @@ enum class ControllerState
     WAITING_DOORS
 };
 
-
 class Controller : public QObject
 {
     Q_OBJECT
@@ -25,9 +24,12 @@ class Controller : public QObject
         ControllerState getState() const noexcept;
         size_t queueSize() const noexcept;
 
+        void callReceived(int floor);
+        void floorReached();
+        void doorsClosed();
+
     signals:
         void floorServicedSignal(int floor);
-        void routeNextTargetSignal();
         void floorChanged(int floor);
         
         void moveCabinSignal();
@@ -35,10 +37,10 @@ class Controller : public QObject
         void freeCabinSignal();
 
     public slots:
-        void callReceivedSlot(int floor);
-        void doorsStateChangedSlot(DoorsState state);
-        void routeNextTargetSlot();
-        void floorReachedSlot();
+        void idleSlot();
+        void routingSlot();
+        void waitingCabinSlot();
+        void waitingDoorsSlot();
 
     private:
         Cabin &_cabin;
