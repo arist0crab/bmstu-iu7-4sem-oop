@@ -1,33 +1,35 @@
 #include "Doors.hpp"
 
-
-Doors::Doors(QObject* parent) : _state(DoorsState::CLOSE), _timer(this) 
+Doors::Doors(QObject* parent) : _state(DoorsState::CLOSE), _openTimer(this), _closeTimer(this)
 { 
-    _timer.setSingleShot(true);
+    _openTimer.setSingleShot(true);
+    _closeTimer.setSingleShot(true);
 
-    connect(&_timer, &QTimer::timeout, this, [this]() 
-    {
-        if (_state == DoorsState::OPENING)
-            emit openedSignal();
-        else if (_state == DoorsState::CLOSING)
-            emit closedSignal();
-    });
-
+    connect(&_openTimer, &QTimer::timeout, this, &Doors::onOpenTimeout);
+    connect(&_closeTimer, &QTimer::timeout, this, &Doors::onCloseTimeout);
+    
     connect(this, &Doors::openedSignal, this, &Doors::openSlot);
     connect(this, &Doors::closedSignal, this, &Doors::closeSlot);
 }
-
 
 DoorsState Doors::getState() const noexcept
 {
     return _state;
 }
 
+void Doors::onOpenTimeout()
+{
+    if (_state == DoorsState::OPENING)
+        emit openedSignal();
+}
 
-// =========================
-//           Слоты
-// =========================
+void Doors::onCloseTimeout()
+{
+    if (_state == DoorsState::CLOSING)
+        emit closedSignal();
+}
 
+// === слоты ===
 
 void Doors::startOpeningSlot()
 {
@@ -37,9 +39,9 @@ void Doors::startOpeningSlot()
     _state = DoorsState::OPENING;
     emit doorsStateChanged(_state);
 
-    _timer.start(DOOR_TIME);
+    _closeTimer.stop();
+    _openTimer.start(DOOR_TIME);
 }
-
 
 void Doors::openSlot()
 {
@@ -50,7 +52,6 @@ void Doors::openSlot()
     emit doorsStateChanged(_state);
 }
 
-
 void Doors::startClosingSlot()
 {
     if (_state != DoorsState::OPEN)
@@ -59,9 +60,9 @@ void Doors::startClosingSlot()
     _state = DoorsState::CLOSING;
     emit doorsStateChanged(_state);
 
-    _timer.start(DOOR_TIME);
+    _openTimer.stop();
+    _closeTimer.start(DOOR_TIME);
 }
-
 
 void Doors::closeSlot()
 {
@@ -71,4 +72,3 @@ void Doors::closeSlot()
     _state = DoorsState::CLOSE;
     emit doorsStateChanged(_state);
 }
-

@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QTimer>
 
-
 enum class DoorsState
 {
     OPEN,
@@ -12,7 +11,6 @@ enum class DoorsState
     OPENING,
     CLOSING
 };
-
 
 class Doors : public QObject
 {
@@ -36,6 +34,10 @@ class Doors : public QObject
         void closeSlot();
 
     private:
+        void onOpenTimeout();
+        void onCloseTimeout();
+
         DoorsState _state;
-        QTimer _timer;
+        QTimer _openTimer;
+        QTimer _closeTimer;
 };

@@ -1,26 +1,18 @@
 #include "Cabin.hpp"
 
-Cabin::Cabin(QObject* parent) 
-    : QObject(parent), _state(CabinState::IDLE), _timer(this)
+
+Cabin::Cabin(QObject* parent) : QObject(parent), _state(CabinState::IDLE), _moveTimer(this), _waitTimer(this)
 {
-    _timer.setSingleShot(true);
-
-    connect(this, &Cabin::openDoorsSignal, &_doors, &Doors::startOpeningSlot);
-    connect(this, &Cabin::closeDoorsSignal, &_doors, &Doors::startClosingSlot);
-
-    // TODO упростить
-    connect(&_timer, &QTimer::timeout, this, [this]() {
-        if (_state == CabinState::MOVE) 
-            emit floorReached(); 
-        else if (_state == CabinState::WAIT)
-            emit closeDoorsSignal();
-    });
-
-    connect(&_doors, &Doors::doorsStateChanged, this, [this](DoorsState doorState) {
-        if (_state == CabinState::WAIT && doorState == DoorsState::OPEN)
-            _timer.start(WAIT_TIME);
-        emit doorsStateChanged(doorState);
-    });
+    _moveTimer.setSingleShot(true);
+    _waitTimer.setSingleShot(true);
+    
+    connect(&_moveTimer, &QTimer::timeout, this, &Cabin::onMoveTimeout);
+    connect(&_waitTimer, &QTimer::timeout, this, &Cabin::onWaitTimeout);
+    
+    connect(&_doors, &Doors::openedSignal, this, &Cabin::onDoorsOpened);
+    connect(&_doors, &Doors::closedSignal, this, &Cabin::onDoorsClosed);
+    
+    connect(&_doors, &Doors::doorsStateChanged, this, &Cabin::doorsStateChanged);
 }
 
 CabinState Cabin::getState() const noexcept
@@ -28,31 +20,72 @@ CabinState Cabin::getState() const noexcept
     return _state;
 }
 
+void Cabin::onDoorsOpened()
+{
+    if (_state == CabinState::WAIT)
+    {
+        _waitTimer.start(WAIT_TIME);
+        emit doorsOpened();
+    }
+}
+
+void Cabin::onDoorsClosed()
+{
+    if (_state == CabinState::WAIT)
+    {
+        freeSlot();
+        emit doorsClosed();
+    }
+}
+
+// === обработчики таймеров ===
+
+void Cabin::onMoveTimeout()
+{
+    if (_state == CabinState::MOVE)
+        emit floorReached();
+}
+
+void Cabin::onWaitTimeout()
+{
+    if (_state == CabinState::WAIT)
+        _doors.startClosingSlot(); 
+}
+
+// === слоты ===
+
 void Cabin::moveSlot()
 {
+    if (_state == CabinState::WAIT) 
+        return;
+    
     _state = CabinState::MOVE;
     emit cabinStateChanged(_state);
-
-    _timer.start(MOVE_TIME);
+    
+    _moveTimer.start(MOVE_TIME);
 }
-// TODO двери закрываются кабина едет - исправить (двери должны быть закрыты)
+
 void Cabin::stopSlot()
 {
     if (_state != CabinState::MOVE && _state != CabinState::IDLE)
         return;
 
-    _timer.stop();
+    
+    _moveTimer.stop();
+    
     _state = CabinState::WAIT;
     emit cabinStateChanged(_state);
     
-    emit openDoorsSignal();
+    _doors.startOpeningSlot();
 }
 
 void Cabin::freeSlot()
 {
     if (_state != CabinState::WAIT)
         return;
-
+    
+    _waitTimer.stop();
+    
     _state = CabinState::IDLE;
     emit cabinStateChanged(_state);
 }

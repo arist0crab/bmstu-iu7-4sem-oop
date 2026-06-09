@@ -5,14 +5,12 @@
 #include <QObject>
 #include <QTimer>
 
-
 enum class CabinState
 {
     IDLE,
     MOVE,
     WAIT
 };
-
 
 class Cabin : public QObject
 {
@@ -27,18 +25,24 @@ class Cabin : public QObject
     signals:
         void cabinStateChanged(CabinState state);
         void doorsStateChanged(DoorsState state);
-        void floorReached();
 
-        void openDoorsSignal();
-        void closeDoorsSignal();
+        void floorReached();
+        void doorsOpened();
+        void doorsClosed();
 
     public slots:
-        void moveSlot();  // MOVE
-        void stopSlot();  // WAIT
-        void freeSlot();  // IDLE
+        void moveSlot();
+        void stopSlot();
+        void freeSlot();
 
     private:
+        void onMoveTimeout();
+        void onWaitTimeout();
+        void onDoorsOpened();
+        void onDoorsClosed();
+        
         Doors _doors;
-        QTimer _timer;
+        QTimer _moveTimer;
+        QTimer _waitTimer;
         CabinState _state;
 };
