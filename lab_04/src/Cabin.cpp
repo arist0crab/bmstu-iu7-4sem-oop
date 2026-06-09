@@ -8,6 +8,7 @@ Cabin::Cabin(QObject* parent)
     connect(this, &Cabin::openDoorsSignal, &_doors, &Doors::startOpeningSlot);
     connect(this, &Cabin::closeDoorsSignal, &_doors, &Doors::startClosingSlot);
 
+    // TODO упростить
     connect(&_timer, &QTimer::timeout, this, [this]() {
         if (_state == CabinState::MOVE) 
             emit floorReached(); 
@@ -34,7 +35,7 @@ void Cabin::moveSlot()
 
     _timer.start(MOVE_TIME);
 }
-
+// TODO двери закрываются кабина едет - исправить (двери должны быть закрыты)
 void Cabin::stopSlot()
 {
     if (_state != CabinState::MOVE && _state != CabinState::IDLE)

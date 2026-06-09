@@ -23,11 +23,6 @@ size_t Controller::queueSize() const noexcept
 }
 
 
-// =========================
-//           Слоты
-// =========================
-
-
 void Controller::callReceivedSlot(int floor)
 {
     if (_curfloor == floor && _state == ControllerState::IDLE)
