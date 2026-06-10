@@ -7,10 +7,10 @@
 
 enum class ControllerState
 {
-    IDLE,
-    ROUTING,
-    WAITING_CABIN,
-    WAITING_DOORS
+    IDLE,  // состояние покоя
+    ROUTING,  // маршрутизация
+    WAITING_CABIN,  // процесс кабины
+    WAITING_DOORS  // процесс дверей
 };
 
 class Controller : public QObject

@@ -9,8 +9,9 @@ Cabin::Cabin(QObject* parent) : QObject(parent), _state(CabinState::IDLE), _move
     connect(&_moveTimer, &QTimer::timeout, this, &Cabin::onMoveTimeout);
     connect(&_waitTimer, &QTimer::timeout, this, &Cabin::onWaitTimeout);
     
-    connect(&_doors, &Doors::openedSignal, this, &Cabin::onDoorsOpened);
-    connect(&_doors, &Doors::closedSignal, this, &Cabin::onDoorsClosed);
+    // TODO на сигналы должны быть подписаны слоты
+    connect(&_doors, &Doors::doorsOpenedSignal, this, &Cabin::onDoorsOpened);
+    connect(&_doors, &Doors::doorsClosedSignal, this, &Cabin::onDoorsClosed);
     
     connect(&_doors, &Doors::doorsStateChanged, this, &Cabin::doorsStateChanged);
 }
@@ -42,14 +43,12 @@ void Cabin::onDoorsClosed()
 
 void Cabin::onMoveTimeout()
 {
-    if (_state == CabinState::MOVE)
-        emit floorReached();
+    emit floorReached();
 }
 
 void Cabin::onWaitTimeout()
 {
-    if (_state == CabinState::WAIT)
-        _doors.startClosingSlot(); 
+    _doors.startClosingSlot(); 
 }
 
 // === слоты ===

@@ -23,8 +23,10 @@ class Doors : public QObject
         DoorsState getState() const noexcept;
 
     signals:
-        void openedSignal();
-        void closedSignal();
+        void timerOpenedSignal();
+        void timerClosedSignal();
+        void doorsOpenedSignal();
+        void doorsClosedSignal();
         void doorsStateChanged(DoorsState state);
 
     public slots:

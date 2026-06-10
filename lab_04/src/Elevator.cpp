@@ -2,6 +2,7 @@
 
 Elevator::Elevator(QObject* parent) : QObject(parent), _cabin(this), _controller(_cabin, this) , _state(ElevatorState::IDLE)
 {
+    // TODO на сигналы должны быть подписаны только слоты
     connect(&_controller, &Controller::floorChanged, this, &Elevator::floorChanged);
     connect(&_cabin, &Cabin::doorsStateChanged, this, &Elevator::doorsStateChangedSignal);
 }

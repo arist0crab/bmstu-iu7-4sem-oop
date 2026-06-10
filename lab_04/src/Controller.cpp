@@ -1,7 +1,6 @@
 #include "Controller.hpp"
 
-Controller::Controller(Cabin &cabin, QObject* parent) 
-    : QObject(parent), _cabin(cabin), _state(ControllerState::IDLE), _direction(Direction::NONE), _curfloor(START_FLOOR), _targetFloor(START_FLOOR)
+Controller::Controller(Cabin &cabin, QObject* parent) : QObject(parent), _cabin(cabin), _state(ControllerState::IDLE), _direction(Direction::NONE), _curfloor(START_FLOOR), _targetFloor(START_FLOOR)
 {
     connect(&_cabin, &Cabin::floorReached, this, &Controller::floorReached);
     connect(&_cabin, &Cabin::doorsClosed, this, &Controller::doorsClosed);

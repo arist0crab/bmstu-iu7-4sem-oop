@@ -8,8 +8,8 @@ Doors::Doors(QObject* parent) : _state(DoorsState::CLOSE), _openTimer(this), _cl
     connect(&_openTimer, &QTimer::timeout, this, &Doors::onOpenTimeout);
     connect(&_closeTimer, &QTimer::timeout, this, &Doors::onCloseTimeout);
     
-    connect(this, &Doors::openedSignal, this, &Doors::openSlot);
-    connect(this, &Doors::closedSignal, this, &Doors::closeSlot);
+    connect(this, &Doors::timerOpenedSignal, this, &Doors::openSlot);
+    connect(this, &Doors::timerClosedSignal, this, &Doors::closeSlot);
 }
 
 DoorsState Doors::getState() const noexcept
@@ -19,14 +19,12 @@ DoorsState Doors::getState() const noexcept
 
 void Doors::onOpenTimeout()
 {
-    if (_state == DoorsState::OPENING)
-        emit openedSignal();
+    emit timerOpenedSignal();
 }
 
 void Doors::onCloseTimeout()
 {
-    if (_state == DoorsState::CLOSING)
-        emit closedSignal();
+    emit timerClosedSignal();
 }
 
 // === слоты ===
@@ -36,11 +34,20 @@ void Doors::startOpeningSlot()
     if (_state != DoorsState::CLOSE && _state != DoorsState::CLOSING)
         return;
 
+    _closeTimer.stop();
+
+    int remainingTime = DOOR_TIME;
+
+    if (_state == DoorsState::CLOSING)
+    {
+        remainingTime = _closeTimer.remainingTime();
+        remainingTime = (remainingTime <= 0) ? DOOR_TIME : remainingTime;
+    }
+
+    _openTimer.start(remainingTime);
+
     _state = DoorsState::OPENING;
     emit doorsStateChanged(_state);
-
-    _closeTimer.stop();
-    _openTimer.start(DOOR_TIME);
 }
 
 void Doors::openSlot()
@@ -50,6 +57,7 @@ void Doors::openSlot()
 
     _state = DoorsState::OPEN;
     emit doorsStateChanged(_state);
+    emit doorsOpenedSignal();
 }
 
 void Doors::startClosingSlot()
@@ -57,11 +65,11 @@ void Doors::startClosingSlot()
     if (_state != DoorsState::OPEN)
         return;
 
-    _state = DoorsState::CLOSING;
-    emit doorsStateChanged(_state);
-
     _openTimer.stop();
     _closeTimer.start(DOOR_TIME);
+
+    _state = DoorsState::CLOSING;
+    emit doorsStateChanged(_state);
 }
 
 void Doors::closeSlot()
@@ -71,4 +79,5 @@ void Doors::closeSlot()
 
     _state = DoorsState::CLOSE;
     emit doorsStateChanged(_state);
+    emit doorsClosedSignal();
 }
