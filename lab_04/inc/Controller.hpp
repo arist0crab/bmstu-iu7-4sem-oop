@@ -43,6 +43,10 @@ class Controller : public QObject
         void waitingDoorsSlot();
 
     private:
+        void removeCurrentFloorFromQueue();
+        bool canStartRouting() const;
+        bool canContinueMovement() const;
+
         Cabin &_cabin;
         ControllerState _state;
         QList<int> _queue;

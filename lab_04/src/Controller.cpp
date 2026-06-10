@@ -3,8 +3,8 @@
 
 Controller::Controller(Cabin &cabin, QObject* parent) : QObject(parent), _cabin(cabin), _state(ControllerState::IDLE), _direction(Direction::NONE), _curfloor(START_FLOOR), _targetFloor(START_FLOOR)
 {
-    connect(&_cabin, &Cabin::cabinFloorReached, this, &Controller::floorReached);
-    connect(&_cabin, &Cabin::cabinDoorsClosed, this, &Controller::doorsClosed);
+    connect(&_cabin, &Cabin::cabinFloorReached, this, &Controller::waitingCabinSlot);
+    connect(&_cabin, &Cabin::cabinDoorsClosed, this, &Controller::routingSlot);
 }
 
 ControllerState Controller::getState() const noexcept
@@ -22,7 +22,7 @@ void Controller::callReceived(int floor)
     if (_curfloor == floor && _state == ControllerState::IDLE)
     {
         waitingDoorsSlot();
-        return; 
+        return;
     }
 
     if (!_queue.contains(floor))
@@ -42,14 +42,17 @@ void Controller::idleSlot()
 
 void Controller::routingSlot()
 {
-    _state = ControllerState::ROUTING;
+    if (!canStartRouting())
+        return;
 
-    if (_queue.isEmpty()) 
+    if (_queue.isEmpty())
     {
         idleSlot();
         return;
     }
 
+    _state = ControllerState::ROUTING;
+    
     _targetFloor = _queue.first();
     _direction = (_targetFloor > _curfloor) ? Direction::UP : Direction::DOWN;
 
@@ -58,41 +61,43 @@ void Controller::routingSlot()
 
 void Controller::waitingCabinSlot()
 {
+    if (!canContinueMovement())
+        return;
+
     _state = ControllerState::WAITING_CABIN;
-    _cabin.moveSlot();
+    _curfloor += _direction;
+    emit controllerFloorChanged(_curfloor);
+
+    if (_curfloor != _targetFloor)
+        _cabin.moveSlot();
+    else 
+        waitingDoorsSlot();
 }
 
 void Controller::waitingDoorsSlot()
 {
     _state = ControllerState::WAITING_DOORS;
+    removeCurrentFloorFromQueue();
     _cabin.serveSlot();
 }
 
-void Controller::doorsClosed()
-{
-    if (_state != ControllerState::WAITING_DOORS) 
-        return;
+// === приватные методы ===
 
-    if (!_queue.isEmpty()) 
-    {
-        int currentFloor = _queue.first();
-        _queue.removeFirst();
-        emit floorServicedSignal(currentFloor);
-    }
-        
-    routingSlot();
+void Controller::removeCurrentFloorFromQueue()
+{
+    if (_queue.empty() || !_queue.contains(_curfloor))
+        return;
+    
+    _queue.removeFirst();
+    emit floorServicedSignal(_curfloor);
 }
 
-void Controller::floorReached()
+bool Controller::canStartRouting() const
 {
-    if (_state != ControllerState::WAITING_CABIN) 
-        return;
+    return _state == ControllerState::IDLE || _state == ControllerState::WAITING_DOORS;
+}
 
-    _curfloor += _direction;
-    emit controllerFloorChanged(_curfloor); 
-
-    if (_curfloor != _targetFloor)
-        _cabin.moveSlot();
-    else
-        waitingDoorsSlot();
+bool Controller::canContinueMovement() const
+{
+    return _state == ControllerState::ROUTING || _state == ControllerState::WAITING_CABIN;
 }
