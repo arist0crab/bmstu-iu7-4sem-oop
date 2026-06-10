@@ -1,5 +1,6 @@
 #include "Doors.hpp"
 
+
 Doors::Doors(QObject* parent) : _state(DoorsState::CLOSE), _openTimer(this), _closeTimer(this)
 { 
     _openTimer.setSingleShot(true);
@@ -16,6 +17,8 @@ DoorsState Doors::getState() const noexcept
 {
     return _state;
 }
+
+// === обработчики таймеров ===
 
 void Doors::onOpenTimeout()
 {
@@ -79,5 +82,6 @@ void Doors::closeSlot()
 
     _state = DoorsState::CLOSE;
     emit doorsStateChanged(_state);
+
     emit doorsClosedSignal();
 }

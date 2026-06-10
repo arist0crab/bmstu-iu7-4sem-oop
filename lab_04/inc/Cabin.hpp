@@ -7,9 +7,9 @@
 
 enum class CabinState
 {
-    IDLE,
-    MOVE,
-    WAIT
+    IDLE,  // покой
+    MOVE,  // движение
+    SERVE  // обслуживание
 };
 
 class Cabin : public QObject
@@ -26,14 +26,14 @@ class Cabin : public QObject
         void cabinStateChanged(CabinState state);
         void doorsStateChanged(DoorsState state);
 
-        void floorReached();
-        void doorsOpened();
-        void doorsClosed();
+        void cabinFloorReached();
+        void cabinDoorsOpened();
+        void cabinDoorsClosed();
 
     public slots:
         void moveSlot();
-        void stopSlot();
-        void freeSlot();
+        void idleSlot();
+        void serveSlot();
 
     private:
         void onMoveTimeout();

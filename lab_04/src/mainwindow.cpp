@@ -1,6 +1,8 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 
+// TODO если создать очередь из вызовов лифт заиснет
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), _elevatorA(this), _elevatorB(this)
 {
     ui->setupUi(this);
@@ -83,15 +85,29 @@ void MainWindow::onFloorChangedA(int floor)
 void MainWindow::onDoorsStateChangedA(DoorsState state)
 {
     QString logText, doorVisual;
-    switch(state) {
-        case DoorsState::OPENING: logText = "Лифт А: Двери открываются..."; doorVisual = "[ <  > ]"; break;
-        case DoorsState::OPEN:    logText = "Лифт А: Двери ОТКРЫТЫ.";      doorVisual = "[      ]"; break;
-        case DoorsState::CLOSING: logText = "Лифт А: Двери закрываются..."; doorVisual = "[ >  < ]"; break;
-        case DoorsState::CLOSE:   logText = "Лифт А: Двери ЗАКРЫТЫ.";      doorVisual = "[  ||  ]"; break;
+    switch(state) 
+    {
+        case DoorsState::OPENING:
+            logText = "Лифт А: Двери открываются..."; 
+            doorVisual = "[ <  > ]"; 
+            break;
+        case DoorsState::OPEN:
+            logText = "Лифт А: Двери ОТКРЫТЫ.";      
+            doorVisual = "[      ]"; 
+            break;
+        case DoorsState::CLOSING: 
+            logText = "Лифт А: Двери закрываются..."; 
+            doorVisual = "[ >  < ]"; 
+            break;
+        case DoorsState::CLOSE:   
+            logText = "Лифт А: Двери ЗАКРЫТЫ.";      
+            doorVisual = "[  ||  ]"; 
+            break;
     }
     ui->processField->append(logText);
     int idx = _currentFloorA - 1;
-    if (idx >= 0 && idx < _shaftA.size()) _shaftA[idx]->setText(QString("[  CABIN A  ] %1").arg(doorVisual));
+    if (idx >= 0 && idx < _shaftA.size()) 
+        _shaftA[idx]->setText(QString("[  CABIN A  ] %1").arg(doorVisual));
 }
 
 // ОБРАБОТКА ЛИФТА Б
@@ -106,11 +122,24 @@ void MainWindow::onFloorChangedB(int floor)
 void MainWindow::onDoorsStateChangedB(DoorsState state)
 {
     QString logText, doorVisual;
-    switch(state) {
-        case DoorsState::OPENING: logText = "Лифт Б: Двери открываются..."; doorVisual = "[ <  > ]"; break;
-        case DoorsState::OPEN:    logText = "Лифт Б: Двери ОТКРЫТЫ.";      doorVisual = "[      ]"; break;
-        case DoorsState::CLOSING: logText = "Лифт Б: Двери закрываются..."; doorVisual = "[ >  < ]"; break;
-        case DoorsState::CLOSE:   logText = "Лифт Б: Двери ЗАКРЫТЫ.";      doorVisual = "[  ||  ]"; break;
+    switch(state) 
+    {
+        case DoorsState::OPENING:
+            logText = "Лифт А: Двери открываются..."; 
+            doorVisual = "[ <  > ]"; 
+            break;
+        case DoorsState::OPEN:
+            logText = "Лифт А: Двери ОТКРЫТЫ.";      
+            doorVisual = "[      ]"; 
+            break;
+        case DoorsState::CLOSING: 
+            logText = "Лифт А: Двери закрываются..."; 
+            doorVisual = "[ >  < ]"; 
+            break;
+        case DoorsState::CLOSE:   
+            logText = "Лифт А: Двери ЗАКРЫТЫ.";      
+            doorVisual = "[  ||  ]"; 
+            break;
     }
     ui->processField->append(logText);
     int idx = _currentFloorB - 1;

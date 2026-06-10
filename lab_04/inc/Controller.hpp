@@ -30,7 +30,7 @@ class Controller : public QObject
 
     signals:
         void floorServicedSignal(int floor);
-        void floorChanged(int floor);
+        void controllerFloorChanged(int floor);
         
         void moveCabinSignal();
         void stopCabinSignal();
